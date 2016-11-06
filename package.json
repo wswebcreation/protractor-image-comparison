@@ -1,0 +1,23 @@
+{
+  "name": "protractor-image-comparison",
+  "version": "0.0.1",
+  "description": "npm-module to compare images with protractor",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wswebcreation/protractor-image-comparison.git"
+  },
+  "keywords": [
+    "image-diff",
+    "image-comparison",
+    "protractor",
+    "comparison",
+    "pix",
+    "blink",
+    "image",
+    "diff",
+    "difference",
+    "compare"
+  ],
+  "author": "Wim Selles - wswebcreation",
+  "license": "ISC"
+}
