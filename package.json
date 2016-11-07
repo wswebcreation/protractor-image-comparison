@@ -1,7 +1,13 @@
 {
-  "name": "protractor-image-comparison",
+  "name": "image-comparison",
   "version": "0.0.1",
   "description": "npm-module to compare images with protractor",
+  "main": "index.js",
+  "scripts": {
+    "changelog": "node ./test/changelog.js",
+    "test": "node ./test/cli image-comparison",
+    "wd-update": "node_modules/.bin/webdriver-manager update"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/wswebcreation/protractor-image-comparison.git"
@@ -12,12 +18,38 @@
     "protractor",
     "comparison",
     "pix",
-    "blink",
+    "resemblejs",
     "image",
     "diff",
     "difference",
     "compare"
   ],
   "author": "Wim Selles - wswebcreation",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "assert": "^1.4.1",
+    "camel-case": "^3.0.0",
+    "mkdirp": "^0.5.1",
+    "png-image": "^1.0.1"
+  },
+  "devDependencies": {
+    "chalk": "^1.1.3",
+    "commander": "^2.9.0",
+    "conventional-changelog": "^1.1.0",
+    "ghooks": "^1.3.2",
+    "jasmine-spec-reporter": "^2.7.0",
+    "protractor": "^4.0.10",
+    "validate-commit-msg": "^2.8.2",
+    "wd": "^1.0.0",
+    "wd-bridge": "0.0.2"
+  },
+  "config": {
+    "ghooks": {
+      "commit-msg": "validate-commit-msg"
+    }
+  },
+  "engines": {
+    "npm": ">=3.0.0",
+    "node": ">=4.6.0"
+  }
 }

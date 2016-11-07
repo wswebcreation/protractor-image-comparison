@@ -1,0 +1,29 @@
+sudo: required
+dist: trusty
+
+language: node_js
+node_js:
+- '6'
+
+addons:
+  sauce_connect: true
+  artifacts:
+    key: $TRAVIS_KEY
+    secret: $TRAVIS_SECRET
+    bucket: wswebcreation-image-comparison
+    paths:
+    - .tmp/
+    target_paths: travis-builds/$TRAVIS_BUILD_NUMBER
+    working_dir: travis-builds
+    s3_region: us-east-1
+    permissions: public-read
+
+notifications:
+    on_success: always
+    on_failure: always
+
+install:
+- npm install
+
+script:
+- npm t -- -e saucelabs --seleniumAddress=http://localhost:4445/wd/hub
