@@ -12,27 +12,22 @@ describe('image-comparison', () => {
     const logName = camelCase(browser.logName),
         devices = {
             iPhone_6SimulatorSafari: {
-                blockOut: [{x: 0, y: 0, width: 750, height: 40}],
                 name: `${logName}-375x667-dpr-2`
             },
             iPadAir_2SimulatorSafari: {
-                blockOut: [{x: 0, y: 0, width: 1536, height: 40}],
                 name: `${logName}-768x1024-dpr-2`
             },
-            nexus_5ByGoogleADB: {
-                blockOut: [{x: 0, y: 0, width: 1080, height: 72}],
+            nexus_5ByGoogleAdb: {
                 name: `${logName}-360x640-dpr-3`
             },
             nexus_5ByGoogleChromeDriver: {
-                blockOut: [{x: 0, y: 0, width: 1080, height: 72}],
                 name: `${logName}-360x640-dpr-3`
             },
             perfectoAppleIPhone_7Safari: {
-                blockOut: [{x: 0, y: 0, width: 750, height: 40}, {x: 0, y: 1246, width: 750, height: 88}],
+                blockOut: [{x: 0, y: 1246, width: 750, height: 88}],
                 name: `${logName}-375x667-dpr-2`
             },
             perfectoSamsungGalaxyS6Chrome: {
-                blockOut: [{x: 0, y: 0, width: 1440, height: 96}],
                 name: `${logName}-360x640-dpr-4`
             }
         },
@@ -48,9 +43,10 @@ describe('image-comparison', () => {
 
                 browser.imageComparson = new imageComparison({
                     baselineFolder: './test/baseline/mobile/',
+                    blockOutStatusBar: true,
                     formatImageName: `{tag}-${logName}-{width}x{height}-dpr-{dpr}`,
-                    screenshotPath: './.tmp/',
-                    nativeWebScreenshot: ADBScreenshot
+                    nativeWebScreenshot: ADBScreenshot,
+                    screenshotPath: './.tmp/'
                 });
 
                 return browser.get(browser.baseUrl);
@@ -82,22 +78,18 @@ describe('image-comparison', () => {
             examplePageFail = `${examplePage}-fail`;
 
         it('should compare successful with a baseline', () => {
-            expect(browser.imageComparson.checkScreen(examplePage,
-                {blockOut: devices[logName]['blockOut']}))
-                .toEqual(0);
+            expect(browser.imageComparson.checkScreen(examplePage)).toEqual(0);
         });
 
         it('should save a difference after failure', () => {
-            browser.executeScript('arguments[0].innerHTML = "Test Demo Page";', headerElement.getWebElement());
-            browser.imageComparson.checkScreen(examplePageFail)
-                .then(() => {
-                    expect(fs.existsSync(`${differencePath}/${examplePageFail}-${devices[logName]['name']}.png`)).toBe(true);
-                });
+            browser.executeScript('arguments[0].innerHTML = "Test Demo Page";', headerElement.getWebElement())
+                .then(() => browser.imageComparson.checkScreen(examplePageFail))
+                .then(() => expect(fs.existsSync(`${differencePath}/${examplePageFail}-${devices[logName]['name']}.png`)).toBe(true));
         });
 
         it('should fail comparing with a baseline', () => {
-            browser.executeScript('arguments[0].innerHTML = "Test Demo Page";', headerElement.getWebElement());
-            expect(browser.imageComparson.checkScreen(examplePageFail)).toBeGreaterThan(0);
+            browser.executeScript('arguments[0].innerHTML = "Test Demo Page";', headerElement.getWebElement())
+                .then(() => expect(browser.imageComparson.checkScreen(examplePageFail)).toBeGreaterThan(0));
         });
 
         it('should throw an error when no baseline is found', () => {

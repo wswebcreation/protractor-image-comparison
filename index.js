@@ -18,12 +18,15 @@ const assert = require('assert'),
  * @param {string} options.screenshotPath Path to the folder where the screenshots are saved
  * @param {string} options.formatImageOptions Custom variables for Image Name
  * @param {boolean} options.nativeWebScreenshot If a native screenshot of a device (complete screenshot) needs to be taken
+ * @param {boolean} options.blockOutStatusBar  If the statusbar on mobile / tablet needs to blocked out by default
+ * @param {object} androidOffsets Object that will hold new values for the statusBar, addressBar and toolBar
+ * @param {object} iosOffsets Object that will hold the new values for the statusBar and addressBar
  *
  * @property {string} actualFolder Path where the actual screenshots are saved
  * @property {string} diffFolder Path where the differences are saved
  * @property {int} devicePixelRatio Ratio of the (vertical) size of one physical pixel on the current display device to the size of one device independent pixels(dips)
- * @property {object} androidOffsets Object that will hold de defaults for the statusBar and addressBar, for now default
- * @property {object} iosOffsets Object that will hold de defaults for the statusBar and addressBar, for now default
+ * @property {object} androidDefaultOffsets Object that will hold de defaults for the statusBar, addressBar and toolBar
+ * @property {object} iosDefaultOffsets Object that will hold de defaults for the statusBar and addressBar
  * @property {int} screenshotHeight height of the screenshot of the page
  */
 
@@ -37,6 +40,9 @@ class protractorImageComparison {
         this.formatString = options.formatImageName || '{tag}-{browserName}-{width}x{height}';
 
         this.nativeWebScreenshot = options.nativeWebScreenshot ? true : false;
+        this.blockOutStatusBar = options.blockOutStatusBar ? true : false;
+        this.androidOffsets = options.androidOffsets && typeof options.androidOffsets === 'object' ? options.androidOffsets : {};
+        this.iosOffsets = options.iosOffsets && typeof options.iosOffsets === 'object' ? options.iosOffsets : {};
 
         this.actualFolder = path.join(this.baseFolder, 'actual');
 
@@ -44,8 +50,15 @@ class protractorImageComparison {
 
         this.devicePixelRatio = 1;
 
-        this.androidOffsets = {};
-        this.iosOffsets = {};
+        this.androidDefaultOffsets = {
+            statusBar: 24,
+            addressBar: 56,
+            toolBar: 48
+        };
+        this.iosDefaultOffsets = {
+            statusBar: 20,
+            addressBar: 44
+        };
 
         this.screenshotHeight = 0;
 
@@ -103,11 +116,7 @@ class protractorImageComparison {
                     y: Math.floor(position.y)
                 };
 
-                Object.keys(rect).map(value => {
-                    rect[value] *= this.devicePixelRatio;
-                });
-
-                return rect;
+                return this._multiplyObjectValuesAgainstDPR(rect);
             });
     }
 
@@ -158,7 +167,7 @@ class protractorImageComparison {
             };
         }
 
-        const _ = this._mergeDefaultOptions(this.androidOffsets, {addressBar: 56, statusBar: 24, toolBar: 48});
+        const _ = this._mergeDefaultOptions(this.androidDefaultOffsets, this.androidOffsets);
 
         return browser.driver.executeScript(getDataObject, element.getWebElement(), _.statusBar, _.addressBar, _.toolBar);
     }
@@ -337,7 +346,7 @@ class protractorImageComparison {
             };
         }
 
-        const _ = this._mergeDefaultOptions(this.iosOffsets, {addressBar: 44, statusBar: 20});
+        const _ = this._mergeDefaultOptions(this.iosDefaultOffsets, this.iosOffsets);
 
         return browser.driver.executeScript(getDataObject, element.getWebElement(), _.addressBar, _.statusBar);
     }
@@ -400,6 +409,20 @@ class protractorImageComparison {
     }
 
     /**
+     * Return the values of an object multiplied against the devicePixelRatio
+     * @param {object} values
+     * @returns {Object}
+     * @private
+     */
+    _multiplyObjectValuesAgainstDPR(values) {
+        Object.keys(values).map(value => {
+            values[value] *= this.devicePixelRatio;
+        });
+
+        return values;
+    }
+
+    /**
      * Runs the comparison against an element
      *
      * @method checkElement
@@ -450,13 +473,28 @@ class protractorImageComparison {
      */
     checkScreen(tag, options) {
         const checkOptions = options || [],
-            ignoreRectangles = 'blockOut' in checkOptions ? options.blockOut : [];
+            blockOutStatusBar = checkOptions.blockOutStatusBar || checkOptions.blockOutStatusBar === false ? checkOptions.blockOutStatusBar : this.blockOutStatusBar;
+
+        let ignoreRectangles = 'blockOut' in checkOptions ? options.blockOut : [];
 
         return this._getInstanceData()
             .then(() => this.saveScreen(tag))
             .then(() => this._checkImageExists(tag))
             .then(() => {
                 const imageComparisonPaths = this._determineImageComparisonPaths(tag);
+
+                if (this._isMobile() && blockOutStatusBar) {
+                    const androidSizes = this._mergeDefaultOptions(this.androidDefaultOffsets, this.androidOffsets),
+                        iosSizes = this._mergeDefaultOptions(this.iosDefaultOffsets, this.iosOffsets),
+                        statusBarHeight = this._isAndroid() ? androidSizes.statusBar : iosSizes.statusBar,
+                        statusBarBlockOut = this._multiplyObjectValuesAgainstDPR({
+                            x: 0,
+                            y: 0,
+                            height: statusBarHeight,
+                            width: this.width
+                        });
+                    ignoreRectangles.push(statusBarBlockOut);
+                }
 
                 return new Promise(resolve => {
                     ResembleJS(imageComparisonPaths.baselineImage)
