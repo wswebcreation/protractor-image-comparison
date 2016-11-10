@@ -1,6 +1,6 @@
 {
   "name": "image-comparison",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "npm-module to compare images with protractor",
   "main": "index.js",
   "scripts": {
