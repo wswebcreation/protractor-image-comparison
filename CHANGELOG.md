@@ -1,5 +1,10 @@
+<a name="0.1.1"></a>
+## [0.1.1](https://github.com/wswebcreation/protractor-image-comparison/compare/v0.1.0...v0.1.1) (2016-11-10)
+
+
+
 <a name="0.1.0"></a>
-# 0.1.0 (2016-11-10)
+# [0.1.0](https://github.com/wswebcreation/protractor-image-comparison/compare/327c136...v0.1.0) (2016-11-10)
 
 
 ### Features
