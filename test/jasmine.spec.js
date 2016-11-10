@@ -18,6 +18,9 @@ describe('protractor-image-comparison', () => {
             .then(()=> browser.sleep(500));
     });
 
+    // Chrome remembers the last postion when the url is loaded again, this will reset it.
+    afterEach(() => browser.executeScript('window.scrollTo(0, 0);'));
+
     const browserName = browser.browserName.replace(/ /g, ''),
         logName = camelCase(browser.logName),
         dpr = {
@@ -36,18 +39,14 @@ describe('protractor-image-comparison', () => {
             const tagName = 'examplePage';
 
             browser.imageComparson.saveScreen(tagName)
-                .then(() => {
-                    expect(fs.existsSync(`${screenshotPath}/${tagName}-${logName}-${resolution}-dpr-${dpr[browserName]}.png`)).toBe(true);
-                });
+                .then(() => expect(fs.existsSync(`${screenshotPath}/${tagName}-${logName}-${resolution}-dpr-${dpr[browserName]}.png`)).toBe(true));
         });
 
         it('should save element', () => {
             const tagName = 'examplePageElement';
 
             browser.imageComparson.saveElement(headerElement, tagName)
-                .then(() => {
-                    expect(fs.existsSync(`${screenshotPath}/${tagName}-${logName}-${resolution}-dpr-${dpr[browserName]}.png`)).toBe(true);
-                });
+                .then(() => expect(fs.existsSync(`${screenshotPath}/${tagName}-${logName}-${resolution}-dpr-${dpr[browserName]}.png`)).toBe(true));
         });
     });
 
@@ -62,23 +61,18 @@ describe('protractor-image-comparison', () => {
         it('should save a difference after failure', () => {
             browser.executeScript('arguments[0].innerHTML = "Test Demo Page";', headerElement.getWebElement());
             browser.imageComparson.checkScreen(examplePageFail)
-                .then(() => {
-                    expect(fs.existsSync(`${differencePath}/${examplePageFail}-${logName}-${resolution}-dpr-${dpr[browserName]}.png`)).toBe(true);
-                });
+                .then(() => expect(fs.existsSync(`${differencePath}/${examplePageFail}-${logName}-${resolution}-dpr-${dpr[browserName]}.png`)).toBe(true));
         });
 
         it('should fail comparing with a baseline', () => {
-            browser.executeScript('arguments[0].innerHTML = "Test Demo Page";', headerElement.getWebElement());
-            expect(browser.imageComparson.checkScreen(examplePageFail)).toBeGreaterThan(0);
+            browser.executeScript('arguments[0].innerHTML = "Test Demo Page";', headerElement.getWebElement())
+                .then(() => expect(browser.imageComparson.checkScreen(examplePageFail)).toBeGreaterThan(0));
         });
 
         it('should throw an error when no baseline is found', () => {
             browser.imageComparson.checkScreen('noImage')
-                .then(() => {
-                    fail(new Error('This should not succeed'));
-                }, error => {
-                    expect(error).toEqual('Image not found, saving current image as new baseline.');
-                });
+                .then(() => fail(new Error('This should not succeed')))
+                .catch((error) => expect(error).toEqual('Image not found, saving current image as new baseline.'));
         });
     });
 
@@ -87,33 +81,35 @@ describe('protractor-image-comparison', () => {
             dangerAlertElementFail = `${dangerAlertElement}-fail`;
 
         it('should compare successful with a baseline', () => {
-            browser.executeScript('arguments[0].scrollIntoView();', dangerAlert.getWebElement());
-            expect(browser.imageComparson.checkElement(dangerAlert, dangerAlertElement)).toEqual(0);
+            browser.executeScript('arguments[0].scrollIntoView();', dangerAlert.getWebElement())
+                .then(() => expect(browser.imageComparson.checkElement(dangerAlert, dangerAlertElement)).toEqual(0));
+        });
+
+        it('should compare successful with a baseline with custom dimensions that is NOT scrolled', () => {
+            expect(browser.imageComparson.checkElement(headerElement, 'resizeDimensions-header-element', {resizeDimensions: 15})).toEqual(0);
+        });
+
+        it('should compare successful with a baseline with custom dimensions that is scrolled', () => {
+            browser.executeScript('arguments[0].scrollIntoView();', dangerAlert.getWebElement())
+                .then(() => expect(browser.imageComparson.checkElement(dangerAlert, `resizeDimensions-${dangerAlertElement}`, {resizeDimensions: 15})).toEqual(0));
         });
 
         it('should save a difference after failure', () => {
             browser.executeScript('arguments[0].scrollIntoView(); arguments[0].style.color = "#2d7091";', dangerAlert.getWebElement());
             browser.imageComparson.checkElement(dangerAlert, dangerAlertElementFail)
-                .then(() => {
-                    expect(fs.existsSync(`${differencePath}/${dangerAlertElementFail}-${logName}-${resolution}-dpr-${dpr[browserName]}.png`)).toBe(true);
-                });
+                .then(() => expect(fs.existsSync(`${differencePath}/${dangerAlertElementFail}-${logName}-${resolution}-dpr-${dpr[browserName]}.png`)).toBe(true));
         });
 
         it('should fail comparing with a baseline', () => {
-            browser.executeScript('arguments[0].scrollIntoView(); arguments[0].style.color = "#2d7091";', dangerAlert.getWebElement());
-            expect(browser.imageComparson.checkElement(dangerAlert, dangerAlertElementFail)).toBeGreaterThan(0);
+            browser.executeScript('arguments[0].scrollIntoView(); arguments[0].style.color = "#2d7091";', dangerAlert.getWebElement())
+                .then(() => expect(browser.imageComparson.checkElement(dangerAlert, dangerAlertElementFail)).toBeGreaterThan(0));
         });
 
         it('should throw an error when no baseline is found', () => {
             browser.executeScript('arguments[0].scrollIntoView();', dangerAlert.getWebElement())
-                .then(() => {
-                    browser.imageComparson.checkElement(dangerAlert, 'noImage');
-                })
-                .then(() => {
-                    fail(new Error('This should not succeed'));
-                }, error => {
-                    expect(error).toEqual('Image not found, saving current image as new baseline.');
-                });
+                .then(() => browser.imageComparson.checkElement(dangerAlert, 'noImage'))
+                .then(() => fail(new Error('This should not succeed')))
+                .catch((error) => expect(error).toEqual('Image not found, saving current image as new baseline.'));
         });
     });
 });

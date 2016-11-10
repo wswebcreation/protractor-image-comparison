@@ -36,7 +36,10 @@ describe('protractor-protractor-image-comparison', () => {
 
     let ADBScreenshot;
 
-    describe('basics', () =>{
+    // Chrome remembers the last postion when the url is loaded again, this will reset it.
+    afterEach(() => browser.executeScript('window.scrollTo(0, 0);'));
+
+    describe('basics', () => {
         beforeEach(function () {
             browser.getProcessedConfig()
                 .then(_ => {
@@ -142,45 +145,38 @@ describe('protractor-protractor-image-comparison', () => {
 
         it('should compare successful with a baseline', () => {
             browser.executeScript('arguments[0].scrollIntoView();', dangerAlert.getWebElement())
-                .then(() => {
-                    if (ADBScreenshot) {
-                        browser.sleep(1000);
-                    }
-                    expect(browser.imageComparson.checkElement(dangerAlert, dangerAlertElement)).toEqual(0);
-                })
+                .then(() => browser.sleep(1000))
+                .then(() => expect(browser.imageComparson.checkElement(dangerAlert, dangerAlertElement)).toEqual(0));
+        });
+
+        it('should compare successful with a baseline with custom dimensions that is NOT scrolled', () => {
+            expect(browser.imageComparson.checkElement(headerElement, 'resizeDimensions-header-element', {resizeDimensions: 15})).toEqual(0);
+        });
+
+        it('should compare successful with a baseline with custom dimensions that is scrolled', () => {
+            browser.executeScript('arguments[0].scrollIntoView();', dangerAlert.getWebElement())
+                .then(() => browser.sleep(1000))
+                .then(() => expect(browser.imageComparson.checkElement(dangerAlert, `resizeDimensions-${dangerAlertElement}`, {resizeDimensions: 15})).toEqual(0));
         });
 
         it('should save a difference after failure', () => {
             browser.executeScript('arguments[0].scrollIntoView(); arguments[0].style.color = "#2d7091";', dangerAlert.getWebElement())
-                .then(() => {
-                    browser.imageComparson.checkElement(dangerAlert, dangerAlertElementFail)
-                })
-                .then(() => {
-                    expect(fs.existsSync(`${differencePath}/${dangerAlertElementFail}-${devices[logName]['name']}.png`)).toBe(true);
-                });
+                .then(() => browser.imageComparson.checkElement(dangerAlert, dangerAlertElementFail))
+                .then(() => expect(fs.existsSync(`${differencePath}/${dangerAlertElementFail}-${devices[logName]['name']}.png`)).toBe(true));
         });
 
         it('should fail comparing with a baseline', () => {
             browser.executeScript('arguments[0].scrollIntoView(); arguments[0].style.color = "#2d7091";', dangerAlert.getWebElement())
-                .then(() => {
-                    if (ADBScreenshot) {
-                        browser.sleep(1000);
-                    }
-                    expect(browser.imageComparson.checkElement(dangerAlert, dangerAlertElementFail)).toBeGreaterThan(0);
-                });
+                .then(() => browser.sleep(1000))
+                .then(() => expect(browser.imageComparson.checkElement(dangerAlert, dangerAlertElementFail)).toBeGreaterThan(0));
 
         });
 
         it('should throw an error when no baseline is found', () => {
             browser.executeScript('arguments[0].scrollIntoView();', dangerAlert.getWebElement())
-                .then(() => {
-                    browser.imageComparson.checkElement(dangerAlert, 'noImage')
-                })
-                .then(() => {
-                    fail(new Error('This should not succeed'))
-                }, error => {
-                    expect(error).toEqual('Image not found, saving current image as new baseline.');
-                });
+                .then(() => browser.imageComparson.checkElement(dangerAlert, 'noImage'))
+                .then(() => fail(new Error('This should not succeed')))
+                .catch(error => expect(error).toEqual('Image not found, saving current image as new baseline.'));
         });
     });
 
@@ -222,12 +218,8 @@ describe('protractor-protractor-image-comparison', () => {
         // This testcase will result in an image that is not equal to the element, but that's the case we are testing here
         it('should compare an element successful with a baseline', () => {
             browser.executeScript('arguments[0].scrollIntoView();', dangerAlert.getWebElement())
-                .then(() => {
-                    if (ADBScreenshot) {
-                        browser.sleep(1000);
-                    }
-                    expect(browser.imageComparson.checkElement(dangerAlert, 'new-offset-element')).toEqual(0);
-                })
+                .then(() => browser.sleep(1000))
+                .then(() =>expect(browser.imageComparson.checkElement(dangerAlert, 'new-offset-element')).toEqual(0));
         });
     });
 });

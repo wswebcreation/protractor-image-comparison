@@ -28,6 +28,7 @@ const assert = require('assert'),
  * @property {object} androidOffsets Object that will hold de defaults for the statusBar, addressBar and toolBar
  * @property {object} iosOffsets Object that will hold de defaults for the statusBar and addressBar
  * @property {int} screenshotHeight height of the screenshot of the page
+ * @property {int} resizeDimensions dimensions that will be used to make the the element coordinates bigger. This needs to be in pixels
  */
 
 class protractorImageComparison {
@@ -65,6 +66,8 @@ class protractorImageComparison {
         this.devicePixelRatio = 1;
 
         this.screenshotHeight = 0;
+
+        this.resizeDimensions = 0;
 
         if (!fs.existsSync(this.diffFolder) || !fs.statSync(this.diffFolder).isDirectory()) {
             mkdirp.sync(this.diffFolder);
@@ -104,20 +107,46 @@ class protractorImageComparison {
      * @private
      */
     _determineRectangles(element) {
-        let rect,
-            size;
+        let height,
+            rect,
+            width,
+            x,
+            y;
 
         return element.getSize()
             .then(elementSize => {
-                size = elementSize;
+                height = elementSize.height;
+                width = elementSize.width;
+
                 return this._getElementPosition(element);
             })
             .then(position => {
+                x = Math.floor(position.x);
+                y = Math.floor(position.y);
+
+                if (x < this.resizeDimensions) {
+                    console.log('\n WARNING: The x-coordinate may not be negative. No width resizing of the element has been executed\n');
+                } else if (((x - this.resizeDimensions) + width + 2 * this.resizeDimensions) > this.width) {
+                    console.log('\n WARNING: The new coordinate may not be outside the screen. No width resizing of the element has been executed\n');
+                } else {
+                    x = x - this.resizeDimensions;
+                    width = width + 2 * this.resizeDimensions
+                }
+
+                if (y < this.resizeDimensions) {
+                    console.log('\n WARNING: The y-coordinate may not be negative. No height resizing of the element has been executed\n');
+                } else if (((y - this.resizeDimensions) + height + 2 * this.resizeDimensions) > this.width) {
+                    console.log('\n WARNING: The new coordinate may not be outside the screen. No height resizing of the element has been executed\n');
+                } else {
+                    y = y - this.resizeDimensions;
+                    height = height + 2 * this.resizeDimensions
+                }
+
                 rect = {
-                    height: size.height,
-                    width: size.width,
-                    x: Math.floor(position.x),
-                    y: Math.floor(position.y)
+                    height: height,
+                    width: width,
+                    x: x,
+                    y: y
                 };
 
                 return this._multiplyObjectValuesAgainstDPR(rect);
@@ -427,7 +456,7 @@ class protractorImageComparison {
      *
      * @method checkElement
      * @example
-     *     browser.protractorImageComparison.checkElement(element(By.id('elementId')), 'imageA', {debug: true});
+     *     browser.protractorImageComparison.checkElement(element(By.id('elementId')), 'imageA'});
      *
      * @param {Promise} element The ElementFinder that is used to get the position
      * @param {string} tag The tag that is used
@@ -440,7 +469,7 @@ class protractorImageComparison {
             ignoreRectangles = 'blockOut' in checkOptions ? options.blockOut : [];
 
         return this._getInstanceData()
-            .then(() => this.saveElement(element, tag))
+            .then(() => this.saveElement(element, tag, options))
             .then(() => this._checkImageExists(tag))
             .then(() => {
                 const imageComparisonPaths = this._determineImageComparisonPaths(tag);
@@ -464,10 +493,10 @@ class protractorImageComparison {
      *
      * @method checkScreen
      * @example
-     *     browser.protractorImageComparison.checkScreen('imageA', {debug: true});
+     *     browser.protractorImageComparison.checkScreen('imageA');
      *
      * @param {string} tag The tag that is used
-     * @param {object} options non-default options
+     * @param {object} options (non-default) options
      * @return {Promise} When the promise is resolved it will return the percentage of the difference
      * @public
      */
@@ -484,6 +513,7 @@ class protractorImageComparison {
                 const imageComparisonPaths = this._determineImageComparisonPaths(tag);
 
                 if (this._isMobile() && blockOutStatusBar) {
+                    console.log('use blockout');
                     const statusBarHeight = this._isAndroid() ? this.androidOffsets.statusBar : this.iosOffsets.statusBar,
                         statusBarBlockOut = this._multiplyObjectValuesAgainstDPR({
                             x: 0,
@@ -517,12 +547,16 @@ class protractorImageComparison {
      *
      * @param {Promise} element The ElementFinder that is used to get the position
      * @param {string} tag The tag that is used
+     * @param {object} options (non-default) options
      * @returns {Promise} The images has been saved when the promise is resolved
      * @public
      */
-    saveElement(element, tag) {
-        let rect,
+    saveElement(element, tag, options) {
+        let saveOptions = options || [],
+            rect,
             bufferedScreenshot;
+
+        this.resizeDimensions = saveOptions.resizeDimensions ? saveOptions.resizeDimensions : this.resizeDimensions;
 
         return this._getInstanceData()
             .then(()=> browser.takeScreenshot())
