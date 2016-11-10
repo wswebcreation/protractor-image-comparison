@@ -269,16 +269,16 @@ class protractorImageComparison {
      */
     _getInstanceData() {
         return browser.getProcessedConfig()
-            .then(config => {
-                this.browserName = config.capabilities.browserName ? config.capabilities.browserName.toLowerCase() : '';
+            .then(browserConfig => {
+                this.browserName = browserConfig.capabilities.browserName ? browserConfig.capabilities.browserName.toLowerCase() : '';
                 this.testInBrowser = this.browserName !== '';
-                this.name = config.capabilities.name ? config.capabilities.name : '';
-                this.logName = config.capabilities.logName ? config.capabilities.logName : '';
+                this.name = browserConfig.capabilities.name ? browserConfig.capabilities.name : '';
+                this.logName = browserConfig.capabilities.logName ? browserConfig.capabilities.logName : '';
 
                 // Used for mobile
-                this.platformName = config.capabilities.platformName ? config.capabilities.platformName.toLowerCase() : '';
-                this.deviceName = config.capabilities.deviceName ? config.capabilities.deviceName.toLowerCase() : '';
-                this.nativeWebScreenshot = config.capabilities.nativeWebScreenshot ? true : false;
+                this.platformName = browserConfig.capabilities.platformName ? browserConfig.capabilities.platformName.toLowerCase() : '';
+                this.deviceName = browserConfig.capabilities.deviceName ? browserConfig.capabilities.deviceName.toLowerCase() : '';
+                this.nativeWebScreenshot = browserConfig.capabilities.nativeWebScreenshot ? true : false;
 
                 // Retrieving height / width is different for desktop and mobile
                 const windowHeight = this.platformName === '' ? 'window.outerHeight' : 'window.screen.height',
