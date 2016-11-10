@@ -6,7 +6,7 @@ let fs = require('fs'),
     screenshotPath = path.resolve(__dirname, '../.tmp/actual/'),
     differencePath = path.resolve(__dirname, '../.tmp/diff/');
 
-describe('image-comparison', () => {
+describe('protractor-image-comparison', () => {
     beforeEach(() => {
         browser.imageComparson = new imageComparison({
             baselineFolder: './test/baseline/desktop/',

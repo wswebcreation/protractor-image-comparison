@@ -7,7 +7,7 @@ let fs = require('fs'),
     screenshotPath = path.resolve(__dirname, '../.tmp/actual/'),
     differencePath = path.resolve(__dirname, '../.tmp/diff/');
 
-describe('protractor-image-comparison', () => {
+describe('protractor-protractor-image-comparison', () => {
 
     const logName = camelCase(browser.logName),
         devices = {
