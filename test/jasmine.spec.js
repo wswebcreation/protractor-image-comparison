@@ -7,6 +7,16 @@ let fs = require('fs'),
     differencePath = path.resolve(__dirname, '../.tmp/diff/');
 
 describe('image-comparison', () => {
+    beforeEach(() => {
+        browser.imageComparson = new imageComparison({
+            baselineFolder: './test/baseline/desktop/',
+            formatImageName: `{tag}-${logName}-{width}x{height}-dpr-{dpr}`,
+            screenshotPath: './.tmp/'
+        });
+
+        browser.get(browser.baseUrl)
+            .then(()=> browser.sleep(500));
+    });
 
     const browserName = browser.browserName.replace(/ /g, ''),
         logName = camelCase(browser.logName),
@@ -21,33 +31,24 @@ describe('image-comparison', () => {
         dangerAlert = element(by.css('.uk-alert-danger')),
         headerElement = element(by.css('h1.page-header'));
 
-    beforeEach(() => {
-        browser.imageComparson = new imageComparison({
-            baselineFolder: './test/baseline/desktop/',
-            formatImageName: `{tag}-${logName}-{width}x{height}-dpr-{dpr}`,
-            screenshotPath: './.tmp/'
+    describe('basics', () => {
+        it('should save the screen', () => {
+            const tagName = 'examplePage';
+
+            browser.imageComparson.saveScreen(tagName)
+                .then(() => {
+                    expect(fs.existsSync(`${screenshotPath}/${tagName}-${logName}-${resolution}-dpr-${dpr[browserName]}.png`)).toBe(true);
+                });
         });
 
-        browser.get(browser.baseUrl)
-            .then(()=> browser.sleep(500));
-    });
+        it('should save element', () => {
+            const tagName = 'examplePageElement';
 
-    it('should save the screen', () => {
-        const tagName = 'examplePage';
-
-        browser.imageComparson.saveScreen(tagName)
-            .then(() => {
-                expect(fs.existsSync(`${screenshotPath}/${tagName}-${logName}-${resolution}-dpr-${dpr[browserName]}.png`)).toBe(true);
-            });
-    });
-
-    it('should save element', () => {
-        const tagName = 'examplePageElement';
-
-        browser.imageComparson.saveElement(headerElement, tagName)
-            .then(() => {
-                expect(fs.existsSync(`${screenshotPath}/${tagName}-${logName}-${resolution}-dpr-${dpr[browserName]}.png`)).toBe(true);
-            });
+            browser.imageComparson.saveElement(headerElement, tagName)
+                .then(() => {
+                    expect(fs.existsSync(`${screenshotPath}/${tagName}-${logName}-${resolution}-dpr-${dpr[browserName]}.png`)).toBe(true);
+                });
+        });
     });
 
     describe('compare screen', () => {

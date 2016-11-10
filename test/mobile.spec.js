@@ -7,7 +7,7 @@ let fs = require('fs'),
     screenshotPath = path.resolve(__dirname, '../.tmp/actual/'),
     differencePath = path.resolve(__dirname, '../.tmp/diff/');
 
-describe('image-comparison', () => {
+describe('protractor-image-comparison', () => {
 
     const logName = camelCase(browser.logName),
         devices = {
@@ -36,44 +36,62 @@ describe('image-comparison', () => {
 
     let ADBScreenshot;
 
-    beforeEach(function () {
-        browser.getProcessedConfig()
-            .then(_ => {
-                ADBScreenshot = _.capabilities.nativeWebScreenshot || false;
+    describe('basics', () =>{
+        beforeEach(function () {
+            browser.getProcessedConfig()
+                .then(_ => {
+                    ADBScreenshot = _.capabilities.nativeWebScreenshot || false;
 
-                browser.imageComparson = new imageComparison({
-                    baselineFolder: './test/baseline/mobile/',
-                    blockOutStatusBar: true,
-                    formatImageName: `{tag}-${logName}-{width}x{height}-dpr-{dpr}`,
-                    nativeWebScreenshot: ADBScreenshot,
-                    screenshotPath: './.tmp/'
+                    browser.imageComparson = new imageComparison({
+                        baselineFolder: './test/baseline/mobile/',
+                        formatImageName: `{tag}-${logName}-{width}x{height}-dpr-{dpr}`,
+                        nativeWebScreenshot: ADBScreenshot,
+                        screenshotPath: './.tmp/'
+                    });
+
+                    return browser.get(browser.baseUrl);
+                })
+                .then(() => browser.sleep(1000));
+        });
+
+        it('should save the screen', () => {
+            const tagName = 'examplePage';
+
+            browser.imageComparson.saveScreen(tagName)
+                .then(() => {
+                    expect(fs.existsSync(`${screenshotPath}/${tagName}-${devices[logName]['name']}.png`)).toBe(true);
                 });
+        });
 
-                return browser.get(browser.baseUrl);
-            })
-            .then(() => browser.sleep(1000));
-    });
+        it('should save an element', () => {
+            const tagName = 'examplePageElement';
 
-
-    it('should save the screen', () => {
-        const tagName = 'examplePage';
-
-        browser.imageComparson.saveScreen(tagName)
-            .then(() => {
-                expect(fs.existsSync(`${screenshotPath}/${tagName}-${devices[logName]['name']}.png`)).toBe(true);
-            });
-    });
-
-    it('should save element', () => {
-        const tagName = 'examplePageElement';
-
-        browser.imageComparson.saveElement(headerElement, tagName)
-            .then(() => {
-                expect(fs.existsSync(`${screenshotPath}/${tagName}-${devices[logName]['name']}.png`)).toBe(true);
-            });
+            browser.imageComparson.saveElement(headerElement, tagName)
+                .then(() => {
+                    expect(fs.existsSync(`${screenshotPath}/${tagName}-${devices[logName]['name']}.png`)).toBe(true);
+                });
+        });
     });
 
     describe('compare screen', () => {
+        beforeEach(function () {
+            browser.getProcessedConfig()
+                .then(_ => {
+                    ADBScreenshot = _.capabilities.nativeWebScreenshot || false;
+
+                    browser.imageComparson = new imageComparison({
+                        baselineFolder: './test/baseline/mobile/',
+                        blockOutStatusBar: true,
+                        formatImageName: `{tag}-${logName}-{width}x{height}-dpr-{dpr}`,
+                        nativeWebScreenshot: ADBScreenshot,
+                        screenshotPath: './.tmp/'
+                    });
+
+                    return browser.get(browser.baseUrl);
+                })
+                .then(() => browser.sleep(1000));
+        });
+
         const examplePage = 'example-page-compare',
             examplePageFail = `${examplePage}-fail`;
 
@@ -103,6 +121,22 @@ describe('image-comparison', () => {
     });
 
     describe('compare element', () => {
+        beforeEach(function () {
+            browser.getProcessedConfig()
+                .then(_ => {
+                    ADBScreenshot = _.capabilities.nativeWebScreenshot || false;
+
+                    browser.imageComparson = new imageComparison({
+                        baselineFolder: './test/baseline/mobile/',
+                        formatImageName: `{tag}-${logName}-{width}x{height}-dpr-{dpr}`,
+                        nativeWebScreenshot: ADBScreenshot,
+                        screenshotPath: './.tmp/'
+                    });
+
+                    return browser.get(browser.baseUrl);
+                })
+                .then(() => browser.sleep(1000));
+        });
         const dangerAlertElement = 'dangerAlert-compare',
             dangerAlertElementFail = `${dangerAlertElement}-fail`;
 
@@ -147,6 +181,53 @@ describe('image-comparison', () => {
                 }, error => {
                     expect(error).toEqual('Image not found, saving current image as new baseline.');
                 });
+        });
+    });
+
+    describe('override default offsets', () => {
+        beforeEach(function () {
+            browser.getProcessedConfig()
+                .then(_ => {
+                    ADBScreenshot = _.capabilities.nativeWebScreenshot || false;
+
+                    browser.imageComparson = new imageComparison({
+                        baselineFolder: './test/baseline/mobile/offsets/',
+                        blockOutStatusBar: true,
+                        formatImageName: `{tag}-${logName}-{width}x{height}-dpr-{dpr}`,
+                        nativeWebScreenshot: ADBScreenshot,
+                        screenshotPath: './.tmp/',
+                        // Custom android offset
+                        androidOffsets: {
+                            statusBar: 50,
+                            addressBar: 100,
+                            toolBar: 60
+                        },
+                        // Custom iOS offset
+                        iosOffsets: {
+                            statusBar: 40,
+                            addressBar: 100
+                        }
+                    });
+
+                    return browser.get(browser.baseUrl);
+                })
+                .then(() => browser.sleep(1000));
+        });
+
+        // The baseline image has a bigger black bar for blocking out the status bar.
+        it('should compare a screenshot successful with a baseline', ()=> {
+            expect(browser.imageComparson.checkScreen('new-offsets')).toEqual(0);
+        });
+
+        // This testcase will result in an image that is not equal to the element, but that's the case we are testing here
+        it('should compare an element successful with a baseline', () => {
+            browser.executeScript('arguments[0].scrollIntoView();', dangerAlert.getWebElement())
+                .then(() => {
+                    if (ADBScreenshot) {
+                        browser.sleep(1000);
+                    }
+                    expect(browser.imageComparson.checkElement(dangerAlert, 'new-offset-element')).toEqual(0);
+                })
         });
     });
 });

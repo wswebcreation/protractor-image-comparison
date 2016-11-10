@@ -46,14 +46,14 @@ class protractorImageComparison {
         let androidOffsets = options.androidOffsets && typeof options.androidOffsets === 'object' ? options.androidOffsets : {},
             iosOffsets = options.iosOffsets && typeof options.iosOffsets === 'object' ? options.iosOffsets : {},
             androidDefaultOffsets = {
-            statusBar: 24,
-            addressBar: 56,
-            toolBar: 48
+                statusBar: 24,
+                addressBar: 56,
+                toolBar: 48
             },
             iosDefaultOffsets = {
-            statusBar: 20,
-            addressBar: 44
-        };
+                statusBar: 20,
+                addressBar: 44
+            };
 
         this.androidOffsets = this._mergeDefaultOptions(androidDefaultOffsets, androidOffsets);
         this.iosOffsets = this._mergeDefaultOptions(iosDefaultOffsets, iosOffsets);
@@ -400,7 +400,7 @@ class protractorImageComparison {
         optionsB = (typeof optionsB === 'object') ? optionsB : {};
 
         for (var option in optionsB) {
-            if (!optionsA.hasOwnProperty(option)) {
+            if (optionsA.hasOwnProperty(option)) {
                 optionsA[option] = optionsB[option];
             }
         }
