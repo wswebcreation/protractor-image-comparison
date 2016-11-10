@@ -10,8 +10,6 @@ A lightweight protractor plugin for image comparison.
 [![Sauce Test Status](https://saucelabs.com/browser-matrix/wswebcreation-nl.svg)](https://saucelabs.com/u/wswebcreation-nl)
 
 ##Installation
-**!!NPM MODULE IS NOT CREATED YET!!**
-
 Install this module locally with the following command:
 ```shell
 npm install protractor-image-comparison
