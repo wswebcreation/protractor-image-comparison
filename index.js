@@ -25,8 +25,8 @@ const assert = require('assert'),
  * @property {string} actualFolder Path where the actual screenshots are saved
  * @property {string} diffFolder Path where the differences are saved
  * @property {int} devicePixelRatio Ratio of the (vertical) size of one physical pixel on the current display device to the size of one device independent pixels(dips)
- * @property {object} androidDefaultOffsets Object that will hold de defaults for the statusBar, addressBar and toolBar
- * @property {object} iosDefaultOffsets Object that will hold de defaults for the statusBar and addressBar
+ * @property {object} androidOffsets Object that will hold de defaults for the statusBar, addressBar and toolBar
+ * @property {object} iosOffsets Object that will hold de defaults for the statusBar and addressBar
  * @property {int} screenshotHeight height of the screenshot of the page
  */
 
@@ -41,24 +41,28 @@ class protractorImageComparison {
 
         this.nativeWebScreenshot = options.nativeWebScreenshot ? true : false;
         this.blockOutStatusBar = options.blockOutStatusBar ? true : false;
-        this.androidOffsets = options.androidOffsets && typeof options.androidOffsets === 'object' ? options.androidOffsets : {};
-        this.iosOffsets = options.iosOffsets && typeof options.iosOffsets === 'object' ? options.iosOffsets : {};
+
+        // OS offsets
+        let androidOffsets = options.androidOffsets && typeof options.androidOffsets === 'object' ? options.androidOffsets : {},
+            iosOffsets = options.iosOffsets && typeof options.iosOffsets === 'object' ? options.iosOffsets : {},
+            androidDefaultOffsets = {
+            statusBar: 24,
+            addressBar: 56,
+            toolBar: 48
+            },
+            iosDefaultOffsets = {
+            statusBar: 20,
+            addressBar: 44
+        };
+
+        this.androidOffsets = this._mergeDefaultOptions(androidDefaultOffsets, androidOffsets);
+        this.iosOffsets = this._mergeDefaultOptions(iosDefaultOffsets, iosOffsets);
 
         this.actualFolder = path.join(this.baseFolder, 'actual');
 
         this.diffFolder = path.join(this.baseFolder, 'diff');
 
         this.devicePixelRatio = 1;
-
-        this.androidDefaultOffsets = {
-            statusBar: 24,
-            addressBar: 56,
-            toolBar: 48
-        };
-        this.iosDefaultOffsets = {
-            statusBar: 20,
-            addressBar: 44
-        };
 
         this.screenshotHeight = 0;
 
@@ -142,7 +146,7 @@ class protractorImageComparison {
      * screenshot on Android is a device screenshot including:
      * - statusbar (given default height = 24 px)
      * - addressbar (can variate in height in Chrome. In chrome is can be max 56px but after scroll it will be smaller, the app
-     *   doesn't has a navbar)
+     *   doesn't have a navbar)
      * - the view
      * @param {Promise} element The ElementFinder that is used to get the position
      * @returns {Promise} The x/y position of the element
@@ -167,9 +171,7 @@ class protractorImageComparison {
             };
         }
 
-        const _ = this._mergeDefaultOptions(this.androidDefaultOffsets, this.androidOffsets);
-
-        return browser.driver.executeScript(getDataObject, element.getWebElement(), _.statusBar, _.addressBar, _.toolBar);
+        return browser.driver.executeScript(getDataObject, element.getWebElement(), this.androidOffsets.statusBar, this.androidOffsets.addressBar, this.androidOffsets.toolBar);
     }
 
     _formatFileName(formatString, tag) {
@@ -267,16 +269,16 @@ class protractorImageComparison {
      */
     _getInstanceData() {
         return browser.getProcessedConfig()
-            .then(_ => {
-                this.browserName = _.capabilities.browserName ? _.capabilities.browserName.toLowerCase() : '';
+            .then(config => {
+                this.browserName = config.capabilities.browserName ? config.capabilities.browserName.toLowerCase() : '';
                 this.testInBrowser = this.browserName !== '';
-                this.name = _.capabilities.name ? _.capabilities.name : '';
-                this.logName = _.capabilities.logName ? _.capabilities.logName : '';
+                this.name = config.capabilities.name ? config.capabilities.name : '';
+                this.logName = config.capabilities.logName ? config.capabilities.logName : '';
 
                 // Used for mobile
-                this.platformName = _.capabilities.platformName ? _.capabilities.platformName.toLowerCase() : '';
-                this.deviceName = _.capabilities.deviceName ? _.capabilities.deviceName.toLowerCase() : '';
-                this.nativeWebScreenshot = _.capabilities.nativeWebScreenshot ? true : false;
+                this.platformName = config.capabilities.platformName ? config.capabilities.platformName.toLowerCase() : '';
+                this.deviceName = config.capabilities.deviceName ? config.capabilities.deviceName.toLowerCase() : '';
+                this.nativeWebScreenshot = config.capabilities.nativeWebScreenshot ? true : false;
 
                 // Retrieving height / width is different for desktop and mobile
                 const windowHeight = this.platformName === '' ? 'window.outerHeight' : 'window.screen.height',
@@ -346,9 +348,7 @@ class protractorImageComparison {
             };
         }
 
-        const _ = this._mergeDefaultOptions(this.iosDefaultOffsets, this.iosOffsets);
-
-        return browser.driver.executeScript(getDataObject, element.getWebElement(), _.addressBar, _.statusBar);
+        return browser.driver.executeScript(getDataObject, element.getWebElement(), this.iosOffsets.addressBar, this.iosOffsets.statusBar);
     }
 
     /**
@@ -484,9 +484,7 @@ class protractorImageComparison {
                 const imageComparisonPaths = this._determineImageComparisonPaths(tag);
 
                 if (this._isMobile() && blockOutStatusBar) {
-                    const androidSizes = this._mergeDefaultOptions(this.androidDefaultOffsets, this.androidOffsets),
-                        iosSizes = this._mergeDefaultOptions(this.iosDefaultOffsets, this.iosOffsets),
-                        statusBarHeight = this._isAndroid() ? androidSizes.statusBar : iosSizes.statusBar,
+                    const statusBarHeight = this._isAndroid() ? this.androidOffsets.statusBar : this.iosOffsets.statusBar,
                         statusBarBlockOut = this._multiplyObjectValuesAgainstDPR({
                             x: 0,
                             y: 0,
