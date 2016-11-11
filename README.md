@@ -58,7 +58,7 @@ The method will calculate the correct dimensions based upon the webdriver elemen
 
 * `baselineFolder` Defines the path to the reference images that are to be compared.
 * `screenshotPath` Defines the path to where the "actual" captured images need to be saved.
-* `formatString` Naming format for images (default: `{tag}-{browserName}-{width}x{height}`), see **Conventions: image naming** for more info
+* `formatImageName` Naming format for images (default: `{tag}-{browserName}-{width}x{height}`), see **Conventions: image naming** for more info
 * `nativeWebScreenshot` *protractor-image-comparison* needs to calculate element position based on a native device screenshot(default: false), see the [Appium docs](./docs/appium.md) for more info.
 * `blockOutStatusBar` *protractor-image-comparison* can blockout the statusbar of a device by default when comparion screens. This means that for example the time in the statusbar won't cause a failure (default:false)
 * `androidOffsets` An object that will hold the pixels of the `statusBar`, `addressBar` and or the `toolBar`. The values are used to calculate the position of an element on a screen (for `saveElement` or `checkElement`). They are defaulted, but can be overridden. These values can be different per Android version. Look up the docs for developing for Android to see the values. If not provided the defaults will be used.
