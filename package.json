@@ -33,14 +33,14 @@
     "png-image": "^1.0.1"
   },
   "devDependencies": {
-    "chalk": "^1.1.3",
-    "commander": "^2.9.0",
-    "conventional-changelog": "^1.1.0",
-    "ghooks": "^1.3.2",
-    "jasmine-spec-reporter": "^2.7.0",
-    "protractor": "^4.0.10",
-    "validate-commit-msg": "^2.8.2",
-    "wd": "^1.0.0",
+    "chalk": "1.1.3",
+    "commander": "2.9.0",
+    "conventional-changelog": "1.1.0",
+    "ghooks": "1.3.2",
+    "jasmine-spec-reporter": "2.7.0",
+    "protractor": "4.0.10",
+    "validate-commit-msg": "2.8.2",
+    "wd": "1.0.0",
     "wd-bridge": "0.0.2"
   },
   "config": {
