@@ -19,8 +19,8 @@ const assert = require('assert'),
  * @param {string} options.formatImageOptions Custom variables for Image Name
  * @param {boolean} options.nativeWebScreenshot If a native screenshot of a device (complete screenshot) needs to be taken
  * @param {boolean} options.blockOutStatusBar  If the statusbar on mobile / tablet needs to blocked out by default
- * @param {object} androidOffsets Object that will hold new values for the statusBar, addressBar and toolBar
- * @param {object} iosOffsets Object that will hold the new values for the statusBar and addressBar
+ * @param {object} options.androidOffsets Object that will hold custom values for the statusBar, addressBar and toolBar
+ * @param {object} options.iosOffsets Object that will hold the custom values for the statusBar and addressBar
  *
  * @property {string} actualFolder Path where the actual screenshots are saved
  * @property {string} diffFolder Path where the differences are saved
@@ -38,7 +38,7 @@ class protractorImageComparison {
 
         this.baselineFolder = path.normalize(options.baselineFolder);
         this.baseFolder = path.normalize(options.screenshotPath);
-        this.formatString = options.formatImageName || '{tag}-{browserName}-{width}x{height}';
+        this.formatString = options.formatImageName || '{tag}-{browserName}-{width}x{height}-dpr-{dpr}';
 
         this.nativeWebScreenshot = options.nativeWebScreenshot ? true : false;
         this.blockOutStatusBar = options.blockOutStatusBar ? true : false;
@@ -455,12 +455,20 @@ class protractorImageComparison {
      * Runs the comparison against an element
      *
      * @method checkElement
+     *
      * @example
-     *     browser.protractorImageComparison.checkElement(element(By.id('elementId')), 'imageA'});
+     * // default usage
+     * browser.protractorImageComparison.checkElement(element(By.id('elementId')), 'imageA');
+     * // blockout example
+     * browser.protractorImageComparison.checkElement(element(By.id('elementId')), 'imageA', {blockOut: [{x: 10, y: 132, width: 100, height: 50}]});
+     * // Add 15 px to top, right, bottom and left when the cut is calculated (it will automatically use the DPR)
+     * browser.protractorImageComparison.saveElement(element(By.id('elementId')), 'imageA', {resizeDimensions: 15});
      *
      * @param {Promise} element The ElementFinder that is used to get the position
      * @param {string} tag The tag that is used
      * @param {object} options non-default options
+     * @param {object} options.blockOut blockout with x, y, width and height values
+     * @param {int} options.resizeDimensions the value to increase the size of the element that needs to be saved
      * @return {Promise} When the promise is resolved it will return the percentage of the difference
      * @public
      */
@@ -492,11 +500,19 @@ class protractorImageComparison {
      * Runs the comparison against the screen
      *
      * @method checkScreen
+     *
      * @example
-     *     browser.protractorImageComparison.checkScreen('imageA');
+     * // default
+     * browser.protractorImageComparison.checkScreen('imageA');
+     * // Blockout the statusbar
+     * browser.protractorImageComparison.checkScreen('imageA', {blockOutStatusBar: true});
+     * // Blockout a given region
+     * browser.protractorImageComparison.checkScreen('imageA', {blockOut: [{x: 10, y: 132, width: 100, height: 50}]});
      *
      * @param {string} tag The tag that is used
      * @param {object} options (non-default) options
+     * @param {boolean} options.blockOutStatusBar blockout the statusbar yes or no
+     * @param {object} options.blockOut blockout with x, y, width and height values, it will override the global
      * @return {Promise} When the promise is resolved it will return the percentage of the difference
      * @public
      */
@@ -542,12 +558,17 @@ class protractorImageComparison {
      * Saves an image of the screen element
      *
      * @method saveElement
+     *
      * @example
-     *     browser.protractorImageComparison.saveElement(element(By.id('elementId')), 'imageA');
+     * // Default
+     * browser.protractorImageComparison.saveElement(element(By.id('elementId')), 'imageA');
+     * // Add 15 px to top, right, bottom and left when the cut is calculated (it will automatically use the DPR)
+     * browser.protractorImageComparison.saveElement(element(By.id('elementId')), 'imageA', {resizeDimensions: 15});
      *
      * @param {Promise} element The ElementFinder that is used to get the position
      * @param {string} tag The tag that is used
      * @param {object} options (non-default) options
+     * @param {int} options.resizeDimensions the value to increase the size of the element that needs to be saved
      * @returns {Promise} The images has been saved when the promise is resolved
      * @public
      */
@@ -580,8 +601,9 @@ class protractorImageComparison {
      * Saves an image of the screen
      *
      * @method saveScreen
+     *
      * @example
-     *     browser.protractorImageComparison.saveScreen('imageA');
+     * browser.protractorImageComparison.saveScreen('imageA');
      *
      * @param {string} tag The tag that is used
      * @returns {Promise} The images has been saved when the promise is resolved
