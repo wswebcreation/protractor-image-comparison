@@ -32,21 +32,21 @@ describe('protractor-image-comparison', () => {
         },
         resolution = '1366x768',
         dangerAlert = element(by.css('.uk-alert-danger')),
-        headerElement = element(by.css('h1.page-header'));
+        headerElement = element(by.css('h1.uk-heading-large'));
 
     describe('basics', () => {
         it('should save the screen', () => {
             const tagName = 'examplePage';
 
             browser.imageComparson.saveScreen(tagName)
-                .then(() => expect(fs.existsSync(`${screenshotPath}/${tagName}-${logName}-${resolution}-dpr-${dpr[browserName]}.png`)).toBe(true));
+                .then(() => expect(fs.existsSync(`${screenshotPath}/${tagName}-${logName}-${resolution}-dpr-1.png`)).toBe(true));
         });
 
         it('should save element', () => {
             const tagName = 'examplePageElement';
 
             browser.imageComparson.saveElement(headerElement, tagName)
-                .then(() => expect(fs.existsSync(`${screenshotPath}/${tagName}-${logName}-${resolution}-dpr-${dpr[browserName]}.png`)).toBe(true));
+                .then(() => expect(fs.existsSync(`${screenshotPath}/${tagName}-${logName}-${resolution}-dpr-1.png`)).toBe(true));
         });
     });
 
@@ -61,7 +61,7 @@ describe('protractor-image-comparison', () => {
         it('should save a difference after failure', () => {
             browser.executeScript('arguments[0].innerHTML = "Test Demo Page";', headerElement.getWebElement());
             browser.imageComparson.checkScreen(examplePageFail)
-                .then(() => expect(fs.existsSync(`${differencePath}/${examplePageFail}-${logName}-${resolution}-dpr-${dpr[browserName]}.png`)).toBe(true));
+                .then(() => expect(fs.existsSync(`${differencePath}/${examplePageFail}-${logName}-${resolution}-dpr-1.png`)).toBe(true));
         });
 
         it('should fail comparing with a baseline', () => {
@@ -97,7 +97,7 @@ describe('protractor-image-comparison', () => {
         it('should save a difference after failure', () => {
             browser.executeScript('arguments[0].scrollIntoView(); arguments[0].style.color = "#2d7091";', dangerAlert.getWebElement());
             browser.imageComparson.checkElement(dangerAlert, dangerAlertElementFail)
-                .then(() => expect(fs.existsSync(`${differencePath}/${dangerAlertElementFail}-${logName}-${resolution}-dpr-${dpr[browserName]}.png`)).toBe(true));
+                .then(() => expect(fs.existsSync(`${differencePath}/${dangerAlertElementFail}-${logName}-${resolution}-dpr-1.png`)).toBe(true));
         });
 
         it('should fail comparing with a baseline', () => {
