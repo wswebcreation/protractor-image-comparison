@@ -1,8 +1,28 @@
 Examples
 ========
+##Configuration file setup:
+Load it from the configuration file of *protractor*
 
-**Jasmine Example:**
-```javascript
+```js
+exports.config = {
+   // your config here ...
+
+    onPrepare: function() {
+        const protractorImageComparison = require('protractor-image-comparison');
+        browser. protractorImageComparison = new protractorImageComparison(
+            {
+                basePath: 'path/to/baseline/',
+                diffPath: 'path/to/diff/'
+            }
+        );
+    },
+}
+```
+
+##Jasmine Example:
+Load it in a *spec* file
+
+```js
 const protractorImageComparison = require('protractor-image-comparison');
 
 describe("Example page", function() {
@@ -35,8 +55,10 @@ describe("Example page", function() {
 });
 ```
 
-**Cucumber Example:**
-```javascript
+##Cucumber Example:
+Load it in a *step* file
+
+```js
 const expect = require('chai').expect,
       protractorImageComparison = require('protractor-image-comparison');
 

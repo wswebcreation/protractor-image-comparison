@@ -32,7 +32,7 @@ describe('protractor-protractor-image-comparison', () => {
             }
         },
         dangerAlert = element(by.css('.uk-alert-danger')),
-        headerElement = element(by.css('h1.page-header'));
+        headerElement = element(by.css('h1.uk-heading-large'));
 
     let ADBScreenshot;
 
