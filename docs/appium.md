@@ -36,7 +36,13 @@ When a user scrolls the screen manually the the addressbar and the Toolbar are i
 ### Simulate
 When the scroll is automated with a "native Appium" command the real use scroll is simulated and the behaviour of the addressbar and toolbar is the same as the manual scroll
 ### Javascript
-When the scroll is automated with a Javascript scroll `browser.executeScript('arguments[0].scrollIntoView();', element(by.css('div h1')).getWebElement());` the view is scrolled, but the addressbar AND the toolbar **ARE NOT INFLUENCED** BY THIS BEHAVIOUR.
+When the scroll is automated with a Javascript scroll 
+
+```js
+browser.executeScript('arguments[0].scrollIntoView();', element(by.css('div h1')).getWebElement());
+``` 
+
+the view is scrolled, but the addressbar AND the toolbar **ARE NOT INFLUENCED** BY THIS BEHAVIOUR.
 
 ## Capabilities iOS
 
@@ -51,13 +57,13 @@ When the scroll is automated with a Javascript scroll `browser.executeScript('ar
 
 # Android
 ## Browser
-Appium can **ONLY** automate **Chrome** on Android. The stockbrowser **CAN"T** be used. When an Emulator is used Chrome is only default provided from Android > 7.0.
+When an Emulator is used Chrome is only default provided from Android > 7.0.
 If an older version of Android needs to be used, Chrome needs to be installed manually. 
 
 ### Install Chrome
 Execute the following steps to install Chrome on Android < 7.0
 
-* Download a Chrome APK from (APKMirror)[http://www.apkmirror.com/apk/google-inc/chrome/], check which processor is used in the Emulator (ARM or X86, X86 is faster).
+* Download a Chrome APK from [APKMirror](http://www.apkmirror.com/apk/google-inc/chrome/), check which processor is used in the Emulator (ARM or X86, X86 is faster).
 * Open the Emulator
 * Install the `chrome.apk` from the folder where it is saved with the following command `adb install chrome.apk`. 
 
