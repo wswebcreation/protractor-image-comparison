@@ -23,13 +23,7 @@ describe('protractor-image-comparison', () => {
 
     const browserName = browser.browserName.replace(/ /g, ''),
         logName = camelCase(browser.logName),
-        dpr = {
-            "chrome": 1,
-            "firefox": 1,
-            "internetexplorer": 1,
-            "microsoftedge": 1,
-            "safari": 1
-        },
+        logName = camelCase(browser.logName),
         resolution = '1366x768',
         dangerAlert = element(by.css('.uk-alert-danger')),
         headerElement = element(by.css('h1.uk-heading-large'));
