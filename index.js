@@ -331,16 +331,12 @@ class protractorImageComparison {
     /**
      * This method returns the position of an element on the screen based on the fact that a screenshot on iOS is a
      * device screenshot including:
-     * - statusbar (given default height = 20px) !IMPORTANT The statusbar is visible in the app, but it doesn't effect the
-     *   webview height. Checked this with team native
-     *   @todo For the iPhone an extra margin needs to be added to the body to make sure the element is below the statusbar
-     *   somehow this doesn't always work for the iPad. That's why it it not done for the iPad. If this gives errors on more
-     *   projects this needs to be investigated. For now (2016-080-2) it works
-     * - navbar (can variate in height in Safari. In Safari is can be max 44px but after scroll it will be smaller. Because
+     * - statusbar (given default height = 20px)
+     * - addressbar (can variate in height in Safari. In Safari is can be max 44px but after scroll it will be smaller. Because
      *   through automation a scrollIntoView is done the navigationbar an button bar are not influenced. A physical scroll
      *   will influence the heights.  The app doesn't has a navbar)
-     * - the view
-     * - buttonbar (this buttonbar is only visible when the page is not scrolled, it is not visible in the app, by default
+     * - the viewpot
+     * - toolbar (this buttonbar is only visible when the page is not scrolled, it is not visible in the app, by default
      *   it is 44px, not used for determining the position of the element and not present on an iPad)
      * @param {Promise} element The ElementFinder that is used to get the position
      * @returns {Promise} The x/y position of the element
@@ -356,16 +352,11 @@ class protractorImageComparison {
                 /* iPad converts screenheight in portraitmode to a incorrect value */
                 rotatedScreenHeight = screenHeight > screenWidth ? screenWidth : screenHeight,
                 userAgent = window.navigator.userAgent.toLocaleLowerCase(),
-                isIPhone = /iphone/.test(userAgent),
                 elementPosition,
                 y;
 
             if (screenHeight === windowInnerHeight || rotatedScreenHeight === windowInnerHeight) {
                 /* the app */
-                /* the statusbar is transparent and over the webview, so add a margin to the body to be sure it on the right position, only for iPhone */
-                if (isIPhone) {
-                    document.body.style.marginTop = divePixelRatio * statusBar + 'px';
-                }
                 elementPosition = element.getBoundingClientRect();
                 y = elementPosition.top;
             } else {
