@@ -307,7 +307,10 @@ class protractorImageComparison {
                 // Used for mobile
                 this.platformName = browserConfig.capabilities.platformName ? browserConfig.capabilities.platformName.toLowerCase() : '';
                 this.deviceName = browserConfig.capabilities.deviceName ? browserConfig.capabilities.deviceName.toLowerCase() : '';
-                this.nativeWebScreenshot = browserConfig.capabilities.nativeWebScreenshot ? true : false;
+                // this.nativeWebScreenshot of the constructor can be overruled by the capabilities when the constructor value is false
+                if(!this.nativeWebScreenshot){
+                    this.nativeWebScreenshot = browserConfig.capabilities.nativeWebScreenshot ? true : false;
+                }
 
                 // Retrieving height / width is different for desktop and mobile
                 const windowHeight = this.platformName === '' ? 'window.outerHeight' : 'window.screen.height',
