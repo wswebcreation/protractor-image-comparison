@@ -19,13 +19,14 @@ config.multiCapabilities = [
                 '--v8-cache-options=off'
             ]
         }
-    },
-    {
-        browserName: 'firefox',
-        logName: 'Firefox',
-        maxInstances: 10,
-        shardTestFiles: true
     }
+    //,
+    // {
+    //     browserName: 'firefox',
+    //     logName: 'Firefox',
+    //     maxInstances: 10,
+    //     shardTestFiles: true
+    // }
 ];
 
 exports.config = config;

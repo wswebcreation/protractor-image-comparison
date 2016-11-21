@@ -238,7 +238,6 @@ class protractorImageComparison {
             });
     }
 
-
     /**
      * Get the position of a given element according to the TOP of the WINDOW
      * @param {Promise} element The ElementFinder that is used to get the position
@@ -313,12 +312,13 @@ class protractorImageComparison {
                 const windowHeight = this.platformName === '' ? 'window.outerHeight' : 'window.screen.height',
                     windowWidth = this.platformName === '' ? 'window.outerWidth' : 'window.screen.width';
 
-                return browser.driver.executeScript(`return {pixelRatio: window.devicePixelRatio, height: ${windowHeight}, innerHeight: window.innerHeight, width: ${windowWidth}};`)
+                return browser.driver.executeScript(`return {pixelRatio: window.devicePixelRatio, height: ${windowHeight}, innerHeight: window.innerHeight, width: ${windowWidth}, fullPageHeight: document.body.offsetHeight};`)
             })
             .then(browserData => {
                 // Firefox creates screenshots in a different way. Although it could be taken on a Retina screen,
                 // the screenshot is returned in its original (no factor x is used) dimensions
                 this.devicePixelRatio = this._isFirefox() ? this.devicePixelRatio : browserData.pixelRatio;
+                this.fullPageHeight = browserData.fullPageHeight;
                 this.innerHeight = browserData.innerHeight;
                 this.height = browserData.height;
                 this.width = browserData.width;
@@ -606,12 +606,65 @@ class protractorImageComparison {
      * browser.protractorImageComparison.saveScreen('imageA');
      *
      * @param {string} tag The tag that is used
-     * @returns {Promise} The images has been saved when the promise is resolved
+     * @param {object} options (non-default) options
+     * @param {object} options.fullPage save a fullpage screenshot with these parameters
+     * @returns {Promise} The image has been saved when the promise is resolved
      * @public
      */
-    saveScreen(tag) {
+    saveScreen(tag, options) {
+        let saveOptions = options || [];
+
+        this.fullPage = typeof saveOptions.fullPage === 'object' ? saveOptions.fullPage : false;
+
         return this._getInstanceData()
-            .then(() => browser.takeScreenshot())
+            .then(() => {
+                if (!this.fullPage) {
+                    return this._saveScreenshot(tag);
+                } else {
+                    return this._saveFullPageScreenshot(tag, 0)
+                }
+            })
+    }
+
+    /**
+     * Takes a screenshot and saves it with a given tag
+     * @param {string} tag The tag that is used
+     * @param {int} part which part that has to be saved
+     * @returns {Promise} The images has been saved when the promise is resolved
+     * @private
+     */
+    _saveFullPageScreenshot(tag, part) {
+        let scrollTopPosition = part == 0 ? part : this.innerHeight * part;
+
+        console.log('scrollTopPosition = ', scrollTopPosition);
+
+        if (part < 3) {
+            console.log('trying part =', part);
+            return browser.driver.executeScript('window.scrollTo(0, arguments[0])', scrollTopPosition)
+            // @todo: need to figure this thing out, how long the scroll will take, now default set to
+                .then(() => browser.sleep(1000))
+                .then(() => browser.takeScreenshot())
+                .then(image => {
+                    return new PNGImage({
+                        imagePath: new Buffer(image, 'base64'),
+                        imageOutputPath: path.join(this.actualFolder, this._formatFileName(this.formatString, `${tag}-${part}`))
+                    }).runWithPromise();
+                })
+                .then(() => this._saveFullPageScreenshot(tag, part + 1));
+        } else {
+            return new Promise(resolve => resolve());
+        }
+    }
+
+
+    /**
+     * Takes a screenshot and saves it with a given tag
+     * @param {string} tag The tag that is used
+     * @returns {Promise} The images has been saved when the promise is resolved
+     * @private
+     */
+    _saveScreenshot(tag) {
+        return browser.takeScreenshot()
             .then(image => {
                 return new PNGImage({
                     imagePath: new Buffer(image, 'base64'),
