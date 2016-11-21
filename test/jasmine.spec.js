@@ -21,9 +21,7 @@ describe('protractor-image-comparison', () => {
     // Chrome remembers the last postion when the url is loaded again, this will reset it.
     afterEach(() => browser.executeScript('window.scrollTo(0, 0);'));
 
-    const browserName = browser.browserName.replace(/ /g, ''),
-        logName = camelCase(browser.logName),
-        logName = camelCase(browser.logName),
+    const logName = camelCase(browser.logName),
         resolution = '1366x768',
         dangerAlert = element(by.css('.uk-alert-danger')),
         headerElement = element(by.css('h1.uk-heading-large'));
