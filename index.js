@@ -135,7 +135,7 @@ class protractorImageComparison {
 
                 if (y < this.resizeDimensions) {
                     console.log('\n WARNING: The y-coordinate may not be negative. No height resizing of the element has been executed\n');
-                } else if (((y - this.resizeDimensions) + height + 2 * this.resizeDimensions) > this.width) {
+                } else if (((y - this.resizeDimensions) + height + 2 * this.resizeDimensions) > this.height) {
                     console.log('\n WARNING: The new coordinate may not be outside the screen. No height resizing of the element has been executed\n');
                 } else {
                     y = y - this.resizeDimensions;
