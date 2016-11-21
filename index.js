@@ -520,7 +520,6 @@ class protractorImageComparison {
                 const imageComparisonPaths = this._determineImageComparisonPaths(tag);
 
                 if (this._isMobile() && blockOutStatusBar) {
-                    console.log('use blockout');
                     const statusBarHeight = this._isAndroid() ? this.androidOffsets.statusBar : this.iosOffsets.statusBar,
                         statusBarBlockOut = this._multiplyObjectValuesAgainstDPR({
                             x: 0,
