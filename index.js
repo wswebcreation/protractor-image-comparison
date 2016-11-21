@@ -344,14 +344,11 @@ class protractorImageComparison {
      */
     _getIOSPosition(element) {
         function getDataObject(element, addressBar, statusBar) {
-            var
-                divePixelRatio = window.devicePixelRatio,
-                screenHeight = window.screen.height,
+            var screenHeight = window.screen.height,
                 screenWidth = window.screen.width,
                 windowInnerHeight = window.innerHeight,
                 /* iPad converts screenheight in portraitmode to a incorrect value */
                 rotatedScreenHeight = screenHeight > screenWidth ? screenWidth : screenHeight,
-                userAgent = window.navigator.userAgent.toLocaleLowerCase(),
                 elementPosition,
                 y;
 
