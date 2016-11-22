@@ -161,6 +161,7 @@ describe('protractor-protractor-image-comparison', () => {
 
         it('should save a difference after failure', () => {
             browser.executeScript('arguments[0].scrollIntoView(); arguments[0].style.color = "#2d7091";', dangerAlert.getWebElement())
+                .then(() => browser.sleep(500))
                 .then(() => browser.imageComparson.checkElement(dangerAlert, dangerAlertElementFail))
                 .then(() => expect(fs.existsSync(`${differencePath}/${dangerAlertElementFail}-${devices[logName]['name']}.png`)).toBe(true));
         });
