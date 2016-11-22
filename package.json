@@ -7,6 +7,8 @@
     "changelog": "node ./test/changelog.js",
     "docs": "jsdoc2md ./index.js > ./docs/index.md",
     "test": "node ./test/cli image-comparison",
+    "unit-test": "JASMINE_CONFIG_PATH=test/unit/jasmine.json jasmine",
+    "unit-test-coverage": "JASMINE_CONFIG_PATH=test/unit/jasmine.json istanbul cover jasmine",
     "wd-update": "node_modules/.bin/webdriver-manager update"
   },
   "repository": {
@@ -38,8 +40,9 @@
     "commander": "2.9.0",
     "conventional-changelog": "1.1.0",
     "ghooks": "1.3.2",
+    "istanbul": "0.4.5",
     "jasmine-spec-reporter": "2.7.0",
-    "jsdoc-to-markdown": "^2.0.1",
+    "jsdoc-to-markdown": "^.0.1",
     "protractor": "4.0.10",
     "validate-commit-msg": "2.8.2",
     "wd": "1.0.0",

@@ -3,4 +3,4 @@ node_modules/
 *.log
 .tmp/
 perfecto.config.json
-test/unit/
+coverage/
