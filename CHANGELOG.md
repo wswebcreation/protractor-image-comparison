@@ -1,3 +1,13 @@
+<a name="0.1.3"></a>
+## [0.1.3](https://github.com/wswebcreation/protractor-image-comparison/compare/v0.1.2...v0.1.3) (2016-11-22)
+
+
+### Bug Fixes
+
+* **element:** fix issue with determine elm position on large screen, fix determin position ([0756520](https://github.com/wswebcreation/protractor-image-comparison/commit/0756520))
+
+
+
 <a name="0.1.2"></a>
 ## [0.1.2](https://github.com/wswebcreation/protractor-image-comparison/compare/v0.1.1...v0.1.2) (2016-11-21)
 
