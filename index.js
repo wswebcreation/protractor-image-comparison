@@ -121,8 +121,8 @@ class protractorImageComparison {
                 return this._getElementPosition(element);
             })
             .then(position => {
-                x = Math.floor(position.x);
-                y = Math.floor(position.y);
+                x = Math.round(position.x);
+                y = Math.round(position.y);
 
                 if (x < this.resizeDimensions) {
                     console.log('\n WARNING: The x-coordinate may not be negative. No width resizing of the element has been executed\n');
@@ -135,7 +135,8 @@ class protractorImageComparison {
 
                 if (y < this.resizeDimensions) {
                     console.log('\n WARNING: The y-coordinate may not be negative. No height resizing of the element has been executed\n');
-                } else if (((y - this.resizeDimensions) + height + 2 * this.resizeDimensions) > this.height) {
+                } else if ((y < this.height && ((y - this.resizeDimensions) + height + 2 * this.resizeDimensions) > this.height) ||
+                    ((y - this.resizeDimensions) + height + 2 * this.resizeDimensions) > this.screenshotHeight) {
                     console.log('\n WARNING: The new coordinate may not be outside the screen. No height resizing of the element has been executed\n');
                 } else {
                     y = y - this.resizeDimensions;
@@ -308,7 +309,7 @@ class protractorImageComparison {
                 this.platformName = browserConfig.capabilities.platformName ? browserConfig.capabilities.platformName.toLowerCase() : '';
                 this.deviceName = browserConfig.capabilities.deviceName ? browserConfig.capabilities.deviceName.toLowerCase() : '';
                 // this.nativeWebScreenshot of the constructor can be overruled by the capabilities when the constructor value is false
-                if(!this.nativeWebScreenshot){
+                if (!this.nativeWebScreenshot) {
                     this.nativeWebScreenshot = browserConfig.capabilities.nativeWebScreenshot ? true : false;
                 }
 
