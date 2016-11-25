@@ -16,7 +16,7 @@ describe('node-resemble.js', () => {
     describe('analysis', () => {
         it('should retrieve basic analysis on an image', done => {
             resemble(peopleImage).onComplete(data => {
-                expect(data).toEqual({red: 72, green: 79, blue: 84, brightness: 78});
+                expect(data).toEqual({red: 72, green: 79, blue: 84, alpha: 0, brightness: 78, white: 43, black: 0});
                 done();
             });
         });
@@ -26,6 +26,14 @@ describe('node-resemble.js', () => {
         describe('defaults', () => {
             it('should successful compare 2 identical images with each other', done => {
                 resemble(peopleImage).compareTo(peopleImage)
+                    .onComplete(data => {
+                        expect(data.misMatchPercentage).toEqual('0.00');
+                        done();
+                    });
+            });
+
+            it('should successful compare 2 identical not equally sized images with each other', done => {
+                resemble(smallImage).compareTo(largeImage)
                     .onComplete(data => {
                         expect(data.misMatchPercentage).toEqual('0.00');
                         done();
