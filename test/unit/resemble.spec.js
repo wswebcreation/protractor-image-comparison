@@ -13,54 +13,42 @@ describe('node-resemble.js', () => {
         withAntiAliasing = path.resolve(__dirname, './example/withAntiAliasing.png'),
         withoutAntiAliasing = path.resolve(__dirname, './example/withoutAntiAliasing.png');
 
-    describe('analysis', () => {
-        it('should retrieve basic analysis on an image', done => {
-            resemble(peopleImage).onComplete(data => {
-                expect(data).toEqual({red: 72, green: 79, blue: 84, alpha: 0, brightness: 78, white: 43, black: 0});
-                done();
-            });
-        });
-    });
+    // describe('analysis', () => {
+    //     it('should retrieve basic analysis on an image', done => {
+    //         resemble(peopleImage).onComplete(data => {
+    //             expect(data).toEqual({red: 72, green: 79, blue: 84, alpha: 0, brightness: 78, white: 43, black: 0});
+    //             done();
+    //         });
+    //     });
+    // });
 
     describe('compareTo', () => {
         describe('defaults', () => {
             it('should successful compare 2 identical images with each other', done => {
-                resemble(peopleImage).compareTo(peopleImage)
+                resemble(peopleImage, peopleImage)
                     .onComplete(data => {
+                        console.log('data = ', data)
                         expect(data.misMatchPercentage).toEqual('0.00');
                         done();
                     });
             });
 
             it('should successful compare 2 identical not equally sized images with each other', done => {
-                resemble(smallImage).compareTo(largeImage)
+                resemble(smallImage, largeImage)
                     .onComplete(data => {
+                        console.log('data = ', data)
+                        expect(data.isSameDimensions).toEqual(false);
+                        expect(data.dimensionDifference).toEqual({width: -201, height: -201});
                         expect(data.misMatchPercentage).toEqual('0.00');
-                        done();
-                    });
-            });
-
-            it('should fail comparing 2 identical images with each other with ignoreNothing enabled', done => {
-                resemble(peopleImage).compareTo(peopleImage)
-                    .ignoreNothing()
-                    .onComplete(data => {
-                        expect(data.misMatchPercentage).toEqual('0.00');
+                        expect(data.diffBounds).toEqual({top: 1201, left: 1201, bottom: 0, right: 0});
                         done();
                     });
             });
 
             it('should fail comparing 2 non identical images with each other', done => {
-                resemble(peopleImage).compareTo(peopleTwoImage)
+                resemble(peopleImage, peopleTwoImage)
                     .onComplete(data => {
-                        expect(data.misMatchPercentage).toEqual('8.66');
-                        done();
-                    });
-            });
-
-            it('should fail comparing 2 identical images with each other with ignoreNothing enabled', done => {
-                resemble(peopleImage).compareTo(peopleTwoImage)
-                    .ignoreNothing()
-                    .onComplete(data => {
+                        console.log('data = ', data)
                         expect(data.misMatchPercentage).toEqual('8.66');
                         done();
                     });
@@ -69,16 +57,18 @@ describe('node-resemble.js', () => {
 
         describe('ignoreColors', () => {
             it('should fail comparing 2 non identical images with each other without ignoreColors enabled', done => {
-                resemble(peopleImage).compareTo(peopleBlackWhiteImage)
+                resemble(peopleImage, peopleBlackWhiteImage, {ignoreColors: false})
                     .onComplete(data => {
+                        console.log('data = ', data)
                         expect(data.misMatchPercentage).toEqual('23.57');
                         done();
                     });
             });
+
             it('should succeed comparing 2 non identical images with each other with ignoreColors enabled', done => {
-                resemble(peopleImage).compareTo(peopleBlackWhiteImage)
-                    .ignoreColors()
+                resemble(peopleImage, peopleBlackWhiteImage, {ignoreColors: true})
                     .onComplete(data => {
+                        console.log('data = ', data)
                         expect(data.misMatchPercentage).toEqual('0.00');
                         done();
                     });
@@ -87,17 +77,18 @@ describe('node-resemble.js', () => {
 
         describe('ignoreAntialiasing', () => {
             it('should fail comparing 2 non identical images with each other without ignoreAntialiasing enabled', done => {
-                resemble(withAntiAliasing).compareTo(withoutAntiAliasing)
+                resemble(withAntiAliasing, withoutAntiAliasing, {ignoreAntialiasing: false})
                     .onComplete(data => {
+                        console.log('data = ', data)
                         expect(data.misMatchPercentage).toEqual('0.58');
                         done();
                     });
             });
 
             it('should succeed comparing 2 non identical images with each other with ignoreAntialiasing enabled', done => {
-                resemble(withAntiAliasing).compareTo(withoutAntiAliasing)
-                    .ignoreAntialiasing()
+                resemble(withAntiAliasing, withoutAntiAliasing, {ignoreAntialiasing: true})
                     .onComplete(data => {
+                        console.log('data = ', data)
                         expect(data.misMatchPercentage).toEqual('0.00');
                         done();
                     });
@@ -106,26 +97,43 @@ describe('node-resemble.js', () => {
 
         describe('ignoreRectangles', () => {
             it('should fail comparing 2 non identical images with each other without ignoreRectangles enabled', done => {
-                resemble(peopleImage).compareTo(peopleTwoImage)
+                resemble(peopleImage, peopleTwoImage)
                     .onComplete(data => {
+                        console.log('data = ', data)
                         expect(data.misMatchPercentage).toEqual('8.66');
                         done();
                     });
             });
-            it('should fail comparing 2 non identical images with each other with ignoreRectangles enabled', done => {
-                resemble(peopleImage).compareTo(peopleTwoImage)
-                    .ignoreRectangles([{
-                        x: 15,
-                        y: 15,
-                        height: 200,
-                        width: 460
-                    }, {
-                        x: 0,
-                        y: 200,
-                        height: 300,
-                        width: 460
-                    }])
+
+            it('should fail comparing 2 non identical images with each other with an empty ignoreRectangles object', done => {
+                resemble(peopleImage, peopleTwoImage, {ignoreRectangles: []})
                     .onComplete(data => {
+                        console.log('data = ', data)
+                        expect(data.misMatchPercentage).toEqual('8.66');
+                        done();
+                    });
+            });
+
+            it('should fail comparing 2 non identical images with each other with ignoreRectangles enabled', done => {
+                resemble(peopleImage, peopleTwoImage, {
+                    ignoreAntialiasing: true,
+                    ignoreColors: true,
+                    ignoreRectangles: [
+                        {
+                            x: 15,
+                            y: 15,
+                            height: 200,
+                            width: 460
+                        }, {
+                            x: 0,
+                            y: 200,
+                            height: 300,
+                            width: 460
+                        }
+                    ]
+                })
+                    .onComplete(data => {
+                        console.log('data = ', data)
                         expect(data.misMatchPercentage).toEqual('0.00');
                         done();
                     });
@@ -134,32 +142,11 @@ describe('node-resemble.js', () => {
     });
 
     describe('outputSettings', () => {
-        beforeEach(() => {
-            resemble.outputSettings({
-                errorColor: {
-                    red: 255,
-                    green: 0,
-                    blue: 255
-                },
-                errorType: 'movement',
-                transparency: 0.3,
-                largeImageThreshold: 1200,
-                useCrossOrigin: true
-            });
-        });
-
-        it('should fail comparing 2 identical images with not the same dimensions', done => {
-            resemble(largeImage).compareTo(smallImage)
-                .onComplete(data => {
-                    expect(data.isSameDimensions).toEqual(false);
-                    done();
-                });
-        });
 
         it('should save a difference when 2 non identical images fail comparing', done => {
-            resemble(peopleImage)
-                .compareTo(peopleTwoImage)
+            resemble(peopleImage, peopleTwoImage)
                 .onComplete(data => {
+                    console.log('data = ', data)
                     const filePath = path.resolve(process.cwd(), '.tmp/diff.png');
 
                     expect(data.misMatchPercentage).toEqual('8.66');
