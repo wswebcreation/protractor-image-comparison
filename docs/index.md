@@ -53,6 +53,9 @@ protractorImageComparison
 | options.formatImageOptions | <code>string</code> | Custom variables for Image Name |
 | options.nativeWebScreenshot | <code>boolean</code> | If a native screenshot of a device (complete screenshot) needs to be taken |
 | options.blockOutStatusBar | <code>boolean</code> | If the statusbar on mobile / tablet needs to blocked out by default |
+| options.comparisonOptions | <code>object</code> | comparison options |
+| options.comparisonOptions.ignoreAntialiasing | <code>boolean</code> | compare images an discard anti aliasing |
+| options.comparisonOptions.ignoreColors | <code>boolean</code> | Even though the images are in colour, the comparison wil compare 2 black/white images |
 | options.androidOffsets | <code>object</code> | Object that will hold custom values for the statusBar, addressBar and toolBar |
 | options.iosOffsets | <code>object</code> | Object that will hold the custom values for the statusBar and addressBar |
 
@@ -72,6 +75,9 @@ Runs the comparison against an element
 | options | <code>object</code> | non-default options |
 | options.blockOut | <code>object</code> | blockout with x, y, width and height values |
 | options.resizeDimensions | <code>int</code> | the value to increase the size of the element that needs to be saved |
+| options.comparisonOptions | <code>object</code> | comparison options |
+| options.comparisonOptions.ignoreAntialiasing | <code>boolean</code> | compare images an discard anti aliasing |
+| options.comparisonOptions.ignoreColors | <code>boolean</code> | Even though the images are in colour, the comparison wil compare 2 black/white images |
 
 **Example**  
 ```js
@@ -97,6 +103,9 @@ Runs the comparison against the screen
 | options | <code>object</code> | (non-default) options |
 | options.blockOutStatusBar | <code>boolean</code> | blockout the statusbar yes or no |
 | options.blockOut | <code>object</code> | blockout with x, y, width and height values, it will override the global |
+| options.comparisonOptions | <code>object</code> | comparison options |
+| options.comparisonOptions.ignoreAntialiasing | <code>boolean</code> | compare images an discard anti aliasing |
+| options.comparisonOptions.ignoreColors | <code>boolean</code> | Even though the images are in colour, the comparison wil compare 2 black/white images |
 
 **Example**  
 ```js
