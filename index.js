@@ -481,9 +481,8 @@ class protractorImageComparison {
      * @public
      */
     checkElement(element, tag, options) {
-        const checkOptions = options || [],
+        const checkOptions = options || {},
             ignoreRectangles = 'blockOut' in checkOptions ? checkOptions.blockOut : [];
-
         let resembleOptions = checkOptions.comparisonOptions || this.comparisonOptions;
         if(!('ignoreAntialiasing' in resembleOptions)){
             resembleOptions.ignoreAntialiasing = this.comparisonOptions.ignoreAntialiasing;
@@ -536,7 +535,7 @@ class protractorImageComparison {
      * @public
      */
     checkScreen(tag, options) {
-        const checkOptions = options || [],
+        const checkOptions = options || {},
             blockOutStatusBar = checkOptions.blockOutStatusBar || checkOptions.blockOutStatusBar === false ? checkOptions.blockOutStatusBar : this.blockOutStatusBar;
 
         let resembleOptions = checkOptions.comparisonOptions || this.comparisonOptions;
