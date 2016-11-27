@@ -10,6 +10,7 @@ describe('protractor-image-comparison', () => {
     beforeEach(() => {
         browser.imageComparson = new imageComparison({
             baselineFolder: './test/baseline/desktop/',
+            debug: true,
             formatImageName: `{tag}-${logName}-{width}x{height}-dpr-{dpr}`,
             screenshotPath: './.tmp/'
         });
@@ -105,11 +106,11 @@ describe('protractor-image-comparison', () => {
         });
     });
 
-    describe('fullpage screenshot', () => {
+    fdescribe('fullpage screenshot', () => {
         it('should save a fullpage screenshot', () => {
             const tagName = 'fullPage';
 
-            browser.imageComparson.saveScreen(tagName, {fullPage: {}})
+            browser.imageComparson.saveFullPageScreenshot(tagName)
                 .then(() => expect(fs.existsSync(`${screenshotPath}/${tagName}-${logName}-${resolution}-dpr-1.png`)).toBe(true));
 
         })

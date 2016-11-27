@@ -16,6 +16,7 @@ const assert = require('assert'),
  * @param {object} options
  * @param {string} options.baselineFolder Path to the baseline folder
  * @param {string} options.screenshotPath Path to the folder where the screenshots are saved
+ * @param {boolean} debug Add some extra logging and always save the image difference
  * @param {string} options.formatImageOptions Custom variables for Image Name
  * @param {boolean} options.nativeWebScreenshot If a native screenshot of a device (complete screenshot) needs to be taken
  * @param {boolean} options.blockOutStatusBar  If the statusbar on mobile / tablet needs to blocked out by default
@@ -29,6 +30,8 @@ const assert = require('assert'),
  * @property {object} iosOffsets Object that will hold de defaults for the statusBar and addressBar
  * @property {int} screenshotHeight height of the screenshot of the page
  * @property {int} resizeDimensions dimensions that will be used to make the the element coordinates bigger. This needs to be in pixels
+ * @property {string} tempFullScreenFolder Path where the temporary fullscreens are saved
+ * @property {int} fullPageScrollTimeout Default timeout to wait after a scroll
  */
 
 class protractorImageComparison {
@@ -38,6 +41,7 @@ class protractorImageComparison {
 
         this.baselineFolder = path.normalize(options.baselineFolder);
         this.baseFolder = path.normalize(options.screenshotPath);
+        this.debug = options.debug || false;
         this.formatString = options.formatImageName || '{tag}-{browserName}-{width}x{height}-dpr-{dpr}';
 
         this.nativeWebScreenshot = options.nativeWebScreenshot ? true : false;
@@ -63,11 +67,15 @@ class protractorImageComparison {
 
         this.diffFolder = path.join(this.baseFolder, 'diff');
 
+
         this.devicePixelRatio = 1;
 
         this.screenshotHeight = 0;
 
         this.resizeDimensions = 0;
+
+        this.tempFullScreenFolder = path.join(this.baseFolder, 'tempFullScreen');
+        this.fullPageScrollTimeout = 1000;
 
         if (!fs.existsSync(this.diffFolder) || !fs.statSync(this.diffFolder).isDirectory()) {
             mkdirp.sync(this.diffFolder);
@@ -79,6 +87,10 @@ class protractorImageComparison {
 
         if (!fs.existsSync(this.actualFolder) || !fs.statSync(this.actualFolder).isDirectory()) {
             mkdirp.sync(this.actualFolder);
+        }
+
+        if (!fs.existsSync(this.tempFullScreenFolder) || !fs.statSync(this.tempFullScreenFolder).isDirectory()) {
+            mkdirp.sync(this.tempFullScreenFolder);
         }
     }
 
@@ -307,7 +319,7 @@ class protractorImageComparison {
                 this.platformName = browserConfig.capabilities.platformName ? browserConfig.capabilities.platformName.toLowerCase() : '';
                 this.deviceName = browserConfig.capabilities.deviceName ? browserConfig.capabilities.deviceName.toLowerCase() : '';
                 // this.nativeWebScreenshot of the constructor can be overruled by the capabilities when the constructor value is false
-                if(!this.nativeWebScreenshot){
+                if (!this.nativeWebScreenshot) {
                     this.nativeWebScreenshot = browserConfig.capabilities.nativeWebScreenshot ? true : false;
                 }
 
@@ -315,7 +327,7 @@ class protractorImageComparison {
                 const windowHeight = this.platformName === '' ? 'window.outerHeight' : 'window.screen.height',
                     windowWidth = this.platformName === '' ? 'window.outerWidth' : 'window.screen.width';
 
-                return browser.driver.executeScript(`return {pixelRatio: window.devicePixelRatio, height: ${windowHeight}, innerHeight: window.innerHeight, width: ${windowWidth}, fullPageHeight: document.body.offsetHeight};`)
+                return browser.driver.executeScript(`return {pixelRatio: window.devicePixelRatio, height: ${windowHeight}, innerHeight: window.innerHeight, width: ${windowWidth}, fullPageHeight: document.body.scrollHeight};`)
             })
             .then(browserData => {
                 // Firefox creates screenshots in a different way. Although it could be taken on a Retina screen,
@@ -577,14 +589,15 @@ class protractorImageComparison {
 
                 return this._determineRectangles(element);
             })
-            .then(result => {
-                rect = result;
-                return new PNGImage({
-                    imagePath: bufferedScreenshot,
-                    imageOutputPath: path.join(this.actualFolder, this._formatFileName(this.formatString, tag)),
-                    cropImage: rect
-                }).runWithPromise();
-            });
+            .then(rectangles => this._saveCroppedScreenshot(bufferedScreenshot, this.actualFolder, rectangles, tag));
+    }
+
+    _saveCroppedScreenshot(bufferedScreenshot, folder, rectangles, tag) {
+        return new PNGImage({
+            imagePath: bufferedScreenshot,
+            imageOutputPath: path.join(folder, this._formatFileName(this.formatString, tag)),
+            cropImage: rectangles
+        }).runWithPromise();
     }
 
     /**
@@ -596,71 +609,110 @@ class protractorImageComparison {
      * browser.protractorImageComparison.saveScreen('imageA');
      *
      * @param {string} tag The tag that is used
-     * @param {object} options (non-default) options
-     * @param {object} options.fullPage save a fullpage screenshot with these parameters
      * @returns {Promise} The image has been saved when the promise is resolved
      * @public
      */
-    saveScreen(tag, options) {
-        let saveOptions = options || [];
-
-        this.fullPage = typeof saveOptions.fullPage === 'object' ? saveOptions.fullPage : false;
-
+    saveScreen(tag) {
         return this._getInstanceData()
-            .then(() => {
-                if (!this.fullPage) {
-                    return this._saveScreenshot(tag);
-                } else {
-                    return this._saveFullPageScreenshot(tag, 0)
-                }
-            })
+            .then(() => this._saveScreenshot(this.actualFolder, tag));
     }
 
     /**
      * Takes a screenshot and saves it with a given tag
-     * @param {string} tag The tag that is used
-     * @param {int} part which part that has to be saved
-     * @returns {Promise} The images has been saved when the promise is resolved
-     * @private
-     */
-    _saveFullPageScreenshot(tag, part) {
-        let scrollTopPosition = part == 0 ? part : this.innerHeight * part;
-
-        console.log('scrollTopPosition = ', scrollTopPosition);
-
-        if (part < 3) {
-            console.log('trying part =', part);
-            return browser.driver.executeScript('window.scrollTo(0, arguments[0])', scrollTopPosition)
-            // @todo: need to figure this thing out, how long the scroll will take, now default set to
-                .then(() => browser.sleep(1000))
-                .then(() => browser.takeScreenshot())
-                .then(image => {
-                    return new PNGImage({
-                        imagePath: new Buffer(image, 'base64'),
-                        imageOutputPath: path.join(this.actualFolder, this._formatFileName(this.formatString, `${tag}-${part}`))
-                    }).runWithPromise();
-                })
-                .then(() => this._saveFullPageScreenshot(tag, part + 1));
-        } else {
-            return new Promise(resolve => resolve());
-        }
-    }
-
-
-    /**
-     * Takes a screenshot and saves it with a given tag
+     * @param {string} folder the path to the folder to save the image to
      * @param {string} tag The tag that is used
      * @returns {Promise} The images has been saved when the promise is resolved
      * @private
      */
-    _saveScreenshot(tag) {
+    _saveScreenshot(folder, tag) {
         return browser.takeScreenshot()
             .then(image => {
                 return new PNGImage({
                     imagePath: new Buffer(image, 'base64'),
-                    imageOutputPath: path.join(this.actualFolder, this._formatFileName(this.formatString, tag))
+                    imageOutputPath: path.join(folder, this._formatFileName(this.formatString, tag))
                 }).runWithPromise();
             });
+    }
+
+    /**
+     * @todo: fix docs
+     * Takes a screenshot and saves it with a given tag
+     * @param {string} tag The tag that is used
+     * @param {object} options the options
+     * @returns {Promise} The images has been saved when the promise is resolved
+     * @public
+     */
+    saveFullPageScreenshot(tag, options) {
+
+        // init
+        return this._getInstanceData()
+            .then(()=> this._scrollToAndDetermineFullPageHeight(0))
+            .then(()=> this._saveAndScrollNext(tag, 1));
+    }
+
+    _scrollToAndDetermineFullPageHeight(y) {
+        return browser.driver.executeAsyncScript(_scrollAndReturnFullPageHeight, y, this.fullPageScrollTimeout)
+            .then(fullPageHeight => {
+                // First check if the full page screen hasn't become bigger because of lazy loading or something
+                if (fullPageHeight !== this.fullPageHeight) {
+                    this.fullPageHeight = fullPageHeight;
+                }
+
+                if(this.debug){
+                    console.log('OLD fullPageHeight = ', fullPageHeight);
+                    console.log('NEW fullPageHeight = ', this.fullPageHeight);
+                }
+
+            });
+
+        function _scrollAndReturnFullPageHeight(y, timeout, done) {
+            var intervalId;
+
+            window.scrollTo(0, y);
+            intervalId = setTimeout(() => {
+                clearInterval(intervalId);
+                done(document.body.scrollHeight);
+            }, timeout);
+        }
+
+    }
+
+    _saveAndScrollNext(tag, part) {
+        let scrollToPosition = this.innerHeight * part;
+        if(this.debug) {
+            console.log('\nscrollTopPosition = ', scrollToPosition);
+            console.log('trying part =', part);
+            console.log(`this.innerHeight * part < this.fullPageHeight = ${this.innerHeight * part} < ${this.fullPageHeight}`);
+        }
+
+        // A fullpage screenshot needs to be taken
+        if (this.innerHeight * part < this.fullPageHeight) {
+            return this._saveScreenshot(this.tempFullScreenFolder, `${tag}-${part}`)
+                .then(() => this._scrollToAndDetermineFullPageHeight(scrollToPosition))
+                .then(() => this._saveAndScrollNext(tag, part + 1));
+        } else {
+            // A cropped screenshot needs to be taken
+            const leftOver = this.fullPageHeight - ((part - 1) * this.innerHeight);
+            const leftOverTop = this.innerHeight - leftOver;
+
+            let rectangles = {
+                height: leftOver,
+                width: this.width,
+                x: 0,
+                y: leftOverTop
+            };
+
+            rectangles = this._multiplyObjectValuesAgainstDPR(rectangles);
+
+            if(this.debug) {
+                console.log('leftOver = ', leftOver);
+                console.log('leftOverTop = ', leftOverTop);
+                console.log('rectangles =', rectangles);
+            }
+
+            return browser.takeScreenshot()
+                .then(bufferedScreenshot => this._saveCroppedScreenshot(new Buffer(bufferedScreenshot, 'base64'), this.tempFullScreenFolder, rectangles, `${tag}-${part}`));
+        }
     }
 }
 
