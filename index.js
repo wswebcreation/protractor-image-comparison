@@ -6,6 +6,7 @@ const assert = require('assert'),
     mkdirp = require('mkdirp'),
     path = require('path'),
     PNGImage = require('png-image'),
+    PNGJSImage = require('pngjs-image'),
     ResembleJS = require('./lib/resemble');
 
 /**
@@ -300,7 +301,10 @@ class protractorImageComparison {
      * @property {boolean} nativeWebScreenshot  Android can take screenshots of the webview (with Chromedriver) or a complete screenshot (like SauceLabs or Perfecto does)
      *
      * @property {number} devicePixelRatio Ratio of the (vertical) size of one physical pixel on the current display device to the size of one device independent pixels(dips)
+     * @property {number} fullPageHeight fullPageHeight of the browser
+     * @property {number} fullPageWidth fullPageWidth of the browser
      * @property {number} innerHeight innerHeight of the browser
+     * @property {number} clientWidth width of the browser without the vertical scrollbar
      * @property {number} height Height of the browser
      * @property {number} width Width of the browser
      *
@@ -327,14 +331,16 @@ class protractorImageComparison {
                 const windowHeight = this.platformName === '' ? 'window.outerHeight' : 'window.screen.height',
                     windowWidth = this.platformName === '' ? 'window.outerWidth' : 'window.screen.width';
 
-                return browser.driver.executeScript(`return {pixelRatio: window.devicePixelRatio, height: ${windowHeight}, innerHeight: window.innerHeight, width: ${windowWidth}, fullPageHeight: document.body.scrollHeight};`)
+                return browser.driver.executeScript(`return {pixelRatio: window.devicePixelRatio, height: ${windowHeight}, innerHeight: window.innerHeight, clientWidth: document.body.clientWidth, width: ${windowWidth}, fullPageHeight: document.body.scrollHeight, fullPageWidth: document.body.scrollWidth};`)
             })
             .then(browserData => {
                 // Firefox creates screenshots in a different way. Although it could be taken on a Retina screen,
                 // the screenshot is returned in its original (no factor x is used) dimensions
                 this.devicePixelRatio = this._isFirefox() ? this.devicePixelRatio : browserData.pixelRatio;
                 this.fullPageHeight = browserData.fullPageHeight;
+                this.fullPageWidth = browserData.fullPageWidth;
                 this.innerHeight = browserData.innerHeight;
+                this.clientWidth = browserData.clientWidth;
                 this.height = browserData.height;
                 this.width = browserData.width;
             });
@@ -658,7 +664,7 @@ class protractorImageComparison {
                     this.fullPageHeight = fullPageHeight;
                 }
 
-                if(this.debug){
+                if (this.debug) {
                     console.log('OLD fullPageHeight = ', fullPageHeight);
                     console.log('NEW fullPageHeight = ', this.fullPageHeight);
                 }
@@ -666,7 +672,8 @@ class protractorImageComparison {
             });
 
         function _scrollAndReturnFullPageHeight(y, timeout, done) {
-            var intervalId;
+            // @todo: check arrow and block support
+            let intervalId;
 
             window.scrollTo(0, y);
             intervalId = setTimeout(() => {
@@ -678,41 +685,58 @@ class protractorImageComparison {
     }
 
     _saveAndScrollNext(tag, part) {
-        let scrollToPosition = this.innerHeight * part;
-        if(this.debug) {
+        const scrollToPosition = this.innerHeight * part;
+        const leftOver = (this.innerHeight * part < this.fullPageHeight) ? this.innerHeight: this.fullPageHeight - ((part - 1) * this.innerHeight);
+        const leftOverTop = (this.innerHeight * part < this.fullPageHeight) ? 0 : this.innerHeight - leftOver;
+
+        let rectangles = {
+            height: leftOver,
+            width: this.clientWidth,
+            x: 0,
+            y: leftOverTop
+        };
+
+        rectangles = this._multiplyObjectValuesAgainstDPR(rectangles);
+
+        if (this.debug) {
             console.log('\nscrollTopPosition = ', scrollToPosition);
             console.log('trying part =', part);
             console.log(`this.innerHeight * part < this.fullPageHeight = ${this.innerHeight * part} < ${this.fullPageHeight}`);
+            console.log('leftOver = ', leftOver);
+            console.log('leftOverTop = ', leftOverTop);
+            console.log('rectangles =', rectangles);
         }
 
-        // A fullpage screenshot needs to be taken
-        if (this.innerHeight * part < this.fullPageHeight) {
-            return this._saveScreenshot(this.tempFullScreenFolder, `${tag}-${part}`)
-                .then(() => this._scrollToAndDetermineFullPageHeight(scrollToPosition))
-                .then(() => this._saveAndScrollNext(tag, part + 1));
-        } else {
-            // A cropped screenshot needs to be taken
-            const leftOver = this.fullPageHeight - ((part - 1) * this.innerHeight);
-            const leftOverTop = this.innerHeight - leftOver;
+        return browser.takeScreenshot()
+            .then(bufferedScreenshot => this._saveCroppedScreenshot(new Buffer(bufferedScreenshot, 'base64'), this.tempFullScreenFolder, rectangles, `${tag}-${part}`))
+            .then(() => this._scrollToAndDetermineFullPageHeight(scrollToPosition))
+            .then(() => {
+                return (this.innerHeight * part < this.fullPageHeight) ? this._saveAndScrollNext(tag, part + 1) : this._composeAndSaveFullScreenshot(tag, part, 1);
+            });
+        // }
+    }
 
-            let rectangles = {
-                height: leftOver,
-                width: this.width,
-                x: 0,
-                y: leftOverTop
-            };
+    _composeAndSaveFullScreenshot(tag, parts, part, image) {
+        const imageHeight = this.fullPageHeight * this.devicePixelRatio;
+        const imageWidth = this.fullPageWidth * this.devicePixelRatio;
+        const height = this.innerHeight * (part - 1) * this.devicePixelRatio;
 
-            rectangles = this._multiplyObjectValuesAgainstDPR(rectangles);
+        let imageOutput = image || null;
 
-            if(this.debug) {
-                console.log('leftOver = ', leftOver);
-                console.log('leftOverTop = ', leftOverTop);
-                console.log('rectangles =', rectangles);
-            }
+        if (part === 1) {
+            imageOutput = PNGJSImage.createImage(imageWidth, imageHeight);
 
-            return browser.takeScreenshot()
-                .then(bufferedScreenshot => this._saveCroppedScreenshot(new Buffer(bufferedScreenshot, 'base64'), this.tempFullScreenFolder, rectangles, `${tag}-${part}`));
+        } else if (part > parts) {
+            return new Promise(resolve => {
+                imageOutput.writeImageSync(path.join(this.actualFolder, this._formatFileName(this.formatString, tag)));
+                resolve();
+            });
         }
+
+        const stitchImage = PNGJSImage.readImageSync(path.join(this.tempFullScreenFolder, this._formatFileName(this.formatString, `${tag}-${part}`)));
+        stitchImage.getImage().bitblt(imageOutput.getImage(), 0, 0, stitchImage.getWidth(), stitchImage.getHeight(), 0, height);
+
+        return this._composeAndSaveFullScreenshot(tag, parts, part + 1, imageOutput)
     }
 }
 
