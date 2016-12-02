@@ -113,6 +113,6 @@ describe('protractor-image-comparison', () => {
             browser.imageComparson.saveFullPageScreenshot(tagName)
                 .then(() => expect(fs.existsSync(`${screenshotPath}/${tagName}-${logName}-${resolution}-dpr-1.png`)).toBe(true));
 
-        })
+        });
     });
 });

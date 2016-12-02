@@ -652,8 +652,7 @@ class protractorImageComparison {
 
         // init
         return this._getInstanceData()
-            .then(()=> this._scrollToAndDetermineFullPageHeight(0))
-            .then(()=> this._saveAndScrollNext(tag, 1));
+            .then(()=> this._scollAndSave(0, tag, 1));
     }
 
     _scrollToAndDetermineFullPageHeight(y) {
@@ -672,11 +671,10 @@ class protractorImageComparison {
             });
 
         function _scrollAndReturnFullPageHeight(y, timeout, done) {
-            // @todo: check arrow and block support
-            let intervalId;
+            var intervalId;
 
             window.scrollTo(0, y);
-            intervalId = setTimeout(() => {
+            intervalId = setTimeout(function () {
                 clearInterval(intervalId);
                 done(document.body.scrollHeight);
             }, timeout);
@@ -684,37 +682,60 @@ class protractorImageComparison {
 
     }
 
-    _saveAndScrollNext(tag, part) {
-        const scrollToPosition = this.innerHeight * part;
-        const leftOver = (this.innerHeight * part < this.fullPageHeight) ? this.innerHeight: this.fullPageHeight - ((part - 1) * this.innerHeight);
-        const leftOverTop = (this.innerHeight * part < this.fullPageHeight) ? 0 : this.innerHeight - leftOver;
+    _scollAndSave(y, tag, part) {
+        const currentPagePosition = (part - 1) * this.innerHeight;
+        const scrollToPosition = y === 1 ? 0: y;
+        let isLastScreenshot;
 
-        let rectangles = {
-            height: leftOver,
-            width: this.clientWidth,
-            x: 0,
-            y: leftOverTop
-        };
+        return this._scrollToAndDetermineFullPageHeight(scrollToPosition)
+            .then(() => browser.takeScreenshot())
+            .then(screenshot => {
+                const bufferedScreenshot = new Buffer(screenshot, 'base64');
+                this.screenshotHeight = (bufferedScreenshot.readUInt32BE(20) / this.devicePixelRatio); // width = 16
 
-        rectangles = this._multiplyObjectValuesAgainstDPR(rectangles);
+                const isLargeScreenshot = this.screenshotHeight > this.innerHeight;
 
-        if (this.debug) {
-            console.log('\nscrollTopPosition = ', scrollToPosition);
-            console.log('trying part =', part);
-            console.log(`this.innerHeight * part < this.fullPageHeight = ${this.innerHeight * part} < ${this.fullPageHeight}`);
-            console.log('leftOver = ', leftOver);
-            console.log('leftOverTop = ', leftOverTop);
-            console.log('rectangles =', rectangles);
-        }
+                isLastScreenshot = this.innerHeight * part > this.fullPageHeight;
 
-        return browser.takeScreenshot()
-            .then(bufferedScreenshot => this._saveCroppedScreenshot(new Buffer(bufferedScreenshot, 'base64'), this.tempFullScreenFolder, rectangles, `${tag}-${part}`))
-            .then(() => this._scrollToAndDetermineFullPageHeight(scrollToPosition))
-            .then(() => {
-                return (this.innerHeight * part < this.fullPageHeight) ? this._saveAndScrollNext(tag, part + 1) : this._composeAndSaveFullScreenshot(tag, part, 1);
-            });
-        // }
+                this.fullPageHeight = isLargeScreenshot ? this.screenshotHeight : this.fullPageHeight;
+
+                const cropHeight = isLastScreenshot ? this.fullPageHeight - currentPagePosition : this.innerHeight;
+
+                let cropTopPosition = isLastScreenshot ? this.innerHeight - cropHeight : 0;
+
+                // large image screenshot
+                if (isLargeScreenshot) {
+                    cropTopPosition = isLastScreenshot ? currentPagePosition : scrollToPosition;
+                }
+
+
+                let rectangles = {
+                    height: cropHeight,
+                    width: this.clientWidth,
+                    x: 0,
+                    y: cropTopPosition
+                };
+
+                rectangles = this._multiplyObjectValuesAgainstDPR(rectangles);
+
+                if (this.debug) {
+                    console.log('\n####################################################');
+                    console.log('this.screenshotHeight = ', this.screenshotHeight);
+                    console.log('currentPagePosition = ', currentPagePosition);
+                    console.log('scrollTopPosition = ', scrollToPosition);
+                    console.log('trying part =', part);
+                    console.log(`this.innerHeight * part > this.fullPageHeight = ${this.innerHeight * part} > ${this.fullPageHeight}`);
+                    console.log('cropHeight = ', cropHeight);
+                    console.log('cropTopPosition = ', cropTopPosition);
+                    console.log('rectangles =', rectangles);
+                    console.log('####################################################\n');
+                }
+
+                return this._saveCroppedScreenshot(bufferedScreenshot, this.tempFullScreenFolder, rectangles, `${tag}-${part}`)
+            })
+            .then(() => isLastScreenshot ? this._composeAndSaveFullScreenshot(tag, part, 1) : this._scollAndSave(this.innerHeight * part, tag, part + 1));
     }
+
 
     _composeAndSaveFullScreenshot(tag, parts, part, image) {
         const imageHeight = this.fullPageHeight * this.devicePixelRatio;
