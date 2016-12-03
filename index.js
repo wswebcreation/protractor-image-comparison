@@ -641,34 +641,40 @@ class protractorImageComparison {
     }
 
     /**
-     * @todo: fix docs
-     * Takes a screenshot and saves it with a given tag
+     * Saves a full page image of the screen
+     *
+     * @method saveFullPageScreenshot
+     *
+     * @example
+     * // Default
+     * browser.protractorImageComparison.saveFullPageScreenshot('imageA');
+     * // Default
+     * browser.protractorImageComparison.saveFullPageScreenshot('imageA',{timeout: 5000});
+     *
      * @param {string} tag The tag that is used
-     * @param {object} options the options
-     * @returns {Promise} The images has been saved when the promise is resolved
+     * @param {object} options (non-default) options
+     * @param {int} options.timeout The time that needs to be waited when scrolling to a point and save the screenshot
+     * @returns {Promise} The image has been saved when the promise is resolved
      * @public
      */
     saveFullPageScreenshot(tag, options) {
+        let saveOptions = options || [];
 
-        // init
+        this.fullPageScrollTimeout = saveOptions.timeout && parseInt(saveOptions.timeout, 10) > this.fullPageScrollTimeout ? saveOptions.timeout : this.fullPageScrollTimeout;
+
+        // Start scrolling at y=0
         return this._getInstanceData()
-            .then(()=> this._scollAndSave(0, tag, 1));
+            .then(()=> this._scrollAndSave(0, tag, 1));
     }
 
-    _scrollToAndDetermineFullPageHeight(y) {
-        return browser.driver.executeAsyncScript(_scrollAndReturnFullPageHeight, y, this.fullPageScrollTimeout)
-            .then(fullPageHeight => {
-                // First check if the full page screen hasn't become bigger because of lazy loading or something
-                if (fullPageHeight !== this.fullPageHeight) {
-                    this.fullPageHeight = fullPageHeight;
-                }
-
-                if (this.debug) {
-                    console.log('OLD fullPageHeight = ', fullPageHeight);
-                    console.log('NEW fullPageHeight = ', this.fullPageHeight);
-                }
-
-            });
+    /**
+     * Scroll to static horizontal and a given vertical coordinate on the page and return the current size of the screen
+     * @param {number} verticalCoordinate The y-coordinate that needs to be scrolled to
+     * @returns {Promise}
+     * @private
+     */
+    _scrollToAndDetermineFullPageHeight(verticalCoordinate) {
+        return browser.driver.executeAsyncScript(_scrollAndReturnFullPageHeight, verticalCoordinate, this.fullPageScrollTimeout);
 
         function _scrollAndReturnFullPageHeight(y, timeout, done) {
             var intervalId;
@@ -682,47 +688,64 @@ class protractorImageComparison {
 
     }
 
-    _scollAndSave(y, tag, part) {
-        const currentPagePosition = (part - 1) * this.innerHeight;
-        const scrollToPosition = y === 1 ? 0: y;
+    /**
+     * Scroll to a given vertical coordinate and save the screenshot
+     * @param {number} verticalCoordinate The vertical coordinate that needs to be scrolled to
+     * @param {string} tag The tag that is used
+     * @param {number} part The part of the screen that is being processed
+     * @returns {Promise}
+     * @private
+     */
+    _scrollAndSave(verticalCoordinate, tag, part) {
+        const currentVerticalCoordinate = (part - 1) * this.innerHeight;
+
+        let actualFullPageHeight;
         let isLastScreenshot;
 
-        return this._scrollToAndDetermineFullPageHeight(scrollToPosition)
-            .then(() => browser.takeScreenshot())
+        return this._scrollToAndDetermineFullPageHeight(verticalCoordinate)
+            .then(height => {
+                actualFullPageHeight = height;
+                return browser.takeScreenshot()
+            })
             .then(screenshot => {
                 const bufferedScreenshot = new Buffer(screenshot, 'base64');
                 this.screenshotHeight = (bufferedScreenshot.readUInt32BE(20) / this.devicePixelRatio); // width = 16
 
+                // For older webdriver of Firefox and IE11, they make "fullpage" screenshots
                 const isLargeScreenshot = this.screenshotHeight > this.innerHeight;
 
+                // Determine current fullpageheight
+                if (isLargeScreenshot) {
+                    this.fullPageHeight = this.screenshotHeight;
+                } else {
+                    // Value can be equal, or bigger due to for example lazyloading
+                    this.fullPageHeight = actualFullPageHeight;
+                }
+
+                // Determine the crop height and postion from where to crop
                 isLastScreenshot = this.innerHeight * part > this.fullPageHeight;
-
-                this.fullPageHeight = isLargeScreenshot ? this.screenshotHeight : this.fullPageHeight;
-
-                const cropHeight = isLastScreenshot ? this.fullPageHeight - currentPagePosition : this.innerHeight;
-
+                const cropHeight = isLastScreenshot ? this.fullPageHeight - currentVerticalCoordinate : this.innerHeight;
                 let cropTopPosition = isLastScreenshot ? this.innerHeight - cropHeight : 0;
 
                 // large image screenshot
                 if (isLargeScreenshot) {
-                    cropTopPosition = isLastScreenshot ? currentPagePosition : scrollToPosition;
+                    cropTopPosition = isLastScreenshot ? currentVerticalCoordinate : verticalCoordinate;
                 }
 
-
-                let rectangles = {
+                const rectangles = this._multiplyObjectValuesAgainstDPR({
                     height: cropHeight,
                     width: this.clientWidth,
                     x: 0,
                     y: cropTopPosition
-                };
-
-                rectangles = this._multiplyObjectValuesAgainstDPR(rectangles);
+                });
 
                 if (this.debug) {
                     console.log('\n####################################################');
+                    console.log('OLD fullPageHeight = ', actualFullPageHeight);
+                    console.log('NEW fullPageHeight = ', this.fullPageHeight);
                     console.log('this.screenshotHeight = ', this.screenshotHeight);
-                    console.log('currentPagePosition = ', currentPagePosition);
-                    console.log('scrollTopPosition = ', scrollToPosition);
+                    console.log('currentVerticalCoordinate = ', currentVerticalCoordinate);
+                    console.log('verticalCoordinate = ', verticalCoordinate);
                     console.log('trying part =', part);
                     console.log(`this.innerHeight * part > this.fullPageHeight = ${this.innerHeight * part} > ${this.fullPageHeight}`);
                     console.log('cropHeight = ', cropHeight);
@@ -733,10 +756,19 @@ class protractorImageComparison {
 
                 return this._saveCroppedScreenshot(bufferedScreenshot, this.tempFullScreenFolder, rectangles, `${tag}-${part}`)
             })
-            .then(() => isLastScreenshot ? this._composeAndSaveFullScreenshot(tag, part, 1) : this._scollAndSave(this.innerHeight * part, tag, part + 1));
+            // Or compose and save the screenshot, or scroll and save again
+            .then(() => isLastScreenshot ? this._composeAndSaveFullScreenshot(tag, part, 1) : this._scrollAndSave(this.innerHeight * part, tag, part + 1));
     }
 
-
+    /**
+     * Compose a full page screenshot and save it
+     * @param {string} tag The tag that is used
+     * @param {number} parts The amount of parts that need to be processed
+     * @param {number} part The current part of the screenshot that is being processed
+     * @param {string} image The current image output that needs to be saved
+     * @returns {Promise}
+     * @private
+     */
     _composeAndSaveFullScreenshot(tag, parts, part, image) {
         const imageHeight = this.fullPageHeight * this.devicePixelRatio;
         const imageWidth = this.fullPageWidth * this.devicePixelRatio;
@@ -746,7 +778,6 @@ class protractorImageComparison {
 
         if (part === 1) {
             imageOutput = PNGJSImage.createImage(imageWidth, imageHeight);
-
         } else if (part > parts) {
             return new Promise(resolve => {
                 imageOutput.writeImageSync(path.join(this.actualFolder, this._formatFileName(this.formatString, tag)));

@@ -106,11 +106,11 @@ describe('protractor-image-comparison', () => {
         });
     });
 
-    fdescribe('fullpage screenshot', () => {
+    describe('fullpage screenshot', () => {
         it('should save a fullpage screenshot', () => {
             const tagName = 'fullPage';
 
-            browser.imageComparson.saveFullPageScreenshot(tagName)
+            browser.imageComparson.saveFullPageScreenshot(tagName, {timeout:'1500a'})
                 .then(() => expect(fs.existsSync(`${screenshotPath}/${tagName}-${logName}-${resolution}-dpr-1.png`)).toBe(true));
 
         });
