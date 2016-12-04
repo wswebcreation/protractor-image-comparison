@@ -719,6 +719,8 @@ class protractorImageComparison {
     checkFullPageScreenshot(tag, options) {
         const checkOptions = options || [];
 
+        let ignoreRectangles = 'blockOut' in checkOptions ? options.blockOut : [];
+
         return this.saveFullPageScreenshot(tag, checkOptions)
             .then(() => this._checkImageExists(tag))
             .then(() => {
