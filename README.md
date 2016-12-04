@@ -12,7 +12,9 @@ protractor-image-comparison
 
 You can:
 
-- compare screens / elements against a baseline
+- save or compare screens / elements against a baseline
+- **NEW:** save or compare a fullpage screenshot against a baseline
+- **NEW:** disbale css animations by default
 - blockout custom regions during comparison (all)
 - increase the element dimenisions screenshots (all)
 - provide custom iOS and Android offsets for status-/address-/toolbar (mobile only)
@@ -47,6 +49,7 @@ For more information about mobile testing see the [Appium](./docs/appium.md) doc
 
 - two comparison methods `checkScreen` and `checkElement`.
 - two helper methods `saveScreen` and `saveElement` for saving images.
+- **NEW** two helper methods `saveFullPageScreenshot` and `checkFullPageScreenshot` for saving a fullpage screenshot.
 
 The comparison methods return a result in percentages like `0` or `3.94`.
 *protractor-image-comparison* can work with Jasmine and Cucumber.js. See [Examples](./docs/examples.md) for or a *protractor*-config setup, or a Jasmine or a CucumberJS implementation.

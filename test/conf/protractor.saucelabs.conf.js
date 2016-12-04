@@ -143,7 +143,8 @@ config.multiCapabilities = [
         logName: "Safari 9",
         shardTestFiles: true,
         specs: deskSpecs
-    },
+    }
+    // //,
     // // Not supporting Async with 2.53
     // // {
     // //     // SauceLabs

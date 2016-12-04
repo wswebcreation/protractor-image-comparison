@@ -17,9 +17,9 @@ const assert = require('assert'),
  * @param {object} options
  * @param {string} options.baselineFolder Path to the baseline folder
  * @param {string} options.screenshotPath Path to the folder where the screenshots are saved
- * @param {boolean} debug Add some extra logging and always save the image difference
+ * @param {boolean} options.debug Add some extra logging and always save the image difference
  * @param {string} options.formatImageOptions Custom variables for Image Name
- * @param {boolean} disableAnimation Disable all animations on a page
+ * @param {boolean} options.disableCSSAnimation Disable all animations on a page
  * @param {boolean} options.nativeWebScreenshot If a native screenshot of a device (complete screenshot) needs to be taken
  * @param {boolean} options.blockOutStatusBar  If the statusbar on mobile / tablet needs to blocked out by default
  * @param {object} options.androidOffsets Object that will hold custom values for the statusBar, addressBar and toolBar
@@ -45,7 +45,7 @@ class protractorImageComparison {
         this.baseFolder = path.normalize(options.screenshotPath);
         this.debug = options.debug || false;
         this.formatString = options.formatImageName || '{tag}-{browserName}-{width}x{height}-dpr-{dpr}';
-        this.disableAnimation = options.disableAnimation || false;
+        this.disableCSSAnimation = options.disableCSSAnimation || false;
 
         this.nativeWebScreenshot = options.nativeWebScreenshot ? true : false;
         this.blockOutStatusBar = options.blockOutStatusBar ? true : false;
@@ -112,6 +112,37 @@ class protractorImageComparison {
                 }
             });
         });
+    }
+
+    /**
+     * Compose a full page screenshot and save it
+     * @param {string} tag The tag that is used
+     * @param {number} parts The amount of parts that need to be processed
+     * @param {number} part The current part of the screenshot that is being processed
+     * @param {string} image The current image output that needs to be saved
+     * @returns {Promise}
+     * @private
+     */
+    _composeAndSaveFullScreenshot(tag, parts, part, image) {
+        const imageHeight = this.fullPageHeight * this.devicePixelRatio;
+        const imageWidth = this.fullPageWidth * this.devicePixelRatio;
+        const height = this.innerHeight * (part - 1) * this.devicePixelRatio;
+
+        let imageOutput = image || null;
+
+        if (part === 1) {
+            imageOutput = PNGJSImage.createImage(imageWidth, imageHeight);
+        } else if (part > parts) {
+            return new Promise(resolve => {
+                imageOutput.writeImageSync(path.join(this.actualFolder, this._formatFileName(this.formatString, tag)));
+                resolve();
+            });
+        }
+
+        const stitchImage = PNGJSImage.readImageSync(path.join(this.tempFullScreenFolder, this._formatFileName(this.formatString, `${tag}-${part}`)));
+        stitchImage.getImage().bitblt(imageOutput.getImage(), 0, 0, stitchImage.getWidth(), stitchImage.getHeight(), 0, height);
+
+        return this._composeAndSaveFullScreenshot(tag, parts, part + 1, imageOutput)
     }
 
     /**
@@ -328,10 +359,10 @@ class protractorImageComparison {
                     this.nativeWebScreenshot = browserConfig.capabilities.nativeWebScreenshot ? true : false;
                 }
 
-                return browser.driver.executeScript(setCSSAndRetrieveBrowserData, this.platformName, this.disableAnimation);
+                return browser.driver.executeScript(setCSSAndRetrieveBrowserData, this.platformName, this.disableCSSAnimation);
 
                 // Platform name is used for determining height / width which is different for desktop and mobile
-                function setCSSAndRetrieveBrowserData(platformName, disableAnimation) {
+                function setCSSAndRetrieveBrowserData(platformName, disableCSSAnimation) {
                     var animation = '* {' +
                             '-webkit-transition-duration: 0s !important;' +
                             'transition-duration: 0s !important;' +
@@ -339,7 +370,7 @@ class protractorImageComparison {
                             'animation-duration: 0s !important;' +
                             '}',
                         scrollBar = '*::-webkit-scrollbar { -webkit-appearance: none;}',
-                        css = disableAnimation ? scrollBar + animation : scrollBar,
+                        css = disableCSSAnimation ? scrollBar + animation : scrollBar,
                         head = document.head || document.getElementsByTagName('head')[0],
                         style = document.createElement('style');
 
@@ -486,240 +517,6 @@ class protractorImageComparison {
     }
 
     /**
-     * Runs the comparison against an element
-     *
-     * @method checkElement
-     *
-     * @example
-     * // default usage
-     * browser.protractorImageComparison.checkElement(element(By.id('elementId')), 'imageA');
-     * // blockout example
-     * browser.protractorImageComparison.checkElement(element(By.id('elementId')), 'imageA', {blockOut: [{x: 10, y: 132, width: 100, height: 50}]});
-     * // Add 15 px to top, right, bottom and left when the cut is calculated (it will automatically use the DPR)
-     * browser.protractorImageComparison.saveElement(element(By.id('elementId')), 'imageA', {resizeDimensions: 15});
-     *
-     * @param {Promise} element The ElementFinder that is used to get the position
-     * @param {string} tag The tag that is used
-     * @param {object} options non-default options
-     * @param {object} options.blockOut blockout with x, y, width and height values
-     * @param {int} options.resizeDimensions the value to increase the size of the element that needs to be saved
-     * @param {boolean} options.disableAnimation enable or disable CSS animation
-     * @return {Promise} When the promise is resolved it will return the percentage of the difference
-     * @public
-     */
-    checkElement(element, tag, options) {
-        const checkOptions = options || [],
-            ignoreRectangles = 'blockOut' in checkOptions ? options.blockOut : [];
-
-        return this.saveElement(element, tag, checkOptions)
-            .then(() => this._checkImageExists(tag))
-            .then(() => {
-                const imageComparisonPaths = this._determineImageComparisonPaths(tag);
-
-                return new Promise(resolve => {
-                    ResembleJS(imageComparisonPaths.baselineImage)
-                        .compareTo(imageComparisonPaths.actualImage)
-                        .ignoreRectangles(ignoreRectangles)
-                        .onComplete(data => {
-                            if (Number(data.misMatchPercentage) > 0) {
-                                data.getDiffImage().pack().pipe(fs.createWriteStream(imageComparisonPaths.imageDiffPath));
-                            }
-                            resolve(Number(data.misMatchPercentage));
-                        });
-                });
-            });
-    }
-
-    /**
-     * Runs the comparison against the screen
-     *
-     * @method checkScreen
-     *
-     * @example
-     * // default
-     * browser.protractorImageComparison.checkScreen('imageA');
-     * // Blockout the statusbar
-     * browser.protractorImageComparison.checkScreen('imageA', {blockOutStatusBar: true});
-     * // Blockout a given region
-     * browser.protractorImageComparison.checkScreen('imageA', {blockOut: [{x: 10, y: 132, width: 100, height: 50}]});
-     *
-     * @param {string} tag The tag that is used
-     * @param {object} options (non-default) options
-     * @param {boolean} options.blockOutStatusBar blockout the statusbar yes or no
-     * @param {object} options.blockOut blockout with x, y, width and height values, it will override the global
-     * @param {boolean} options.disableAnimation enable or disable CSS animation
-     * @return {Promise} When the promise is resolved it will return the percentage of the difference
-     * @public
-     */
-    checkScreen(tag, options) {
-        const checkOptions = options || [],
-            blockOutStatusBar = checkOptions.blockOutStatusBar || checkOptions.blockOutStatusBar === false ? checkOptions.blockOutStatusBar : this.blockOutStatusBar;
-
-        let ignoreRectangles = 'blockOut' in checkOptions ? options.blockOut : [];
-
-        return this.saveScreen(tag, checkOptions)
-            .then(() => this._checkImageExists(tag))
-            .then(() => {
-                const imageComparisonPaths = this._determineImageComparisonPaths(tag);
-
-                if (this._isMobile() && blockOutStatusBar) {
-                    const statusBarHeight = this._isAndroid() ? this.androidOffsets.statusBar : this.iosOffsets.statusBar,
-                        statusBarBlockOut = this._multiplyObjectValuesAgainstDPR({
-                            x: 0,
-                            y: 0,
-                            height: statusBarHeight,
-                            width: this.width
-                        });
-                    ignoreRectangles.push(statusBarBlockOut);
-                }
-
-                return new Promise(resolve => {
-                    ResembleJS(imageComparisonPaths.baselineImage)
-                        .compareTo(imageComparisonPaths.actualImage)
-                        .ignoreRectangles(ignoreRectangles)
-                        .onComplete(data => {
-                            if (Number(data.misMatchPercentage) > 0) {
-                                data.getDiffImage().pack().pipe(fs.createWriteStream(imageComparisonPaths.imageDiffPath));
-                            }
-                            resolve(Number(data.misMatchPercentage));
-                        });
-                });
-            });
-    }
-
-    /**
-     * Runs the comparison against the fullpage screenshot
-     *
-     * @method checkFullPage
-     *
-     * @example
-     * // default
-     * browser.protractorImageComparison.checkFullPage('imageA');
-     * // Blockout the statusbar
-     * browser.protractorImageComparison.checkFullPage('imageA', {blockOutStatusBar: true});
-     * // Blockout a given region
-     * browser.protractorImageComparison.checkFullPage('imageA', {blockOut: [{x: 10, y: 132, width: 100, height: 50}]});
-     *
-     * @param {string} tag The tag that is used
-     * @param {object} options (non-default) options
-     * @param {boolean} options.blockOutStatusBar blockout the statusbar yes or no
-     * @param {object} options.blockOut blockout with x, y, width and height values, it will override the global
-     * @param {boolean} options.disableAnimation enable or disable CSS animation
-     * @return {Promise} When the promise is resolved it will return the percentage of the difference
-     * @public
-     */
-    checkFullPage(tag, options) {
-        const checkOptions = options || [];
-
-        return this.saveFullPageScreenshot(tag, checkOptions)
-            .then(() => this._checkImageExists(tag))
-            .then(() => {
-                const imageComparisonPaths = this._determineImageComparisonPaths(tag);
-
-                return new Promise(resolve => {
-                    ResembleJS(imageComparisonPaths.baselineImage)
-                        .compareTo(imageComparisonPaths.actualImage)
-                        .ignoreRectangles(ignoreRectangles)
-                        .onComplete(data => {
-                            if (Number(data.misMatchPercentage) > 0) {
-                                data.getDiffImage().pack().pipe(fs.createWriteStream(imageComparisonPaths.imageDiffPath));
-                            }
-                            resolve(Number(data.misMatchPercentage));
-                        });
-                });
-            })
-    }
-
-    /**
-     * Saves an image of the screen element
-     *
-     * @method saveElement
-     *
-     * @example
-     * // Default
-     * browser.protractorImageComparison.saveElement(element(By.id('elementId')), 'imageA');
-     * // Add 15 px to top, right, bottom and left when the cut is calculated (it will automatically use the DPR)
-     * browser.protractorImageComparison.saveElement(element(By.id('elementId')), 'imageA', {resizeDimensions: 15});
-     *
-     * @param {Promise} element The ElementFinder that is used to get the position
-     * @param {string} tag The tag that is used
-     * @param {object} options (non-default) options
-     * @param {int} options.resizeDimensions the value to increase the size of the element that needs to be saved
-     * @param {boolean} options.disableAnimation enable or disable CSS animation
-     * @returns {Promise} The images has been saved when the promise is resolved
-     * @public
-     */
-    saveElement(element, tag, options) {
-        let saveOptions = options || [],
-            bufferedScreenshot;
-
-        this.resizeDimensions = saveOptions.resizeDimensions ? saveOptions.resizeDimensions : this.resizeDimensions;
-        this.disableAnimation = saveOptions.disableAnimation || saveOptions.disableAnimation === false ? saveOptions.disableAnimation : this.disableAnimation;
-
-        return this._getInstanceData()
-            .then(()=> browser.takeScreenshot())
-            .then(screenshot => {
-                bufferedScreenshot = new Buffer(screenshot, 'base64');
-                this.screenshotHeight = (bufferedScreenshot.readUInt32BE(20) / this.devicePixelRatio); // width = 16
-
-                return this._determineRectangles(element);
-            })
-            .then(rectangles => this._saveCroppedScreenshot(bufferedScreenshot, this.actualFolder, rectangles, tag));
-    }
-
-    /**
-     * Saves a full page image of the screen
-     *
-     * @method saveFullPageScreenshot
-     *
-     * @example
-     * // Default
-     * browser.protractorImageComparison.saveFullPageScreenshot('imageA');
-     * // Default
-     * browser.protractorImageComparison.saveFullPageScreenshot('imageA',{timeout: 5000});
-     *
-     * @param {string} tag The tag that is used
-     * @param {object} options (non-default) options
-     * @param {int} options.timeout The time that needs to be waited when scrolling to a point and save the screenshot
-     * @param {boolean} options.disableAnimation enable or disable CSS animation
-     * @returns {Promise} The image has been saved when the promise is resolved
-     * @public
-     */
-    saveFullPageScreenshot(tag, options) {
-        let saveOptions = options || [];
-
-        this.fullPageScrollTimeout = saveOptions.timeout && parseInt(saveOptions.timeout, 10) > this.fullPageScrollTimeout ? saveOptions.timeout : this.fullPageScrollTimeout;
-        this.disableAnimation = saveOptions.disableAnimation || saveOptions.disableAnimation === false ? saveOptions.disableAnimation : this.disableAnimation;
-
-        // Start scrolling at y=0
-        return this._getInstanceData()
-            .then(()=> this._scrollAndSave(0, tag, 1));
-    }
-
-    /**
-     * Saves an image of the screen
-     *
-     * @method saveScreen
-     *
-     * @example
-     * browser.protractorImageComparison.saveScreen('imageA');
-     *
-     * @param {string} tag The tag that is used
-     * @param {object} options (non-default) options
-     * @param {boolean} options.disableAnimation enable or disable CSS animation
-     * @returns {Promise} The image has been saved when the promise is resolved
-     * @public
-     */
-    saveScreen(tag, options) {
-        let saveOptions = options || [];
-
-        this.disableAnimation = saveOptions.disableAnimation || saveOptions.disableAnimation === false ? saveOptions.disableAnimation : this.disableAnimation;
-
-        return this._getInstanceData()
-            .then(() => this._saveScreenshot(this.actualFolder, tag));
-    }
-
-    /**
      * Save a cropped screenshot
      * @param {string} bufferedScreenshot a new Buffer screenshot
      * @param {string} folder path of the folder where the image needs to be saved
@@ -847,34 +644,248 @@ class protractorImageComparison {
     }
 
     /**
-     * Compose a full page screenshot and save it
+     * Runs the comparison against an element
+     *
+     * @method checkElement
+     *
+     * @example
+     * // default usage
+     * browser.protractorImageComparison.checkElement(element(By.id('elementId')), 'imageA');
+     * // blockout example
+     * browser.protractorImageComparison.checkElement(element(By.id('elementId')), 'imageA', {blockOut: [{x: 10, y: 132, width: 100, height: 50}]});
+     * // Add 15 px to top, right, bottom and left when the cut is calculated (it will automatically use the DPR)
+     * browser.protractorImageComparison.saveElement(element(By.id('elementId')), 'imageA', {resizeDimensions: 15});
+     * // Disable css animation on all elements
+     * browser.protractorImageComparison.saveElement(element(By.id('elementId')), 'imageA', {disableCSSAnimation: true});
+     *
+     * @param {Promise} element The ElementFinder that is used to get the position
      * @param {string} tag The tag that is used
-     * @param {number} parts The amount of parts that need to be processed
-     * @param {number} part The current part of the screenshot that is being processed
-     * @param {string} image The current image output that needs to be saved
-     * @returns {Promise}
-     * @private
+     * @param {object} options non-default options
+     * @param {object} options.blockOut blockout with x, y, width and height values
+     * @param {int} options.resizeDimensions the value to increase the size of the element that needs to be saved
+     * @param {boolean} options.disableCSSAnimation enable or disable CSS animation
+     * @return {Promise} When the promise is resolved it will return the percentage of the difference
+     * @public
      */
-    _composeAndSaveFullScreenshot(tag, parts, part, image) {
-        const imageHeight = this.fullPageHeight * this.devicePixelRatio;
-        const imageWidth = this.fullPageWidth * this.devicePixelRatio;
-        const height = this.innerHeight * (part - 1) * this.devicePixelRatio;
+    checkElement(element, tag, options) {
+        const checkOptions = options || [],
+            ignoreRectangles = 'blockOut' in checkOptions ? options.blockOut : [];
 
-        let imageOutput = image || null;
+        return this.saveElement(element, tag, checkOptions)
+            .then(() => this._checkImageExists(tag))
+            .then(() => {
+                const imageComparisonPaths = this._determineImageComparisonPaths(tag);
 
-        if (part === 1) {
-            imageOutput = PNGJSImage.createImage(imageWidth, imageHeight);
-        } else if (part > parts) {
-            return new Promise(resolve => {
-                imageOutput.writeImageSync(path.join(this.actualFolder, this._formatFileName(this.formatString, tag)));
-                resolve();
+                return new Promise(resolve => {
+                    ResembleJS(imageComparisonPaths.baselineImage)
+                        .compareTo(imageComparisonPaths.actualImage)
+                        .ignoreRectangles(ignoreRectangles)
+                        .onComplete(data => {
+                            if (Number(data.misMatchPercentage) > 0) {
+                                data.getDiffImage().pack().pipe(fs.createWriteStream(imageComparisonPaths.imageDiffPath));
+                            }
+                            resolve(Number(data.misMatchPercentage));
+                        });
+                });
             });
-        }
+    }
 
-        const stitchImage = PNGJSImage.readImageSync(path.join(this.tempFullScreenFolder, this._formatFileName(this.formatString, `${tag}-${part}`)));
-        stitchImage.getImage().bitblt(imageOutput.getImage(), 0, 0, stitchImage.getWidth(), stitchImage.getHeight(), 0, height);
+    /**
+     * Runs the comparison against the fullpage screenshot
+     *
+     * @method checkFullPage
+     *
+     * @example
+     * // default
+     * browser.protractorImageComparison.checkFullPage('imageA');
+     * // Blockout the statusbar
+     * browser.protractorImageComparison.checkFullPage('imageA', {blockOutStatusBar: true});
+     * // Blockout a given region
+     * browser.protractorImageComparison.checkFullPage('imageA', {blockOut: [{x: 10, y: 132, width: 100, height: 50}]});
+     * // Blockout a given region
+     * browser.protractorImageComparison.checkFullPage('imageA', {blockOut: [{x: 10, y: 132, width: 100, height: 50}]});
+     *
+     * @param {string} tag The tag that is used
+     * @param {object} options (non-default) options
+     * @param {boolean} options.blockOutStatusBar blockout the statusbar yes or no
+     * @param {object} options.blockOut blockout with x, y, width and height values, it will override the global
+     * @param {boolean} options.disableCSSAnimation enable or disable CSS animation
+     * @return {Promise} When the promise is resolved it will return the percentage of the difference
+     * @public
+     */
+    checkFullPageScreenshot(tag, options) {
+        const checkOptions = options || [];
 
-        return this._composeAndSaveFullScreenshot(tag, parts, part + 1, imageOutput)
+        return this.saveFullPageScreenshot(tag, checkOptions)
+            .then(() => this._checkImageExists(tag))
+            .then(() => {
+                const imageComparisonPaths = this._determineImageComparisonPaths(tag);
+
+                return new Promise(resolve => {
+                    ResembleJS(imageComparisonPaths.baselineImage)
+                        .compareTo(imageComparisonPaths.actualImage)
+                        .ignoreRectangles(ignoreRectangles)
+                        .onComplete(data => {
+                            if (Number(data.misMatchPercentage) > 0) {
+                                data.getDiffImage().pack().pipe(fs.createWriteStream(imageComparisonPaths.imageDiffPath));
+                            }
+                            resolve(Number(data.misMatchPercentage));
+                        });
+                });
+            })
+    }
+
+    /**
+     * Runs the comparison against the screen
+     *
+     * @method checkScreen
+     *
+     * @example
+     * // default
+     * browser.protractorImageComparison.checkScreen('imageA');
+     * // Blockout the statusbar
+     * browser.protractorImageComparison.checkScreen('imageA', {blockOutStatusBar: true});
+     * // Disable css animation on all elements
+     * browser.protractorImageComparison.checkScreen('imageA', {disableCSSAnimation: true});
+     *
+     * @param {string} tag The tag that is used
+     * @param {object} options (non-default) options
+     * @param {boolean} options.blockOutStatusBar blockout the statusbar yes or no
+     * @param {object} options.blockOut blockout with x, y, width and height values, it will override the global
+     * @param {boolean} options.disableCSSAnimation enable or disable CSS animation
+     * @return {Promise} When the promise is resolved it will return the percentage of the difference
+     * @public
+     */
+    checkScreen(tag, options) {
+        const checkOptions = options || [],
+            blockOutStatusBar = checkOptions.blockOutStatusBar || checkOptions.blockOutStatusBar === false ? checkOptions.blockOutStatusBar : this.blockOutStatusBar;
+
+        let ignoreRectangles = 'blockOut' in checkOptions ? options.blockOut : [];
+
+        return this.saveScreen(tag, checkOptions)
+            .then(() => this._checkImageExists(tag))
+            .then(() => {
+                const imageComparisonPaths = this._determineImageComparisonPaths(tag);
+
+                if (this._isMobile() && blockOutStatusBar) {
+                    const statusBarHeight = this._isAndroid() ? this.androidOffsets.statusBar : this.iosOffsets.statusBar,
+                        statusBarBlockOut = this._multiplyObjectValuesAgainstDPR({
+                            x: 0,
+                            y: 0,
+                            height: statusBarHeight,
+                            width: this.width
+                        });
+                    ignoreRectangles.push(statusBarBlockOut);
+                }
+
+                return new Promise(resolve => {
+                    ResembleJS(imageComparisonPaths.baselineImage)
+                        .compareTo(imageComparisonPaths.actualImage)
+                        .ignoreRectangles(ignoreRectangles)
+                        .onComplete(data => {
+                            if (Number(data.misMatchPercentage) > 0) {
+                                data.getDiffImage().pack().pipe(fs.createWriteStream(imageComparisonPaths.imageDiffPath));
+                            }
+                            resolve(Number(data.misMatchPercentage));
+                        });
+                });
+            });
+    }
+
+    /**
+     * Saves an image of the screen element
+     *
+     * @method saveElement
+     *
+     * @example
+     * // Default
+     * browser.protractorImageComparison.saveElement(element(By.id('elementId')), 'imageA');
+     * // Add 15 px to top, right, bottom and left when the cut is calculated (it will automatically use the DPR)
+     * browser.protractorImageComparison.saveElement(element(By.id('elementId')), 'imageA', {resizeDimensions: 15});
+     * // Disable css animation on all elements
+     * browser.protractorImageComparison.saveElement(element(By.id('elementId')), 'imageA', {disableCSSAnimation: true});
+     *
+     * @param {Promise} element The ElementFinder that is used to get the position
+     * @param {string} tag The tag that is used
+     * @param {object} options (non-default) options
+     * @param {int} options.resizeDimensions the value to increase the size of the element that needs to be saved
+     * @param {boolean} options.disableCSSAnimation enable or disable CSS animation
+     * @returns {Promise} The images has been saved when the promise is resolved
+     * @public
+     */
+    saveElement(element, tag, options) {
+        let saveOptions = options || [],
+            bufferedScreenshot;
+
+        this.resizeDimensions = saveOptions.resizeDimensions ? saveOptions.resizeDimensions : this.resizeDimensions;
+        this.disableCSSAnimation = saveOptions.disableCSSAnimation || saveOptions.disableCSSAnimation === false ? saveOptions.disableCSSAnimation : this.disableCSSAnimation;
+
+        return this._getInstanceData()
+            .then(()=> browser.takeScreenshot())
+            .then(screenshot => {
+                bufferedScreenshot = new Buffer(screenshot, 'base64');
+                this.screenshotHeight = (bufferedScreenshot.readUInt32BE(20) / this.devicePixelRatio); // width = 16
+
+                return this._determineRectangles(element);
+            })
+            .then(rectangles => this._saveCroppedScreenshot(bufferedScreenshot, this.actualFolder, rectangles, tag));
+    }
+
+    /**
+     * Saves a full page image of the screen
+     *
+     * @method saveFullPageScreenshot
+     *
+     * @example
+     * // Default
+     * browser.protractorImageComparison.saveFullPageScreenshot('imageA');
+     * // Disable css animation on all elements
+     * browser.protractorImageComparison.saveFullPageScreenshot('imageA',{disableCSSAnimation: true});
+     * // Default
+     * browser.protractorImageComparison.saveFullPageScreenshot('imageA',{timeout: 5000});
+     *
+     * @param {string} tag The tag that is used
+     * @param {object} options (non-default) options
+     * @param {int} options.timeout The time that needs to be waited when scrolling to a point and save the screenshot
+     * @param {boolean} options.disableCSSAnimation enable or disable CSS animation
+     * @returns {Promise} The image has been saved when the promise is resolved
+     * @public
+     */
+    saveFullPageScreenshot(tag, options) {
+        let saveOptions = options || [];
+
+        this.fullPageScrollTimeout = saveOptions.timeout && parseInt(saveOptions.timeout, 10) > this.fullPageScrollTimeout ? saveOptions.timeout : this.fullPageScrollTimeout;
+        this.disableCSSAnimation = saveOptions.disableCSSAnimation || saveOptions.disableCSSAnimation === false ? saveOptions.disableCSSAnimation : this.disableCSSAnimation;
+
+        // Start scrolling at y=0
+        return this._getInstanceData()
+            .then(()=> this._scrollAndSave(0, tag, 1));
+    }
+
+    /**
+     * Saves an image of the screen
+     *
+     * @method saveScreen
+     *
+     * @example
+     * // Default
+     * browser.protractorImageComparison.saveScreen('imageA');
+     * // Disable css animation on all elements
+     * browser.protractorImageComparison.saveScreen('imageA',{disableCSSAnimation: true});
+     *
+     * @param {string} tag The tag that is used
+     * @param {object} options (non-default) options
+     * @param {boolean} options.disableCSSAnimation enable or disable CSS animation
+     * @returns {Promise} The image has been saved when the promise is resolved
+     * @public
+     */
+    saveScreen(tag, options) {
+        let saveOptions = options || [];
+
+        this.disableCSSAnimation = saveOptions.disableCSSAnimation || saveOptions.disableCSSAnimation === false ? saveOptions.disableCSSAnimation : this.disableCSSAnimation;
+
+        return this._getInstanceData()
+            .then(() => this._saveScreenshot(this.actualFolder, tag));
     }
 }
 
