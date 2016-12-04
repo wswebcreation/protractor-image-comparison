@@ -19,6 +19,7 @@ const assert = require('assert'),
  * @param {string} options.screenshotPath Path to the folder where the screenshots are saved
  * @param {boolean} debug Add some extra logging and always save the image difference
  * @param {string} options.formatImageOptions Custom variables for Image Name
+ * @param {boolean} disableAnimation Disable all animations on a page
  * @param {boolean} options.nativeWebScreenshot If a native screenshot of a device (complete screenshot) needs to be taken
  * @param {boolean} options.blockOutStatusBar  If the statusbar on mobile / tablet needs to blocked out by default
  * @param {object} options.androidOffsets Object that will hold custom values for the statusBar, addressBar and toolBar
@@ -44,6 +45,7 @@ class protractorImageComparison {
         this.baseFolder = path.normalize(options.screenshotPath);
         this.debug = options.debug || false;
         this.formatString = options.formatImageName || '{tag}-{browserName}-{width}x{height}-dpr-{dpr}';
+        this.disableAnimation = options.disableAnimation || false;
 
         this.nativeWebScreenshot = options.nativeWebScreenshot ? true : false;
         this.blockOutStatusBar = options.blockOutStatusBar ? true : false;
@@ -67,7 +69,6 @@ class protractorImageComparison {
         this.actualFolder = path.join(this.baseFolder, 'actual');
 
         this.diffFolder = path.join(this.baseFolder, 'diff');
-
 
         this.devicePixelRatio = 1;
 
@@ -327,11 +328,35 @@ class protractorImageComparison {
                     this.nativeWebScreenshot = browserConfig.capabilities.nativeWebScreenshot ? true : false;
                 }
 
-                // Retrieving height / width is different for desktop and mobile
-                const windowHeight = this.platformName === '' ? 'window.outerHeight' : 'window.screen.height',
-                    windowWidth = this.platformName === '' ? 'window.outerWidth' : 'window.screen.width';
+                return browser.driver.executeScript(setCSSAndRetrieveBrowserData, this.platformName, this.disableAnimation);
 
-                return browser.driver.executeScript(`return {pixelRatio: window.devicePixelRatio, height: ${windowHeight}, innerHeight: window.innerHeight, clientWidth: document.body.clientWidth, width: ${windowWidth}, fullPageHeight: document.body.scrollHeight, fullPageWidth: document.body.scrollWidth};`)
+                // Platform name is used for determining height / width which is different for desktop and mobile
+                function setCSSAndRetrieveBrowserData(platformName, disableAnimation) {
+                    var animation = '* {' +
+                            '-webkit-transition-duration: 0s !important;' +
+                            'transition-duration: 0s !important;' +
+                            '-webkit-animation-duration: 0s !important;' +
+                            'animation-duration: 0s !important;' +
+                            '}',
+                        scrollBar = '*::-webkit-scrollbar { -webkit-appearance: none;}',
+                        css = disableAnimation ? scrollBar + animation : scrollBar,
+                        head = document.head || document.getElementsByTagName('head')[0],
+                        style = document.createElement('style');
+
+                    style.type = 'text/css';
+                    style.appendChild(document.createTextNode(css));
+                    head.appendChild(style);
+
+                    return {
+                        clientWidth: document.body.clientWidth,
+                        fullPageHeight: document.body.scrollHeight,
+                        fullPageWidth: document.body.scrollWidth,
+                        height: platformName === '' ? window.outerHeight : window.screen.height,
+                        innerHeight: window.innerHeight,
+                        pixelRatio: window.devicePixelRatio,
+                        width: platformName === '' ? window.outerWidth : window.screen.width
+                    };
+                }
             })
             .then(browserData => {
                 // Firefox creates screenshots in a different way. Although it could be taken on a Retina screen,
@@ -478,6 +503,7 @@ class protractorImageComparison {
      * @param {object} options non-default options
      * @param {object} options.blockOut blockout with x, y, width and height values
      * @param {int} options.resizeDimensions the value to increase the size of the element that needs to be saved
+     * @param {boolean} options.disableAnimation enable or disable CSS animation
      * @return {Promise} When the promise is resolved it will return the percentage of the difference
      * @public
      */
@@ -485,8 +511,7 @@ class protractorImageComparison {
         const checkOptions = options || [],
             ignoreRectangles = 'blockOut' in checkOptions ? options.blockOut : [];
 
-        return this._getInstanceData()
-            .then(() => this.saveElement(element, tag, options))
+        return this.saveElement(element, tag, checkOptions)
             .then(() => this._checkImageExists(tag))
             .then(() => {
                 const imageComparisonPaths = this._determineImageComparisonPaths(tag);
@@ -522,6 +547,7 @@ class protractorImageComparison {
      * @param {object} options (non-default) options
      * @param {boolean} options.blockOutStatusBar blockout the statusbar yes or no
      * @param {object} options.blockOut blockout with x, y, width and height values, it will override the global
+     * @param {boolean} options.disableAnimation enable or disable CSS animation
      * @return {Promise} When the promise is resolved it will return the percentage of the difference
      * @public
      */
@@ -531,8 +557,7 @@ class protractorImageComparison {
 
         let ignoreRectangles = 'blockOut' in checkOptions ? options.blockOut : [];
 
-        return this._getInstanceData()
-            .then(() => this.saveScreen(tag))
+        return this.saveScreen(tag, checkOptions)
             .then(() => this._checkImageExists(tag))
             .then(() => {
                 const imageComparisonPaths = this._determineImageComparisonPaths(tag);
@@ -563,6 +588,49 @@ class protractorImageComparison {
     }
 
     /**
+     * Runs the comparison against the fullpage screenshot
+     *
+     * @method checkFullPage
+     *
+     * @example
+     * // default
+     * browser.protractorImageComparison.checkFullPage('imageA');
+     * // Blockout the statusbar
+     * browser.protractorImageComparison.checkFullPage('imageA', {blockOutStatusBar: true});
+     * // Blockout a given region
+     * browser.protractorImageComparison.checkFullPage('imageA', {blockOut: [{x: 10, y: 132, width: 100, height: 50}]});
+     *
+     * @param {string} tag The tag that is used
+     * @param {object} options (non-default) options
+     * @param {boolean} options.blockOutStatusBar blockout the statusbar yes or no
+     * @param {object} options.blockOut blockout with x, y, width and height values, it will override the global
+     * @param {boolean} options.disableAnimation enable or disable CSS animation
+     * @return {Promise} When the promise is resolved it will return the percentage of the difference
+     * @public
+     */
+    checkFullPage(tag, options) {
+        const checkOptions = options || [];
+
+        return this.saveFullPageScreenshot(tag, checkOptions)
+            .then(() => this._checkImageExists(tag))
+            .then(() => {
+                const imageComparisonPaths = this._determineImageComparisonPaths(tag);
+
+                return new Promise(resolve => {
+                    ResembleJS(imageComparisonPaths.baselineImage)
+                        .compareTo(imageComparisonPaths.actualImage)
+                        .ignoreRectangles(ignoreRectangles)
+                        .onComplete(data => {
+                            if (Number(data.misMatchPercentage) > 0) {
+                                data.getDiffImage().pack().pipe(fs.createWriteStream(imageComparisonPaths.imageDiffPath));
+                            }
+                            resolve(Number(data.misMatchPercentage));
+                        });
+                });
+            })
+    }
+
+    /**
      * Saves an image of the screen element
      *
      * @method saveElement
@@ -577,15 +645,16 @@ class protractorImageComparison {
      * @param {string} tag The tag that is used
      * @param {object} options (non-default) options
      * @param {int} options.resizeDimensions the value to increase the size of the element that needs to be saved
+     * @param {boolean} options.disableAnimation enable or disable CSS animation
      * @returns {Promise} The images has been saved when the promise is resolved
      * @public
      */
     saveElement(element, tag, options) {
         let saveOptions = options || [],
-            rect,
             bufferedScreenshot;
 
         this.resizeDimensions = saveOptions.resizeDimensions ? saveOptions.resizeDimensions : this.resizeDimensions;
+        this.disableAnimation = saveOptions.disableAnimation || saveOptions.disableAnimation === false ? saveOptions.disableAnimation : this.disableAnimation;
 
         return this._getInstanceData()
             .then(()=> browser.takeScreenshot())
@@ -598,12 +667,33 @@ class protractorImageComparison {
             .then(rectangles => this._saveCroppedScreenshot(bufferedScreenshot, this.actualFolder, rectangles, tag));
     }
 
-    _saveCroppedScreenshot(bufferedScreenshot, folder, rectangles, tag) {
-        return new PNGImage({
-            imagePath: bufferedScreenshot,
-            imageOutputPath: path.join(folder, this._formatFileName(this.formatString, tag)),
-            cropImage: rectangles
-        }).runWithPromise();
+    /**
+     * Saves a full page image of the screen
+     *
+     * @method saveFullPageScreenshot
+     *
+     * @example
+     * // Default
+     * browser.protractorImageComparison.saveFullPageScreenshot('imageA');
+     * // Default
+     * browser.protractorImageComparison.saveFullPageScreenshot('imageA',{timeout: 5000});
+     *
+     * @param {string} tag The tag that is used
+     * @param {object} options (non-default) options
+     * @param {int} options.timeout The time that needs to be waited when scrolling to a point and save the screenshot
+     * @param {boolean} options.disableAnimation enable or disable CSS animation
+     * @returns {Promise} The image has been saved when the promise is resolved
+     * @public
+     */
+    saveFullPageScreenshot(tag, options) {
+        let saveOptions = options || [];
+
+        this.fullPageScrollTimeout = saveOptions.timeout && parseInt(saveOptions.timeout, 10) > this.fullPageScrollTimeout ? saveOptions.timeout : this.fullPageScrollTimeout;
+        this.disableAnimation = saveOptions.disableAnimation || saveOptions.disableAnimation === false ? saveOptions.disableAnimation : this.disableAnimation;
+
+        // Start scrolling at y=0
+        return this._getInstanceData()
+            .then(()=> this._scrollAndSave(0, tag, 1));
     }
 
     /**
@@ -615,12 +705,35 @@ class protractorImageComparison {
      * browser.protractorImageComparison.saveScreen('imageA');
      *
      * @param {string} tag The tag that is used
+     * @param {object} options (non-default) options
+     * @param {boolean} options.disableAnimation enable or disable CSS animation
      * @returns {Promise} The image has been saved when the promise is resolved
      * @public
      */
-    saveScreen(tag) {
+    saveScreen(tag, options) {
+        let saveOptions = options || [];
+
+        this.disableAnimation = saveOptions.disableAnimation || saveOptions.disableAnimation === false ? saveOptions.disableAnimation : this.disableAnimation;
+
         return this._getInstanceData()
             .then(() => this._saveScreenshot(this.actualFolder, tag));
+    }
+
+    /**
+     * Save a cropped screenshot
+     * @param {string} bufferedScreenshot a new Buffer screenshot
+     * @param {string} folder path of the folder where the image needs to be saved
+     * @param {object} rectangles x, y, height and width data to determine the crop
+     * @param {string} tag The tag that is used
+     * @returns {Promise} The image has been saved when the promise is resoled
+     * @private
+     */
+    _saveCroppedScreenshot(bufferedScreenshot, folder, rectangles, tag) {
+        return new PNGImage({
+            imagePath: bufferedScreenshot,
+            imageOutputPath: path.join(folder, this._formatFileName(this.formatString, tag)),
+            cropImage: rectangles
+        }).runWithPromise();
     }
 
     /**
@@ -638,33 +751,6 @@ class protractorImageComparison {
                     imageOutputPath: path.join(folder, this._formatFileName(this.formatString, tag))
                 }).runWithPromise();
             });
-    }
-
-    /**
-     * Saves a full page image of the screen
-     *
-     * @method saveFullPageScreenshot
-     *
-     * @example
-     * // Default
-     * browser.protractorImageComparison.saveFullPageScreenshot('imageA');
-     * // Default
-     * browser.protractorImageComparison.saveFullPageScreenshot('imageA',{timeout: 5000});
-     *
-     * @param {string} tag The tag that is used
-     * @param {object} options (non-default) options
-     * @param {int} options.timeout The time that needs to be waited when scrolling to a point and save the screenshot
-     * @returns {Promise} The image has been saved when the promise is resolved
-     * @public
-     */
-    saveFullPageScreenshot(tag, options) {
-        let saveOptions = options || [];
-
-        this.fullPageScrollTimeout = saveOptions.timeout && parseInt(saveOptions.timeout, 10) > this.fullPageScrollTimeout ? saveOptions.timeout : this.fullPageScrollTimeout;
-
-        // Start scrolling at y=0
-        return this._getInstanceData()
-            .then(()=> this._scrollAndSave(0, tag, 1));
     }
 
     /**
