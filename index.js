@@ -6,7 +6,7 @@ const assert = require('assert'),
     mkdirp = require('mkdirp'),
     path = require('path'),
     PNGImage = require('png-image'),
-    ResembleJS = require('./lib/resemble');
+    resembleJS = require('./lib/resemble');
 
 /**
  * image-diff protractor plugin class
@@ -19,6 +19,9 @@ const assert = require('assert'),
  * @param {string} options.formatImageOptions Custom variables for Image Name
  * @param {boolean} options.nativeWebScreenshot If a native screenshot of a device (complete screenshot) needs to be taken
  * @param {boolean} options.blockOutStatusBar  If the statusbar on mobile / tablet needs to blocked out by default
+ * @param {object} options.comparisonOptions comparison options
+ * @param {boolean} options.comparisonOptions.ignoreAntialiasing compare images an discard anti aliasing
+ * @param {boolean} options.comparisonOptions.ignoreColors Even though the images are in colour, the comparison wil compare 2 black/white images
  * @param {object} options.androidOffsets Object that will hold custom values for the statusBar, addressBar and toolBar
  * @param {object} options.iosOffsets Object that will hold the custom values for the statusBar and addressBar
  *
@@ -42,6 +45,16 @@ class protractorImageComparison {
 
         this.nativeWebScreenshot = options.nativeWebScreenshot ? true : false;
         this.blockOutStatusBar = options.blockOutStatusBar ? true : false;
+
+        this.comparisonOptions = options.comparisonOptions || {};
+
+        // Set comparison defaults
+        if(!('ignoreAntialiasing' in this.comparisonOptions)){
+            this.comparisonOptions.ignoreAntialiasing = false;
+        }
+        if(!('ignoreColors' in this.comparisonOptions)){
+            this.comparisonOptions.ignoreColors = false;
+        }
 
         // OS offsets
         let androidOffsets = options.androidOffsets && typeof options.androidOffsets === 'object' ? options.androidOffsets : {},
@@ -454,19 +467,35 @@ class protractorImageComparison {
      * // blockout example
      * browser.protractorImageComparison.checkElement(element(By.id('elementId')), 'imageA', {blockOut: [{x: 10, y: 132, width: 100, height: 50}]});
      * // Add 15 px to top, right, bottom and left when the cut is calculated (it will automatically use the DPR)
-     * browser.protractorImageComparison.saveElement(element(By.id('elementId')), 'imageA', {resizeDimensions: 15});
+     * browser.protractorImageComparison.checkElement(element(By.id('elementId')), 'imageA', {resizeDimensions: 15});
+     * // Ignore antialiasing
+     * browser.protractorImageComparison.checkElement(element(By.id('elementId')), 'imageA', {comparisonOptions: {ignoreAntialiasing: true}});
+     * // Ignore colors
+     * browser.protractorImageComparison.checkElement(element(By.id('elementId')), 'imageA', {comparisonOptions: {ignoreColors: true}});
      *
      * @param {Promise} element The ElementFinder that is used to get the position
      * @param {string} tag The tag that is used
      * @param {object} options non-default options
      * @param {object} options.blockOut blockout with x, y, width and height values
      * @param {int} options.resizeDimensions the value to increase the size of the element that needs to be saved
+     * @param {object} options.comparisonOptions comparison options
+     * @param {boolean} options.comparisonOptions.ignoreAntialiasing compare images an discard anti aliasing
+     * @param {boolean} options.comparisonOptions.ignoreColors Even though the images are in colour, the comparison wil compare 2 black/white images
      * @return {Promise} When the promise is resolved it will return the percentage of the difference
      * @public
      */
     checkElement(element, tag, options) {
-        const checkOptions = options || [],
-            ignoreRectangles = 'blockOut' in checkOptions ? options.blockOut : [];
+        const checkOptions = options || {},
+            ignoreRectangles = 'blockOut' in checkOptions ? checkOptions.blockOut : [];
+        let resembleOptions = checkOptions.comparisonOptions || this.comparisonOptions;
+        if(!('ignoreAntialiasing' in resembleOptions)){
+            resembleOptions.ignoreAntialiasing = this.comparisonOptions.ignoreAntialiasing;
+        }
+        if(!('ignoreColors' in resembleOptions)){
+            resembleOptions.ignoreColors = this.comparisonOptions.ignoreColors;
+        }
+
+        resembleOptions.ignoreRectangles = ignoreRectangles;
 
         return this._getInstanceData()
             .then(() => this.saveElement(element, tag, options))
@@ -475,9 +504,7 @@ class protractorImageComparison {
                 const imageComparisonPaths = this._determineImageComparisonPaths(tag);
 
                 return new Promise(resolve => {
-                    ResembleJS(imageComparisonPaths.baselineImage)
-                        .compareTo(imageComparisonPaths.actualImage)
-                        .ignoreRectangles(ignoreRectangles)
+                    resembleJS(imageComparisonPaths.baselineImage, imageComparisonPaths.actualImage, resembleOptions)
                         .onComplete(data => {
                             if (Number(data.misMatchPercentage) > 0) {
                                 data.getDiffImage().pack().pipe(fs.createWriteStream(imageComparisonPaths.imageDiffPath));
@@ -500,19 +527,35 @@ class protractorImageComparison {
      * browser.protractorImageComparison.checkScreen('imageA', {blockOutStatusBar: true});
      * // Blockout a given region
      * browser.protractorImageComparison.checkScreen('imageA', {blockOut: [{x: 10, y: 132, width: 100, height: 50}]});
+     * // Ignore antialiasing
+     * browser.protractorImageComparison.checkScreen('imageA', {comparisonOptions: {ignoreAntialiasing: true}});
+     * // Ignore colors
+     * browser.protractorImageComparison.checkScreen('imageA', {comparisonOptions: {ignoreColors: true}});
      *
      * @param {string} tag The tag that is used
      * @param {object} options (non-default) options
      * @param {boolean} options.blockOutStatusBar blockout the statusbar yes or no
      * @param {object} options.blockOut blockout with x, y, width and height values, it will override the global
+     * @param {object} options.comparisonOptions comparison options
+     * @param {boolean} options.comparisonOptions.ignoreAntialiasing compare images an discard anti aliasing
+     * @param {boolean} options.comparisonOptions.ignoreColors Even though the images are in colour, the comparison wil compare 2 black/white images
      * @return {Promise} When the promise is resolved it will return the percentage of the difference
      * @public
      */
     checkScreen(tag, options) {
-        const checkOptions = options || [],
+        const checkOptions = options || {},
             blockOutStatusBar = checkOptions.blockOutStatusBar || checkOptions.blockOutStatusBar === false ? checkOptions.blockOutStatusBar : this.blockOutStatusBar;
 
-        let ignoreRectangles = 'blockOut' in checkOptions ? options.blockOut : [];
+        let resembleOptions = checkOptions.comparisonOptions || this.comparisonOptions;
+        let ignoreRectangles = 'blockOut' in checkOptions ? checkOptions.blockOut : [];
+
+
+        if(!('ignoreAntialiasing' in resembleOptions)){
+            resembleOptions.ignoreAntialiasing = this.comparisonOptions.ignoreAntialiasing;
+        }
+        if(!('ignoreColors' in resembleOptions)){
+            resembleOptions.ignoreColors = this.comparisonOptions.ignoreColors;
+        }
 
         return this._getInstanceData()
             .then(() => this.saveScreen(tag))
@@ -531,10 +574,10 @@ class protractorImageComparison {
                     ignoreRectangles.push(statusBarBlockOut);
                 }
 
+                resembleOptions.ignoreRectangles = ignoreRectangles;
+
                 return new Promise(resolve => {
-                    ResembleJS(imageComparisonPaths.baselineImage)
-                        .compareTo(imageComparisonPaths.actualImage)
-                        .ignoreRectangles(ignoreRectangles)
+                    resembleJS(imageComparisonPaths.baselineImage, imageComparisonPaths.actualImage, resembleOptions)
                         .onComplete(data => {
                             if (Number(data.misMatchPercentage) > 0) {
                                 data.getDiffImage().pack().pipe(fs.createWriteStream(imageComparisonPaths.imageDiffPath));

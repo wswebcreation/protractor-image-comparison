@@ -29,6 +29,7 @@ Code details and example usage can be found [here](./index.md).
 * `nativeWebScreenshot` *protractor-image-comparison* needs to calculate element position based on a native device screenshot(default: false), see the [Appium docs](./appium.md) for more info.
 * `blockOutStatusBar` *protractor-image-comparison* can blockout the statusbar of a device by default when comparion screens. This means that for example the time in the statusbar won't cause a failure (default:false)
 * `androidOffsets` An object that will hold the pixels of the `statusBar`, `addressBar` and or the `toolBar`. The values are used to calculate the position of an element on a screen (for `saveElement` or `checkElement`). They are defaulted, but can be overridden. These values can be different per Android version. Look up the docs for developing for Android to see the values. If not provided the defaults will be used.
+* `comparisonOptions` An object that can hold `ignoreAntialiasing` (default: false) or `ignoreColors` (default: false). *Remark: `ignoreColors: true` will automatically defaulted to `false` if `ignoreAntialiasing: true`*. The `comparisonOptions` can also be set per testcase, see [here](./index.md) 
 * `iosOffsets` An object that will hold the pixels of the `statusBar` and or the `addressBar`. The values are used to calculate the position of an element on a screen (for `saveElement` or `checkElement`). They are defaulted, but can be overridden. These values can be different per iOS version. Look up the docs for developing for iOS to see the values. If not provided the defaults will be used.
 
 **For example:**
@@ -47,6 +48,9 @@ browser.protractorImageComparison = new protractorImageComparison({
    iosOffsets: {
 		statusBar: 40,
 		addressBar: 100
+	},
+	comparisonOptions: {
+	    ignoreAntialiasing: true
 	}
 });
 `````
@@ -68,3 +72,6 @@ expect(browser.imageComparson.saveElement(element(by.css('#id')), 'tagName', {re
 // or
 expect(browser.imageComparson.checkElement(element(by.css('#id')), 'tagName', {resizeDimensions: 15})).toEqual(0);
 `````
+
+### More options
+For more method options and example usage see [here](./index.md).

@@ -17,6 +17,8 @@ You can:
 - increase the element dimenisions screenshots (all)
 - provide custom iOS and Android offsets for status-/address-/toolbar (mobile only)
 - automatically exclude a statusbar during screencomparison (mobile only)
+- **NEW** ignore anti-aliasing differences
+- **NEW** compare images by ignoring their colors (do a grayscale comparison)
 
 Comparison is based on [ResembleJS](https://github.com/Huddle/Resemble.js).
 
