@@ -12,7 +12,7 @@
 <dt><a href="#checkElement">checkElement(element, tag, options)</a> ⇒ <code>Promise</code></dt>
 <dd><p>Runs the comparison against an element</p>
 </dd>
-<dt><a href="#checkFullPage">checkFullPage(tag, options)</a> ⇒ <code>Promise</code></dt>
+<dt><a href="#checkFullPageScreenshot">checkFullPageScreenshot(tag, options)</a> ⇒ <code>Promise</code></dt>
 <dd><p>Runs the comparison against the fullpage screenshot</p>
 </dd>
 <dt><a href="#checkScreen">checkScreen(tag, options)</a> ⇒ <code>Promise</code></dt>
@@ -58,10 +58,10 @@ protractorImageComparison
 | options | <code>object</code> |  |
 | options.baselineFolder | <code>string</code> | Path to the baseline folder |
 | options.screenshotPath | <code>string</code> | Path to the folder where the screenshots are saved |
-| options.debug | <code>boolean</code> | Add some extra logging and always save the image difference |
-| options.formatImageOptions | <code>string</code> | Custom variables for Image Name |
-| options.disableCSSAnimation | <code>boolean</code> | Disable all animations on a page |
-| options.nativeWebScreenshot | <code>boolean</code> | If a native screenshot of a device (complete screenshot) needs to be taken |
+| options.debug | <code>boolean</code> | Add some extra logging and always save the image difference (default:false) |
+| options.formatImageOptions | <code>string</code> | Custom variables for Image Name (default:{tag}-{browserName}-{width}x{height}-dpr-{dpr}) |
+| options.disableCSSAnimation | <code>boolean</code> | Disable all css animations on a page (default:false) |
+| options.nativeWebScreenshot | <code>boolean</code> | If a native screenshot of a device (complete screenshot) needs to be taken (default:false) |
 | options.blockOutStatusBar | <code>boolean</code> | If the statusbar on mobile / tablet needs to blocked out by default |
 | options.androidOffsets | <code>object</code> | Object that will hold custom values for the statusBar, addressBar and toolBar |
 | options.iosOffsets | <code>object</code> | Object that will hold the custom values for the statusBar and addressBar |
@@ -95,9 +95,9 @@ browser.protractorImageComparison.saveElement(element(By.id('elementId')), 'imag
 // Disable css animation on all elements
 browser.protractorImageComparison.saveElement(element(By.id('elementId')), 'imageA', {disableCSSAnimation: true});
 ```
-<a name="checkFullPage"></a>
+<a name="checkFullPageScreenshot"></a>
 
-## checkFullPage(tag, options) ⇒ <code>Promise</code>
+## checkFullPageScreenshot(tag, options) ⇒ <code>Promise</code>
 Runs the comparison against the fullpage screenshot
 
 **Kind**: global function  
@@ -111,17 +111,20 @@ Runs the comparison against the fullpage screenshot
 | options.blockOutStatusBar | <code>boolean</code> | blockout the statusbar yes or no |
 | options.blockOut | <code>object</code> | blockout with x, y, width and height values, it will override the global |
 | options.disableCSSAnimation | <code>boolean</code> | enable or disable CSS animation |
+| options.fullPageScrollTimeout | <code>int</code> | The time that needs to be waited when scrolling to a point and save the screenshot |
 
 **Example**  
 ```js
 // default
-browser.protractorImageComparison.checkFullPage('imageA');
+browser.protractorImageComparison.checkFullPageScreenshot('imageA');
 // Blockout the statusbar
-browser.protractorImageComparison.checkFullPage('imageA', {blockOutStatusBar: true});
+browser.protractorImageComparison.checkFullPageScreenshot('imageA', {blockOutStatusBar: true});
 // Blockout a given region
-browser.protractorImageComparison.checkFullPage('imageA', {blockOut: [{x: 10, y: 132, width: 100, height: 50}]});
-// Blockout a given region
-browser.protractorImageComparison.checkFullPage('imageA', {blockOut: [{x: 10, y: 132, width: 100, height: 50}]});
+browser.protractorImageComparison.checkFullPageScreenshot('imageA', {blockOut: [{x: 10, y: 132, width: 100, height: 50}]});
+// Disable css animation on all elements
+browser.protractorImageComparison.checkFullPageScreenshot('imageA', {disableCSSAnimation: true});
+// Add timeout between scrolling and taking a screenshot
+browser.protractorImageComparison.checkFullPageScreenshot('imageA',{fullPageScrollTimeout: 5000});
 ```
 <a name="checkScreen"></a>
 
@@ -188,7 +191,7 @@ Saves a full page image of the screen
 | --- | --- | --- |
 | tag | <code>string</code> | The tag that is used |
 | options | <code>object</code> | (non-default) options |
-| options.timeout | <code>int</code> | The time that needs to be waited when scrolling to a point and save the screenshot |
+| options.fullPageScrollTimeout | <code>int</code> | The time that needs to be waited when scrolling to a point and save the screenshot |
 | options.disableCSSAnimation | <code>boolean</code> | enable or disable CSS animation |
 
 **Example**  
@@ -197,8 +200,8 @@ Saves a full page image of the screen
 browser.protractorImageComparison.saveFullPageScreenshot('imageA');
 // Disable css animation on all elements
 browser.protractorImageComparison.saveFullPageScreenshot('imageA',{disableCSSAnimation: true});
-// Default
-browser.protractorImageComparison.saveFullPageScreenshot('imageA',{timeout: 5000});
+// Add timeout between scrolling and taking a screenshot
+browser.protractorImageComparison.saveFullPageScreenshot('imageA',{fullPageScrollTimeout: 5000});
 ```
 <a name="saveScreen"></a>
 
