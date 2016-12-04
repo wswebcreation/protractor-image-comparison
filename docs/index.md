@@ -86,7 +86,11 @@ browser.protractorImageComparison.checkElement(element(By.id('elementId')), 'ima
 // blockout example
 browser.protractorImageComparison.checkElement(element(By.id('elementId')), 'imageA', {blockOut: [{x: 10, y: 132, width: 100, height: 50}]});
 // Add 15 px to top, right, bottom and left when the cut is calculated (it will automatically use the DPR)
-browser.protractorImageComparison.saveElement(element(By.id('elementId')), 'imageA', {resizeDimensions: 15});
+browser.protractorImageComparison.checkElement(element(By.id('elementId')), 'imageA', {resizeDimensions: 15});
+// Ignore antialiasing
+browser.protractorImageComparison.checkElement(element(By.id('elementId')), 'imageA', {comparisonOptions: {ignoreAntialiasing: true}});
+// Ignore colors
+browser.protractorImageComparison.checkElement(element(By.id('elementId')), 'imageA', {comparisonOptions: {ignoreColors: true}});
 ```
 <a name="checkScreen"></a>
 
@@ -115,6 +119,10 @@ browser.protractorImageComparison.checkScreen('imageA');
 browser.protractorImageComparison.checkScreen('imageA', {blockOutStatusBar: true});
 // Blockout a given region
 browser.protractorImageComparison.checkScreen('imageA', {blockOut: [{x: 10, y: 132, width: 100, height: 50}]});
+// Ignore antialiasing
+browser.protractorImageComparison.checkScreen('imageA', {comparisonOptions: {ignoreAntialiasing: true}});
+// Ignore colors
+browser.protractorImageComparison.checkScreen('imageA', {comparisonOptions: {ignoreColors: true}});
 ```
 <a name="saveElement"></a>
 
