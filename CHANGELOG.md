@@ -1,3 +1,13 @@
+<a name="0.1.5"></a>
+## [0.1.5](https://github.com/wswebcreation/protractor-image-comparison/compare/v0.1.4...v0.1.5) (2016-12-05)
+
+
+### Bug Fixes
+
+* **comparison-api:** incorrect comparison api implementation, do not use version 0.1.4 ([6112bb8](https://github.com/wswebcreation/protractor-image-comparison/commit/6112bb8))
+
+
+
 <a name="0.1.4"></a>
 ## [0.1.4](https://github.com/wswebcreation/protractor-image-comparison/compare/v0.1.3...v0.1.4) (2016-12-04)
 
