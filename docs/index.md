@@ -53,9 +53,8 @@ protractorImageComparison
 | options.formatImageOptions | <code>string</code> | Custom variables for Image Name |
 | options.nativeWebScreenshot | <code>boolean</code> | If a native screenshot of a device (complete screenshot) needs to be taken |
 | options.blockOutStatusBar | <code>boolean</code> | If the statusbar on mobile / tablet needs to blocked out by default |
-| options.comparisonOptions | <code>object</code> | comparison options |
-| options.comparisonOptions.ignoreAntialiasing | <code>boolean</code> | compare images an discard anti aliasing |
-| options.comparisonOptions.ignoreColors | <code>boolean</code> | Even though the images are in colour, the comparison wil compare 2 black/white images |
+| options.ignoreAntialiasing | <code>boolean</code> | compare images an discard anti aliasing |
+| options.ignoreColors | <code>boolean</code> | Even though the images are in colour, the comparison wil compare 2 black/white images |
 | options.androidOffsets | <code>object</code> | Object that will hold custom values for the statusBar, addressBar and toolBar |
 | options.iosOffsets | <code>object</code> | Object that will hold the custom values for the statusBar and addressBar |
 
@@ -75,9 +74,8 @@ Runs the comparison against an element
 | options | <code>object</code> | non-default options |
 | options.blockOut | <code>object</code> | blockout with x, y, width and height values |
 | options.resizeDimensions | <code>int</code> | the value to increase the size of the element that needs to be saved |
-| options.comparisonOptions | <code>object</code> | comparison options |
-| options.comparisonOptions.ignoreAntialiasing | <code>boolean</code> | compare images an discard anti aliasing |
-| options.comparisonOptions.ignoreColors | <code>boolean</code> | Even though the images are in colour, the comparison wil compare 2 black/white images |
+| options.ignoreAntialiasing | <code>boolean</code> | compare images an discard anti aliasing |
+| options.ignoreColors | <code>boolean</code> | Even though the images are in colour, the comparison wil compare 2 black/white images |
 
 **Example**  
 ```js
@@ -88,9 +86,9 @@ browser.protractorImageComparison.checkElement(element(By.id('elementId')), 'ima
 // Add 15 px to top, right, bottom and left when the cut is calculated (it will automatically use the DPR)
 browser.protractorImageComparison.checkElement(element(By.id('elementId')), 'imageA', {resizeDimensions: 15});
 // Ignore antialiasing
-browser.protractorImageComparison.checkElement(element(By.id('elementId')), 'imageA', {comparisonOptions: {ignoreAntialiasing: true}});
+browser.protractorImageComparison.checkElement(element(By.id('elementId')), 'imageA', {ignoreAntialiasing: true});
 // Ignore colors
-browser.protractorImageComparison.checkElement(element(By.id('elementId')), 'imageA', {comparisonOptions: {ignoreColors: true}});
+browser.protractorImageComparison.checkElement(element(By.id('elementId')), 'imageA', {ignoreColors: true});
 ```
 <a name="checkScreen"></a>
 
@@ -107,9 +105,8 @@ Runs the comparison against the screen
 | options | <code>object</code> | (non-default) options |
 | options.blockOutStatusBar | <code>boolean</code> | blockout the statusbar yes or no |
 | options.blockOut | <code>object</code> | blockout with x, y, width and height values, it will override the global |
-| options.comparisonOptions | <code>object</code> | comparison options |
-| options.comparisonOptions.ignoreAntialiasing | <code>boolean</code> | compare images an discard anti aliasing |
-| options.comparisonOptions.ignoreColors | <code>boolean</code> | Even though the images are in colour, the comparison wil compare 2 black/white images |
+| options.ignoreAntialiasing | <code>boolean</code> | compare images an discard anti aliasing |
+| options.ignoreColors | <code>boolean</code> | Even though the images are in colour, the comparison wil compare 2 black/white images |
 
 **Example**  
 ```js
@@ -120,9 +117,9 @@ browser.protractorImageComparison.checkScreen('imageA', {blockOutStatusBar: true
 // Blockout a given region
 browser.protractorImageComparison.checkScreen('imageA', {blockOut: [{x: 10, y: 132, width: 100, height: 50}]});
 // Ignore antialiasing
-browser.protractorImageComparison.checkScreen('imageA', {comparisonOptions: {ignoreAntialiasing: true}});
+browser.protractorImageComparison.checkScreen('imageA', {ignoreAntialiasing: true});
 // Ignore colors
-browser.protractorImageComparison.checkScreen('imageA', {comparisonOptions: {ignoreColors: true}});
+browser.protractorImageComparison.checkScreen('imageA', {ignoreColors: true});
 ```
 <a name="saveElement"></a>
 
