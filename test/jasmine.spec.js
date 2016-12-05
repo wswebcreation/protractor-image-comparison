@@ -45,7 +45,7 @@ describe('protractor-image-comparison', () => {
         it('should save a fullpage screenshot', () => {
             const tagName = 'fullPage';
 
-            browser.imageComparson.saveFullPageScreenshot(tagName, {timeout:'1500a'})
+            browser.imageComparson.saveFullPageScreens(tagName, {timeout:'1500a'})
                 .then(() => expect(fs.existsSync(`${screenshotPath}/${tagName}-${logName}-${resolution}-dpr-1.png`)).toBe(true));
 
         });
@@ -147,12 +147,12 @@ describe('protractor-image-comparison', () => {
             examplePageFail = `${exampleFullPage}-fail`;
 
         it('should compare successful with a baseline', () => {
-            expect(browser.imageComparson.checkFullPageScreenshot(exampleFullPage)).toEqual(0);
+            expect(browser.imageComparson.checkFullPageScreen(exampleFullPage)).toEqual(0);
         });
 
         it('should fail comparing with a baseline', () => {
             browser.executeScript('arguments[0].innerHTML = "Test Demo Page"; arguments[1].style.color = "#2d7091";', headerElement.getWebElement(), dangerAlert.getWebElement())
-                .then(() => expect(browser.imageComparson.checkFullPageScreenshot(examplePageFail)).toBeGreaterThan(0));
+                .then(() => expect(browser.imageComparson.checkFullPageScreen(examplePageFail)).toBeGreaterThan(0));
         });
     });
 });

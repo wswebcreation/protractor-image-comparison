@@ -12,7 +12,7 @@
 <dt><a href="#checkElement">checkElement(element, tag, options)</a> ⇒ <code>Promise</code></dt>
 <dd><p>Runs the comparison against an element</p>
 </dd>
-<dt><a href="#checkFullPageScreenshot">checkFullPageScreenshot(tag, options)</a> ⇒ <code>Promise</code></dt>
+<dt><a href="#checkFullPageScreen">checkFullPageScreen(tag, options)</a> ⇒ <code>Promise</code></dt>
 <dd><p>Runs the comparison against the fullpage screenshot</p>
 </dd>
 <dt><a href="#checkScreen">checkScreen(tag, options)</a> ⇒ <code>Promise</code></dt>
@@ -21,7 +21,7 @@
 <dt><a href="#saveElement">saveElement(element, tag, options)</a> ⇒ <code>Promise</code></dt>
 <dd><p>Saves an image of the screen element</p>
 </dd>
-<dt><a href="#saveFullPageScreenshot">saveFullPageScreenshot(tag, options)</a> ⇒ <code>Promise</code></dt>
+<dt><a href="#saveFullPageScreens">saveFullPageScreens(tag, options)</a> ⇒ <code>Promise</code></dt>
 <dd><p>Saves a full page image of the screen</p>
 </dd>
 <dt><a href="#saveScreen">saveScreen(tag, options)</a> ⇒ <code>Promise</code></dt>
@@ -106,9 +106,9 @@ browser.protractorImageComparison.checkElement(element(By.id('elementId')), 'ima
 // Ignore colors
 browser.protractorImageComparison.checkElement(element(By.id('elementId')), 'imageA', {comparisonOptions: {ignoreColors: true}});
 ```
-<a name="checkFullPageScreenshot"></a>
+<a name="checkFullPageScreen"></a>
 
-## checkFullPageScreenshot(tag, options) ⇒ <code>Promise</code>
+## checkFullPageScreen(tag, options) ⇒ <code>Promise</code>
 Runs the comparison against the fullpage screenshot
 
 **Kind**: global function  
@@ -127,19 +127,19 @@ Runs the comparison against the fullpage screenshot
 **Example**  
 ```js
 // default
-browser.protractorImageComparison.checkFullPageScreenshot('imageA');
+browser.protractorImageComparison.checkFullPageScreen('imageA');
 // Blockout the statusbar
-browser.protractorImageComparison.checkFullPageScreenshot('imageA', {blockOutStatusBar: true});
+browser.protractorImageComparison.checkFullPageScreen('imageA', {blockOutStatusBar: true});
 // Blockout a given region
-browser.protractorImageComparison.checkFullPageScreenshot('imageA', {blockOut: [{x: 10, y: 132, width: 100, height: 50}]});
+browser.protractorImageComparison.checkFullPageScreen('imageA', {blockOut: [{x: 10, y: 132, width: 100, height: 50}]});
 // Disable css animation on all elements
-browser.protractorImageComparison.checkFullPageScreenshot('imageA', {disableCSSAnimation: true});
+browser.protractorImageComparison.checkFullPageScreen('imageA', {disableCSSAnimation: true});
 // Add timeout between scrolling and taking a screenshot
-browser.protractorImageComparison.checkFullPageScreenshot('imageA',{fullPageScrollTimeout: 5000});
+browser.protractorImageComparison.checkFullPageScreen('imageA',{fullPageScrollTimeout: 5000});
 // Ignore antialiasing
-browser.protractorImageComparison.checkFullPageScreenshot('imageA', {comparisonOptions: {ignoreAntialiasing: true}});
+browser.protractorImageComparison.checkFullPageScreen('imageA', {comparisonOptions: {ignoreAntialiasing: true}});
 // Ignore colors
-browser.protractorImageComparison.checkFullPageScreenshot('imageA', {comparisonOptions: {ignoreColors: true}});
+browser.protractorImageComparison.checkFullPageScreen('imageA', {comparisonOptions: {ignoreColors: true}});
 ```
 <a name="checkScreen"></a>
 
@@ -202,9 +202,9 @@ browser.protractorImageComparison.saveElement(element(By.id('elementId')), 'imag
 // Disable css animation on all elements
 browser.protractorImageComparison.saveElement(element(By.id('elementId')), 'imageA', {disableCSSAnimation: true});
 ```
-<a name="saveFullPageScreenshot"></a>
+<a name="saveFullPageScreens"></a>
 
-## saveFullPageScreenshot(tag, options) ⇒ <code>Promise</code>
+## saveFullPageScreens(tag, options) ⇒ <code>Promise</code>
 Saves a full page image of the screen
 
 **Kind**: global function  
@@ -221,11 +221,11 @@ Saves a full page image of the screen
 **Example**  
 ```js
 // Default
-browser.protractorImageComparison.saveFullPageScreenshot('imageA');
+browser.protractorImageComparison.saveFullPageScreens('imageA');
 // Disable css animation on all elements
-browser.protractorImageComparison.saveFullPageScreenshot('imageA',{disableCSSAnimation: true});
+browser.protractorImageComparison.saveFullPageScreens('imageA',{disableCSSAnimation: true});
 // Add timeout between scrolling and taking a screenshot
-browser.protractorImageComparison.saveFullPageScreenshot('imageA',{fullPageScrollTimeout: 5000});
+browser.protractorImageComparison.saveFullPageScreens('imageA',{fullPageScrollTimeout: 5000});
 ```
 <a name="saveScreen"></a>
 

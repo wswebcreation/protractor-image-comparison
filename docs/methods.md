@@ -21,8 +21,8 @@ The method will calculate the correct dimensions based upon the webdriver elemen
 
 Code details and example usage can be found [here](./index.md).
 
-##NEW saveFullPageScreenshot or checkFullPageScreenshot 
-The methods `saveFullPageScreenshot` and `checkFullPageScreenshot` create a screenshot of the **complete** page. Basically it will device the complete page into multiple viewports. 
+##NEW saveFullPageScreens or checkFullPageScreen 
+The methods `saveFullPageScreens` and `checkFullPageScreen` create a screenshot of the **complete** page. Basically it will device the complete page into multiple viewports. 
 Then it will scroll to each viewport, waits a given timeout (default 1000 milliseconds) and takes a screenshot. When all the viewports have been captured it will compose a new complete fullpage screenshot.
 These methods will also work on pages with lazyloading. By altering the `timeout` you can set it to wait for how long the lazyloading will take and then take a screenshot. It wil automatically recalculate the height of the full screen
 

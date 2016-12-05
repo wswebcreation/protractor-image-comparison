@@ -706,23 +706,23 @@ class protractorImageComparison {
     /**
      * Runs the comparison against the fullpage screenshot
      *
-     * @method checkFullPageScreenshot
+     * @method checkFullPageScreen
      *
      * @example
      * // default
-     * browser.protractorImageComparison.checkFullPageScreenshot('imageA');
+     * browser.protractorImageComparison.checkFullPageScreen('imageA');
      * // Blockout the statusbar
-     * browser.protractorImageComparison.checkFullPageScreenshot('imageA', {blockOutStatusBar: true});
+     * browser.protractorImageComparison.checkFullPageScreen('imageA', {blockOutStatusBar: true});
      * // Blockout a given region
-     * browser.protractorImageComparison.checkFullPageScreenshot('imageA', {blockOut: [{x: 10, y: 132, width: 100, height: 50}]});
+     * browser.protractorImageComparison.checkFullPageScreen('imageA', {blockOut: [{x: 10, y: 132, width: 100, height: 50}]});
      * // Disable css animation on all elements
-     * browser.protractorImageComparison.checkFullPageScreenshot('imageA', {disableCSSAnimation: true});
+     * browser.protractorImageComparison.checkFullPageScreen('imageA', {disableCSSAnimation: true});
      * // Add timeout between scrolling and taking a screenshot
-     * browser.protractorImageComparison.checkFullPageScreenshot('imageA',{fullPageScrollTimeout: 5000});
+     * browser.protractorImageComparison.checkFullPageScreen('imageA',{fullPageScrollTimeout: 5000});
      * // Ignore antialiasing
-     * browser.protractorImageComparison.checkFullPageScreenshot('imageA', {comparisonOptions: {ignoreAntialiasing: true}});
+     * browser.protractorImageComparison.checkFullPageScreen('imageA', {comparisonOptions: {ignoreAntialiasing: true}});
      * // Ignore colors
-     * browser.protractorImageComparison.checkFullPageScreenshot('imageA', {comparisonOptions: {ignoreColors: true}});
+     * browser.protractorImageComparison.checkFullPageScreen('imageA', {comparisonOptions: {ignoreColors: true}});
      *
      * @param {string} tag The tag that is used
      * @param {object} options (non-default) options
@@ -733,7 +733,7 @@ class protractorImageComparison {
      * @return {Promise} When the promise is resolved it will return the percentage of the difference
      * @public
      */
-    checkFullPageScreenshot(tag, options) {
+    checkFullPageScreen(tag, options) {
         const checkOptions = options || [],
             ignoreRectangles = 'blockOut' in checkOptions ? checkOptions.blockOut : [];
         let resembleOptions = checkOptions.comparisonOptions || this.comparisonOptions;
@@ -747,7 +747,7 @@ class protractorImageComparison {
 
         resembleOptions.ignoreRectangles = ignoreRectangles;
 
-        return this.saveFullPageScreenshot(tag, checkOptions)
+        return this.saveFullPageScreens(tag, checkOptions)
             .then(() => this._checkImageExists(tag))
             .then(() => {
                 const imageComparisonPaths = this._determineImageComparisonPaths(tag);
@@ -881,15 +881,15 @@ class protractorImageComparison {
     /**
      * Saves a full page image of the screen
      *
-     * @method saveFullPageScreenshot
+     * @method saveFullPageScreen
      *
      * @example
      * // Default
-     * browser.protractorImageComparison.saveFullPageScreenshot('imageA');
+     * browser.protractorImageComparison.saveFullPageScreen('imageA');
      * // Disable css animation on all elements
-     * browser.protractorImageComparison.saveFullPageScreenshot('imageA',{disableCSSAnimation: true});
+     * browser.protractorImageComparison.saveFullPageScreen('imageA',{disableCSSAnimation: true});
      * // Add timeout between scrolling and taking a screenshot
-     * browser.protractorImageComparison.saveFullPageScreenshot('imageA',{fullPageScrollTimeout: 5000});
+     * browser.protractorImageComparison.saveFullPageScreen('imageA',{fullPageScrollTimeout: 5000});
      *
      * @param {string} tag The tag that is used
      * @param {object} options (non-default) options
@@ -898,7 +898,7 @@ class protractorImageComparison {
      * @returns {Promise} The image has been saved when the promise is resolved
      * @public
      */
-    saveFullPageScreenshot(tag, options) {
+    saveFullPageScreens(tag, options) {
         let saveOptions = options || [];
 
         this.fullPageScrollTimeout = saveOptions.fullPageScrollTimeout && parseInt(saveOptions.fullPageScrollTimeout, 10) > this.fullPageScrollTimeout ? saveOptions.fullPageScrollTimeout : this.fullPageScrollTimeout;
