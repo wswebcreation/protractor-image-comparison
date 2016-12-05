@@ -56,10 +56,10 @@ class protractorImageComparison {
         this.comparisonOptions = options.comparisonOptions || {};
 
         // Set comparison defaults
-        if(!('ignoreAntialiasing' in this.comparisonOptions)){
+        if (!('ignoreAntialiasing' in this.comparisonOptions)) {
             this.comparisonOptions.ignoreAntialiasing = false;
         }
-        if(!('ignoreColors' in this.comparisonOptions)){
+        if (!('ignoreColors' in this.comparisonOptions)) {
             this.comparisonOptions.ignoreColors = false;
         }
 
@@ -548,23 +548,6 @@ class protractorImageComparison {
     }
 
     /**
-     * Takes a screenshot and saves it with a given tag
-     * @param {string} folder the path to the folder to save the image to
-     * @param {string} tag The tag that is used
-     * @returns {Promise} The images has been saved when the promise is resolved
-     * @private
-     */
-    _saveScreenshot(folder, tag) {
-        return browser.takeScreenshot()
-            .then(image => {
-                return new PNGImage({
-                    imagePath: new Buffer(image, 'base64'),
-                    imageOutputPath: path.join(folder, this._formatFileName(this.formatString, tag))
-                }).runWithPromise();
-            });
-    }
-
-    /**
      * Scroll to static horizontal and a given vertical coordinate on the page and return the current size of the screen
      * @param {number} verticalCoordinate The y-coordinate that needs to be scrolled to
      * @returns {Promise}
@@ -694,10 +677,10 @@ class protractorImageComparison {
             ignoreRectangles = 'blockOut' in checkOptions ? checkOptions.blockOut : [];
         let resembleOptions = checkOptions.comparisonOptions || this.comparisonOptions;
 
-        if(!('ignoreAntialiasing' in resembleOptions)){
+        if (!('ignoreAntialiasing' in resembleOptions)) {
             resembleOptions.ignoreAntialiasing = this.comparisonOptions.ignoreAntialiasing;
         }
-        if(!('ignoreColors' in resembleOptions)){
+        if (!('ignoreColors' in resembleOptions)) {
             resembleOptions.ignoreColors = this.comparisonOptions.ignoreColors;
         }
 
@@ -755,10 +738,10 @@ class protractorImageComparison {
             ignoreRectangles = 'blockOut' in checkOptions ? checkOptions.blockOut : [];
         let resembleOptions = checkOptions.comparisonOptions || this.comparisonOptions;
 
-        if(!('ignoreAntialiasing' in resembleOptions)){
+        if (!('ignoreAntialiasing' in resembleOptions)) {
             resembleOptions.ignoreAntialiasing = this.comparisonOptions.ignoreAntialiasing;
         }
-        if(!('ignoreColors' in resembleOptions)){
+        if (!('ignoreColors' in resembleOptions)) {
             resembleOptions.ignoreColors = this.comparisonOptions.ignoreColors;
         }
 
@@ -770,7 +753,7 @@ class protractorImageComparison {
                 const imageComparisonPaths = this._determineImageComparisonPaths(tag);
 
                 return new Promise(resolve => {
-                    resembleJS(imageComparisonPaths.baselineImage,imageComparisonPaths.actualImage, resembleOptions)
+                    resembleJS(imageComparisonPaths.baselineImage, imageComparisonPaths.actualImage, resembleOptions)
                         .onComplete(data => {
                             if (Number(data.misMatchPercentage) > 0) {
                                 data.getDiffImage().pack().pipe(fs.createWriteStream(imageComparisonPaths.imageDiffPath));
@@ -819,10 +802,10 @@ class protractorImageComparison {
         let ignoreRectangles = 'blockOut' in checkOptions ? checkOptions.blockOut : [];
 
 
-        if(!('ignoreAntialiasing' in resembleOptions)){
+        if (!('ignoreAntialiasing' in resembleOptions)) {
             resembleOptions.ignoreAntialiasing = this.comparisonOptions.ignoreAntialiasing;
         }
-        if(!('ignoreColors' in resembleOptions)){
+        if (!('ignoreColors' in resembleOptions)) {
             resembleOptions.ignoreColors = this.comparisonOptions.ignoreColors;
         }
 
@@ -949,7 +932,22 @@ class protractorImageComparison {
         this.disableCSSAnimation = saveOptions.disableCSSAnimation || saveOptions.disableCSSAnimation === false ? saveOptions.disableCSSAnimation : this.disableCSSAnimation;
 
         return this._getInstanceData()
-            .then(() => this._saveScreenshot(this.actualFolder, tag));
+            .then(() => {
+                return browser.takeScreenshot()
+            })
+            .then(screenshot => {
+                const bufferedScreenshot = new Buffer(screenshot, 'base64');
+                this.screenshotHeight = (bufferedScreenshot.readUInt32BE(20) / this.devicePixelRatio); // width = 16
+
+                const rectangles = this._multiplyObjectValuesAgainstDPR({
+                    height: this.screenshotHeight > this.innerHeight ? this.screenshotHeight : this.innerHeight,
+                    width: this.clientWidth,
+                    x: 0,
+                    y: 0
+                });
+                return this._saveCroppedScreenshot(bufferedScreenshot, this.actualFolder, rectangles, tag);
+            });
+
     }
 }
 
