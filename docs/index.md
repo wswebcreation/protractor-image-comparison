@@ -21,7 +21,7 @@
 <dt><a href="#saveElement">saveElement(element, tag, options)</a> ⇒ <code>Promise</code></dt>
 <dd><p>Saves an image of the screen element</p>
 </dd>
-<dt><a href="#saveFullPageScreens">saveFullPageScreens(tag, options)</a> ⇒ <code>Promise</code></dt>
+<dt><a href="#saveFullPageScreen">saveFullPageScreen(tag, options)</a> ⇒ <code>Promise</code></dt>
 <dd><p>Saves a full page image of the screen</p>
 </dd>
 <dt><a href="#saveScreen">saveScreen(tag, options)</a> ⇒ <code>Promise</code></dt>
@@ -63,9 +63,8 @@ protractorImageComparison
 | options.disableCSSAnimation | <code>boolean</code> | Disable all css animations on a page (default:false) |
 | options.nativeWebScreenshot | <code>boolean</code> | If a native screenshot of a device (complete screenshot) needs to be taken (default:false) |
 | options.blockOutStatusBar | <code>boolean</code> | If the statusbar on mobile / tablet needs to blocked out by default |
-| options.comparisonOptions | <code>object</code> | comparison options |
-| options.comparisonOptions.ignoreAntialiasing | <code>boolean</code> | compare images an discard anti aliasing |
-| options.comparisonOptions.ignoreColors | <code>boolean</code> | Even though the images are in colour, the comparison wil compare 2 black/white images |
+| options.ignoreAntialiasing | <code>boolean</code> | compare images an discard anti aliasing |
+| options.ignoreColors | <code>boolean</code> | Even though the images are in colour, the comparison wil compare 2 black/white images |
 | options.androidOffsets | <code>object</code> | Object that will hold custom values for the statusBar, addressBar and toolBar |
 | options.iosOffsets | <code>object</code> | Object that will hold the custom values for the statusBar and addressBar |
 
@@ -85,10 +84,8 @@ Runs the comparison against an element
 | options | <code>object</code> | non-default options |
 | options.blockOut | <code>object</code> | blockout with x, y, width and height values |
 | options.resizeDimensions | <code>int</code> | the value to increase the size of the element that needs to be saved |
-| options.disableCSSAnimation | <code>boolean</code> | enable or disable CSS animation |
-| options.comparisonOptions | <code>object</code> | comparison options |
-| options.comparisonOptions.ignoreAntialiasing | <code>boolean</code> | compare images an discard anti aliasing |
-| options.comparisonOptions.ignoreColors | <code>boolean</code> | Even though the images are in colour, the comparison wil compare 2 black/white images |
+| options.ignoreAntialiasing | <code>boolean</code> | compare images an discard anti aliasing |
+| options.ignoreColors | <code>boolean</code> | Even though the images are in colour, the comparison wil compare 2 black/white images |
 
 **Example**  
 ```js
@@ -102,9 +99,9 @@ browser.protractorImageComparison.checkElement(element(By.id('elementId')), 'ima
 // Disable css animation on all elements
 browser.protractorImageComparison.saveElement(element(By.id('elementId')), 'imageA', {disableCSSAnimation: true});
 // Ignore antialiasing
-browser.protractorImageComparison.checkElement(element(By.id('elementId')), 'imageA', {comparisonOptions: {ignoreAntialiasing: true}});
+browser.protractorImageComparison.checkElement(element(By.id('elementId')), 'imageA', {ignoreAntialiasing: true});
 // Ignore colors
-browser.protractorImageComparison.checkElement(element(By.id('elementId')), 'imageA', {comparisonOptions: {ignoreColors: true}});
+browser.protractorImageComparison.checkElement(element(By.id('elementId')), 'imageA', {ignoreColors: true});
 ```
 <a name="checkFullPageScreen"></a>
 
@@ -156,10 +153,8 @@ Runs the comparison against the screen
 | options | <code>object</code> | (non-default) options |
 | options.blockOutStatusBar | <code>boolean</code> | blockout the statusbar yes or no |
 | options.blockOut | <code>object</code> | blockout with x, y, width and height values, it will override the global |
-| options.disableCSSAnimation | <code>boolean</code> | enable or disable CSS animation |
-| options.comparisonOptions | <code>object</code> | comparison options |
-| options.comparisonOptions.ignoreAntialiasing | <code>boolean</code> | compare images an discard anti aliasing |
-| options.comparisonOptions.ignoreColors | <code>boolean</code> | Even though the images are in colour, the comparison wil compare 2 black/white images |
+| options.ignoreAntialiasing | <code>boolean</code> | compare images an discard anti aliasing |
+| options.ignoreColors | <code>boolean</code> | Even though the images are in colour, the comparison wil compare 2 black/white images |
 
 **Example**  
 ```js
@@ -172,9 +167,9 @@ browser.protractorImageComparison.checkScreen('imageA', {blockOut: [{x: 10, y: 1
 // Disable css animation on all elements
 browser.protractorImageComparison.checkScreen('imageA', {disableCSSAnimation: true});
 // Ignore antialiasing
-browser.protractorImageComparison.checkScreen('imageA', {comparisonOptions: {ignoreAntialiasing: true}});
+browser.protractorImageComparison.checkScreen('imageA', {ignoreAntialiasing: true});
 // Ignore colors
-browser.protractorImageComparison.checkScreen('imageA', {comparisonOptions: {ignoreColors: true}});
+browser.protractorImageComparison.checkScreen('imageA', {ignoreColors: true});
 ```
 <a name="saveElement"></a>
 
@@ -202,9 +197,9 @@ browser.protractorImageComparison.saveElement(element(By.id('elementId')), 'imag
 // Disable css animation on all elements
 browser.protractorImageComparison.saveElement(element(By.id('elementId')), 'imageA', {disableCSSAnimation: true});
 ```
-<a name="saveFullPageScreens"></a>
+<a name="saveFullPageScreen"></a>
 
-## saveFullPageScreens(tag, options) ⇒ <code>Promise</code>
+## saveFullPageScreen(tag, options) ⇒ <code>Promise</code>
 Saves a full page image of the screen
 
 **Kind**: global function  
@@ -221,11 +216,11 @@ Saves a full page image of the screen
 **Example**  
 ```js
 // Default
-browser.protractorImageComparison.saveFullPageScreens('imageA');
+browser.protractorImageComparison.saveFullPageScreen('imageA');
 // Disable css animation on all elements
-browser.protractorImageComparison.saveFullPageScreens('imageA',{disableCSSAnimation: true});
+browser.protractorImageComparison.saveFullPageScreen('imageA',{disableCSSAnimation: true});
 // Add timeout between scrolling and taking a screenshot
-browser.protractorImageComparison.saveFullPageScreens('imageA',{fullPageScrollTimeout: 5000});
+browser.protractorImageComparison.saveFullPageScreen('imageA',{fullPageScrollTimeout: 5000});
 ```
 <a name="saveScreen"></a>
 

@@ -122,21 +122,13 @@ describe('protractor-image-comparison', () => {
                 it('should fail comparing 2 non identical images with each other with ignoreAntialiasing enabled', () => {
                     browser.executeScript('arguments[0].scrollIntoView(); arguments[0].style.color = "#2d7091";', dangerAlert.getWebElement())
                         .then(() => browser.sleep(500))
-                        .then(() => expect(browser.imageComparson.checkElement(dangerAlert, `${dangerAlertElementFail}-ignore-antialiasing`, {
-                            comparisonOptions: {
-                                ignoreAntialiasing: true
-                            }
-                        })).toEqual(0.14));
+                        .then(() => expect(browser.imageComparson.checkElement(dangerAlert, `${dangerAlertElementFail}-ignore-antialiasing`, {ignoreAntialiasing: true})).toEqual(0.14));
                 });
 
                 it('should fail comparing 2 non identical images with each other with ignoreColors enabled', () => {
                     browser.executeScript('arguments[0].scrollIntoView(); arguments[0].style.color = "#2d7091";', dangerAlert.getWebElement())
                         .then(() => browser.sleep(500))
-                        .then(() => expect(browser.imageComparson.checkElement(dangerAlert, `${dangerAlertElementFail}-ignore-colors`, {
-                            comparisonOptions: {
-                                ignoreColors: true
-                            }
-                        })).toEqual(1.08));
+                        .then(() => expect(browser.imageComparson.checkElement(dangerAlert, `${dangerAlertElementFail}-ignore-colors`, {ignoreColors: true})).toEqual(1.08));
                 });
             });
         }
