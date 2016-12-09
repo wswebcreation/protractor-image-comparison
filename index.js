@@ -109,7 +109,7 @@ class protractorImageComparison {
      */
     _checkImageExists(tag) {
         return new Promise((resolve, reject) => {
-            fs.access(path.join(this.baselineFolder, this._formatFileName(this.formatString, tag)), fs.F_OK, error => {
+            fs.access(path.join(this.baselineFolder, this._formatFileName(tag)), fs.F_OK, error => {
                 if (error) {
                     reject('Image not found, saving current image as new baseline.');
                 } else {
@@ -139,12 +139,12 @@ class protractorImageComparison {
             imageOutput = PNGJSImage.createImage(imageWidth, imageHeight);
         } else if (part > parts) {
             return new Promise(resolve => {
-                imageOutput.writeImageSync(path.join(this.actualFolder, this._formatFileName(this.formatString, tag)));
+                imageOutput.writeImageSync(path.join(this.actualFolder, this._formatFileName(tag)));
                 resolve();
             });
         }
 
-        const stitchImage = PNGJSImage.readImageSync(path.join(this.tempFullScreenFolder, this._formatFileName(this.formatString, `${tag}-${part}`)));
+        const stitchImage = PNGJSImage.readImageSync(path.join(this.tempFullScreenFolder, this._formatFileName(`${tag}-${part}`)));
         stitchImage.getImage().bitblt(imageOutput.getImage(), 0, 0, stitchImage.getWidth(), stitchImage.getHeight(), 0, height);
 
         return this._composeAndSaveFullScreenshot(tag, parts, part + 1, imageOutput)
@@ -212,13 +212,63 @@ class protractorImageComparison {
      */
     _determineImageComparisonPaths(tag) {
         const imageComparisonPaths = {},
-            tagName = this._formatFileName(this.formatString, tag);
+            tagName = this._formatFileName(tag);
 
         imageComparisonPaths['actualImage'] = path.join(this.actualFolder, tagName);
         imageComparisonPaths['baselineImage'] = path.join(this.baselineFolder, tagName);
         imageComparisonPaths['imageDiffPath'] = path.join(this.diffFolder, path.basename(tagName));
 
         return imageComparisonPaths;
+    }
+
+    /**
+     * Compare images against each other
+     * @param {string} tag The tag that is used
+     * @param {object} options comparison options
+     * @param {object} options.blockOut blockout with x, y, width and height values
+     * @param {boolean} options.blockOutStatusBar blockout the statusbar yes or no, it will override the global
+     * @param {boolean} options.ignoreAntialiasing compare images an discard anti aliasing
+     * @param {boolean} options.ignoreColors Even though the images are in colour, the comparison wil compare 2 black/white images
+     * @returns {Promise}
+     * @private
+     */
+    _executeImageComparison(tag, compareOptions) {
+        const imageComparisonPaths = this._determineImageComparisonPaths(tag);
+        const ignoreRectangles = 'blockOut' in compareOptions ? compareOptions.blockOut : [];
+        const blockOutStatusBar = compareOptions.blockOutStatusBar || compareOptions.blockOutStatusBar === false ? compareOptions.blockOutStatusBar : this.blockOutStatusBar;
+
+        // comparison options are not available anymore, due to new version and api
+        compareOptions.ignoreAntialiasing = 'ignoreAntialiasing' in compareOptions ? compareOptions.ignoreAntialiasing : this.ignoreAntialiasing;
+        compareOptions.ignoreColors = 'ignoreColors' in compareOptions ? compareOptions.ignoreColors : this.ignoreColors;
+        compareOptions.ignoreRectangles = 'ignoreRectangles' in compareOptions ? compareOptions.ignoreRectangles.push(ignoreRectangles) : ignoreRectangles;
+
+        if(this.debug){
+            console.log('\n####################################################');
+            console.log('compareOptions = ', compareOptions);
+            console.log('####################################################\n');
+        }
+
+        if (this._isMobile() && this.nativeWebScreenshot && compareOptions.isScreen && blockOutStatusBar) {
+            const statusBarHeight = this._isAndroid() ? this.androidOffsets.statusBar : this.iosOffsets.statusBar,
+                statusBarBlockOut = [this._multiplyObjectValuesAgainstDPR({
+                    x: 0,
+                    y: 0,
+                    height: statusBarHeight,
+                    width: this.width
+                })];
+
+            compareOptions.ignoreRectangles = statusBarBlockOut;
+        }
+
+        return new Promise(resolve => {
+            resembleJS(imageComparisonPaths.baselineImage, imageComparisonPaths.actualImage, compareOptions)
+                .onComplete(data => {
+                    if (Number(data.misMatchPercentage) > 0 || this.debug) {
+                        data.getDiffImage().pack().pipe(fs.createWriteStream(imageComparisonPaths.imageDiffPath));
+                    }
+                    resolve(Number(data.misMatchPercentage));
+                });
+        });
     }
 
     /**
@@ -254,18 +304,25 @@ class protractorImageComparison {
         return browser.driver.executeScript(getDataObject, element.getWebElement(), this.androidOffsets.statusBar, this.androidOffsets.addressBar, this.androidOffsets.toolBar);
     }
 
-    _formatFileName(formatString, tag) {
+    /**
+     * _formatFileName
+     * @param {string} tag The tag that is used
+     * @returns {string} Returns a formated string
+     * @private
+     */
+    _formatFileName(tag) {
         let defaults = {
-            'browserName': this.browserName,
-            'deviceName': this.deviceName,
-            'dpr': this.devicePixelRatio,
-            'height': this.height,
-            'logName': camelCase(this.logName),
-            'mobile': this._isMobile() && this.testInBrowser ? this.browserName : this._isMobile() ? 'app' : '',
-            'name': this.name,
-            'tag': tag,
-            'width': this.width
-        };
+                'browserName': this.browserName,
+                'deviceName': this.deviceName,
+                'dpr': this.devicePixelRatio,
+                'height': this.height,
+                'logName': camelCase(this.logName),
+                'mobile': this._isMobile() && this.testInBrowser ? this.browserName : this._isMobile() ? 'app' : '',
+                'name': this.name,
+                'tag': tag,
+                'width': this.width
+            },
+            formatString = this.formatString;
 
         defaults = this._mergeDefaultOptions(defaults, this.formatOptions);
 
@@ -534,7 +591,7 @@ class protractorImageComparison {
     _saveCroppedScreenshot(bufferedScreenshot, folder, rectangles, tag) {
         return new PNGImage({
             imagePath: bufferedScreenshot,
-            imageOutputPath: path.join(folder, this._formatFileName(this.formatString, tag)),
+            imageOutputPath: path.join(folder, this._formatFileName(tag)),
             cropImage: rectangles
         }).runWithPromise();
     }
@@ -663,30 +720,12 @@ class protractorImageComparison {
      * @public
      */
     checkElement(element, tag, options) {
-        const checkOptions = options || {},
-            ignoreRectangles = 'blockOut' in checkOptions ? checkOptions.blockOut : [];
-        let resembleOptions = [];
-
-        resembleOptions.ignoreAntialiasing = checkOptions.ignoreAntialiasing || checkOptions.ignoreAntialiasing === false ? checkOptions.ignoreAntialiasing : this.ignoreAntialiasing;
-        resembleOptions.ignoreColors = checkOptions.ignoreColors || checkOptions.ignoreColors === false ? checkOptions.ignoreColors : this.ignoreColors;
-
-        resembleOptions.ignoreRectangles = ignoreRectangles;
+        const checkOptions = options || {};
+        checkOptions.isScreen = false;
 
         return this.saveElement(element, tag, checkOptions)
             .then(() => this._checkImageExists(tag))
-            .then(() => {
-                const imageComparisonPaths = this._determineImageComparisonPaths(tag);
-
-                return new Promise(resolve => {
-                    resembleJS(imageComparisonPaths.baselineImage, imageComparisonPaths.actualImage, resembleOptions)
-                        .onComplete(data => {
-                            if (Number(data.misMatchPercentage) > 0) {
-                                data.getDiffImage().pack().pipe(fs.createWriteStream(imageComparisonPaths.imageDiffPath));
-                            }
-                            resolve(Number(data.misMatchPercentage));
-                        });
-                });
-            });
+            .then(() => this._executeImageComparison(tag, checkOptions));
     }
 
     /**
@@ -706,48 +745,26 @@ class protractorImageComparison {
      * // Add timeout between scrolling and taking a screenshot
      * browser.protractorImageComparison.checkFullPageScreen('imageA',{fullPageScrollTimeout: 5000});
      * // Ignore antialiasing
-     * browser.protractorImageComparison.checkFullPageScreen('imageA', {comparisonOptions: {ignoreAntialiasing: true}});
+     * browser.protractorImageComparison.checkFullPageScreen('imageA', {ignoreAntialiasing: true});
      * // Ignore colors
-     * browser.protractorImageComparison.checkFullPageScreen('imageA', {comparisonOptions: {ignoreColors: true}});
+     * browser.protractorImageComparison.checkFullPageScreen('imageA', {ignoreColors: true});
      *
      * @param {string} tag The tag that is used
      * @param {object} options (non-default) options
-     * @param {boolean} options.blockOutStatusBar blockout the statusbar yes or no
-     * @param {object} options.blockOut blockout with x, y, width and height values, it will override the global
+     * @param {boolean} options.blockOutStatusBar blockout the statusbar yes or no, it will override the global
+     * @param {object} options.blockOut blockout with x, y, width and height values
      * @param {boolean} options.disableCSSAnimation enable or disable CSS animation
      * @param {int} options.fullPageScrollTimeout The time that needs to be waited when scrolling to a point and save the screenshot
      * @return {Promise} When the promise is resolved it will return the percentage of the difference
      * @public
      */
     checkFullPageScreen(tag, options) {
-        const checkOptions = options || [],
-            ignoreRectangles = 'blockOut' in checkOptions ? checkOptions.blockOut : [];
-        let resembleOptions = checkOptions.comparisonOptions || this.comparisonOptions;
-
-        if (!('ignoreAntialiasing' in resembleOptions)) {
-            resembleOptions.ignoreAntialiasing = this.comparisonOptions.ignoreAntialiasing;
-        }
-        if (!('ignoreColors' in resembleOptions)) {
-            resembleOptions.ignoreColors = this.comparisonOptions.ignoreColors;
-        }
-
-        resembleOptions.ignoreRectangles = ignoreRectangles;
+        const checkOptions = options || [];
+        checkOptions.isScreen = true;
 
         return this.saveFullPageScreens(tag, checkOptions)
             .then(() => this._checkImageExists(tag))
-            .then(() => {
-                const imageComparisonPaths = this._determineImageComparisonPaths(tag);
-
-                return new Promise(resolve => {
-                    resembleJS(imageComparisonPaths.baselineImage, imageComparisonPaths.actualImage, resembleOptions)
-                        .onComplete(data => {
-                            if (Number(data.misMatchPercentage) > 0) {
-                                data.getDiffImage().pack().pipe(fs.createWriteStream(imageComparisonPaths.imageDiffPath));
-                            }
-                            resolve(Number(data.misMatchPercentage));
-                        });
-                });
-            })
+            .then(() => this._executeImageComparison(tag, checkOptions));
     }
 
     /**
@@ -771,50 +788,21 @@ class protractorImageComparison {
      *
      * @param {string} tag The tag that is used
      * @param {object} options (non-default) options
-     * @param {boolean} options.blockOutStatusBar blockout the statusbar yes or no
-     * @param {object} options.blockOut blockout with x, y, width and height values, it will override the global
+     * @param {boolean} options.blockOutStatusBar blockout the statusbar yes or no, it will override the global
+     * @param {object} options.blockOut blockout with x, y, width and height values
+     * @param {boolean} options.disableCSSAnimation enable or disable CSS animation
      * @param {boolean} options.ignoreAntialiasing compare images an discard anti aliasing
      * @param {boolean} options.ignoreColors Even though the images are in colour, the comparison wil compare 2 black/white images
      * @return {Promise} When the promise is resolved it will return the percentage of the difference
      * @public
      */
     checkScreen(tag, options) {
-        const checkOptions = options || {},
-            blockOutStatusBar = checkOptions.blockOutStatusBar || checkOptions.blockOutStatusBar === false ? checkOptions.blockOutStatusBar : this.blockOutStatusBar;
-
-        let ignoreRectangles = 'blockOut' in checkOptions ? checkOptions.blockOut : [];
-        let resembleOptions = [];
-
-        resembleOptions.ignoreColors = checkOptions.ignoreColors || checkOptions.ignoreColors === false ? checkOptions.ignoreColors : this.ignoreColors;
+        let checkOptions = options || {};
+        checkOptions.isScreen = true;
 
         return this.saveScreen(tag, checkOptions)
             .then(() => this._checkImageExists(tag))
-            .then(() => {
-                const imageComparisonPaths = this._determineImageComparisonPaths(tag);
-
-                if (this._isMobile() && blockOutStatusBar) {
-                    const statusBarHeight = this._isAndroid() ? this.androidOffsets.statusBar : this.iosOffsets.statusBar,
-                        statusBarBlockOut = this._multiplyObjectValuesAgainstDPR({
-                            x: 0,
-                            y: 0,
-                            height: statusBarHeight,
-                            width: this.width
-                        });
-                    ignoreRectangles.push(statusBarBlockOut);
-                }
-
-                resembleOptions.ignoreRectangles = ignoreRectangles;
-
-                return new Promise(resolve => {
-                    resembleJS(imageComparisonPaths.baselineImage, imageComparisonPaths.actualImage, resembleOptions)
-                        .onComplete(data => {
-                            if (Number(data.misMatchPercentage) > 0) {
-                                data.getDiffImage().pack().pipe(fs.createWriteStream(imageComparisonPaths.imageDiffPath));
-                            }
-                            resolve(Number(data.misMatchPercentage));
-                        });
-                });
-            });
+            .then(() => this._executeImageComparison(tag, checkOptions));
     }
 
     /**

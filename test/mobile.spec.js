@@ -47,6 +47,7 @@ describe('protractor-protractor-image-comparison', () => {
 
                     browser.imageComparson = new imageComparison({
                         baselineFolder: './test/baseline/mobile/',
+                        debug: false,
                         formatImageName: `{tag}-${logName}-{width}x{height}-dpr-{dpr}`,
                         nativeWebScreenshot: ADBScreenshot,
                         screenshotPath: './.tmp/'
@@ -85,6 +86,7 @@ describe('protractor-protractor-image-comparison', () => {
                     browser.imageComparson = new imageComparison({
                         baselineFolder: './test/baseline/mobile/',
                         blockOutStatusBar: true,
+                        debug: false,
                         formatImageName: `{tag}-${logName}-{width}x{height}-dpr-{dpr}`,
                         nativeWebScreenshot: ADBScreenshot,
                         screenshotPath: './.tmp/'
@@ -104,12 +106,14 @@ describe('protractor-protractor-image-comparison', () => {
 
         it('should save a difference after failure', () => {
             browser.executeScript('arguments[0].innerHTML = "Test Demo Page";', headerElement.getWebElement())
+                .then(() => browser.sleep(1000))
                 .then(() => browser.imageComparson.checkScreen(examplePageFail))
                 .then(() => expect(fs.existsSync(`${differencePath}/${examplePageFail}-${devices[logName]['name']}.png`)).toBe(true));
         });
 
         it('should fail comparing with a baseline', () => {
             browser.executeScript('arguments[0].innerHTML = "Test Demo Page";', headerElement.getWebElement())
+                .then(() => browser.sleep(1000))
                 .then(() => expect(browser.imageComparson.checkScreen(examplePageFail)).toBeGreaterThan(0));
         });
 
@@ -131,6 +135,7 @@ describe('protractor-protractor-image-comparison', () => {
 
                     browser.imageComparson = new imageComparison({
                         baselineFolder: './test/baseline/mobile/',
+                        debug: false,
                         formatImageName: `{tag}-${logName}-{width}x{height}-dpr-{dpr}`,
                         nativeWebScreenshot: ADBScreenshot,
                         screenshotPath: './.tmp/'
@@ -161,7 +166,7 @@ describe('protractor-protractor-image-comparison', () => {
 
         it('should save a difference after failure', () => {
             browser.executeScript('arguments[0].scrollIntoView(); arguments[0].style.color = "#2d7091";', dangerAlert.getWebElement())
-                .then(() => browser.sleep(500))
+                .then(() => browser.sleep(1000))
                 .then(() => browser.imageComparson.checkElement(dangerAlert, dangerAlertElementFail))
                 .then(() => expect(fs.existsSync(`${differencePath}/${dangerAlertElementFail}-${devices[logName]['name']}.png`)).toBe(true));
         });
@@ -175,6 +180,7 @@ describe('protractor-protractor-image-comparison', () => {
 
         it('should throw an error when no baseline is found', () => {
             browser.executeScript('arguments[0].scrollIntoView();', dangerAlert.getWebElement())
+                .then(() => browser.sleep(1000))
                 .then(() => browser.imageComparson.checkElement(dangerAlert, 'noImage'))
                 .then(() => fail(new Error('This should not succeed')))
                 .catch(error => expect(error).toEqual('Image not found, saving current image as new baseline.'));
@@ -190,6 +196,7 @@ describe('protractor-protractor-image-comparison', () => {
                     browser.imageComparson = new imageComparison({
                         baselineFolder: './test/baseline/mobile/offsets/',
                         blockOutStatusBar: true,
+                        debug: false,
                         formatImageName: `{tag}-${logName}-{width}x{height}-dpr-{dpr}`,
                         nativeWebScreenshot: ADBScreenshot,
                         screenshotPath: './.tmp/',
