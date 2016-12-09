@@ -215,7 +215,7 @@ describe('protractor-protractor-image-comparison', () => {
 
                     return browser.get(browser.baseUrl);
                 })
-                .then(() => browser.sleep(1000));
+                .then(() => browser.sleep(1500));
         });
 
         // The baseline image has a bigger black bar for blocking out the status bar.

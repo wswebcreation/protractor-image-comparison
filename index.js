@@ -432,7 +432,7 @@ class protractorImageComparison {
                             '-webkit-animation-duration: 0s !important;' +
                             'animation-duration: 0s !important;' +
                             '}',
-                        scrollBar = '*::-webkit-scrollbar { -webkit-appearance: none;}',
+                        scrollBar = '*::-webkit-scrollbar { display:none; !important}',
                         css = disableCSSAnimation ? scrollBar + animation : scrollBar,
                         head = document.head || document.getElementsByTagName('head')[0],
                         style = document.createElement('style');
