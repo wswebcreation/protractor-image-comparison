@@ -116,8 +116,8 @@ Runs the comparison against the fullpage screenshot
 | --- | --- | --- |
 | tag | <code>string</code> | The tag that is used |
 | options | <code>object</code> | (non-default) options |
-| options.blockOutStatusBar | <code>boolean</code> | blockout the statusbar yes or no |
-| options.blockOut | <code>object</code> | blockout with x, y, width and height values, it will override the global |
+| options.blockOutStatusBar | <code>boolean</code> | blockout the statusbar yes or no, it will override the global |
+| options.blockOut | <code>object</code> | blockout with x, y, width and height values |
 | options.disableCSSAnimation | <code>boolean</code> | enable or disable CSS animation |
 | options.fullPageScrollTimeout | <code>int</code> | The time that needs to be waited when scrolling to a point and save the screenshot |
 
@@ -134,9 +134,9 @@ browser.protractorImageComparison.checkFullPageScreen('imageA', {disableCSSAnima
 // Add timeout between scrolling and taking a screenshot
 browser.protractorImageComparison.checkFullPageScreen('imageA',{fullPageScrollTimeout: 5000});
 // Ignore antialiasing
-browser.protractorImageComparison.checkFullPageScreen('imageA', {comparisonOptions: {ignoreAntialiasing: true}});
+browser.protractorImageComparison.checkFullPageScreen('imageA', {ignoreAntialiasing: true});
 // Ignore colors
-browser.protractorImageComparison.checkFullPageScreen('imageA', {comparisonOptions: {ignoreColors: true}});
+browser.protractorImageComparison.checkFullPageScreen('imageA', {ignoreColors: true});
 ```
 <a name="checkScreen"></a>
 
@@ -151,8 +151,9 @@ Runs the comparison against the screen
 | --- | --- | --- |
 | tag | <code>string</code> | The tag that is used |
 | options | <code>object</code> | (non-default) options |
-| options.blockOutStatusBar | <code>boolean</code> | blockout the statusbar yes or no |
-| options.blockOut | <code>object</code> | blockout with x, y, width and height values, it will override the global |
+| options.blockOutStatusBar | <code>boolean</code> | blockout the statusbar yes or no, it will override the global |
+| options.blockOut | <code>object</code> | blockout with x, y, width and height values |
+| options.disableCSSAnimation | <code>boolean</code> | enable or disable CSS animation |
 | options.ignoreAntialiasing | <code>boolean</code> | compare images an discard anti aliasing |
 | options.ignoreColors | <code>boolean</code> | Even though the images are in colour, the comparison wil compare 2 black/white images |
 
