@@ -47,7 +47,7 @@ describe('protractor-protractor-image-comparison', () => {
 
                     browser.imageComparson = new imageComparison({
                         baselineFolder: './test/baseline/mobile/',
-                        debug: false,
+                        debug: true,
                         formatImageName: `{tag}-${logName}-{width}x{height}-dpr-{dpr}`,
                         nativeWebScreenshot: ADBScreenshot,
                         screenshotPath: './.tmp/'
@@ -62,18 +62,22 @@ describe('protractor-protractor-image-comparison', () => {
             const tagName = 'examplePage';
 
             browser.imageComparson.saveScreen(tagName)
-                .then(() => {
-                    expect(fs.existsSync(`${screenshotPath}/${tagName}-${devices[logName]['name']}.png`)).toBe(true);
-                });
+                .then(() => expect(fs.existsSync(`${screenshotPath}/${tagName}-${devices[logName]['name']}.png`)).toBe(true));
         });
 
         it('should save an element', () => {
             const tagName = 'examplePageElement';
 
             browser.imageComparson.saveElement(headerElement, tagName)
-                .then(() => {
-                    expect(fs.existsSync(`${screenshotPath}/${tagName}-${devices[logName]['name']}.png`)).toBe(true);
-                });
+                .then(() => expect(fs.existsSync(`${screenshotPath}/${tagName}-${devices[logName]['name']}.png`)).toBe(true));
+        });
+
+        it('should save a fullpage screenshot', () => {
+            const tagName = 'fullPage';
+
+            browser.imageComparson.saveFullPageScreens(tagName, {timeout:'1500a'})
+                .then(() => expect(fs.existsSync(`${screenshotPath}/${tagName}-${devices[logName]['name']}.png`)).toBe(true));
+
         });
     });
 
@@ -239,22 +243,10 @@ describe('protractor-protractor-image-comparison', () => {
 
                     browser.imageComparson = new imageComparison({
                         baselineFolder: './test/baseline/mobile/',
-                        blockOutStatusBar: true,
                         debug: true,
                         formatImageName: `{tag}-${logName}-{width}x{height}-dpr-{dpr}`,
                         nativeWebScreenshot: ADBScreenshot,
-                        screenshotPath: './.tmp/',
-                        // Custom android offset
-                        androidOffsets: {
-                            statusBar: 50,
-                            addressBar: 100,
-                            toolBar: 60
-                        },
-                        // Custom iOS offset
-                        iosOffsets: {
-                            statusBar: 40,
-                            addressBar: 100
-                        }
+                        screenshotPath: './.tmp/'
                     });
 
                     return browser.get(browser.baseUrl);
@@ -269,7 +261,7 @@ describe('protractor-protractor-image-comparison', () => {
             expect(browser.imageComparson.checkFullPageScreen(exampleFullPage)).toEqual(0);
         });
 
-        fit('should fail comparing with a baseline', () => {
+        it('should fail comparing with a baseline', () => {
             browser.executeScript('arguments[0].innerHTML = "Test Demo Page"; arguments[1].style.color = "#2d7091";', headerElement.getWebElement(), dangerAlert.getWebElement())
                 .then(() => expect(browser.imageComparson.checkFullPageScreen(examplePageFail)).toBeGreaterThan(0));
         });

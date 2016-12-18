@@ -81,6 +81,8 @@ class protractorImageComparison {
 
         this.resizeDimensions = 0;
 
+        this.chromeShadowPadding = 6;
+
         this.tempFullScreenFolder = path.join(this.baseFolder, 'tempFullScreen');
         this.fullPageScrollTimeout = 1000;
 
@@ -131,7 +133,17 @@ class protractorImageComparison {
     _composeAndSaveFullScreenshot(tag, parts, part, image) {
         const imageHeight = this.fullPageHeight * this.devicePixelRatio;
         const imageWidth = this.fullPageWidth * this.devicePixelRatio;
-        const height = this.innerHeight * (part - 1) * this.devicePixelRatio;
+        const height = (this.innerHeight - this.chromeShadowPadding) * (part - 1) * this.devicePixelRatio;
+
+        if (this.debug) {
+            console.log('\n####################################################');
+            console.log('_composeAndSaveFullScreenshot()');
+            console.log('imageHeight = ', imageHeight);
+            console.log('innerHeight = ', this.innerHeight);
+            console.log('imageWidth = ', imageWidth);
+            console.log('height = ', height);
+            console.log('####################################################\n');
+        }
 
         let imageOutput = image || null;
 
@@ -242,7 +254,7 @@ class protractorImageComparison {
         compareOptions.ignoreColors = 'ignoreColors' in compareOptions ? compareOptions.ignoreColors : this.ignoreColors;
         compareOptions.ignoreRectangles = 'ignoreRectangles' in compareOptions ? compareOptions.ignoreRectangles.push(ignoreRectangles) : ignoreRectangles;
 
-        if(this.debug){
+        if (this.debug) {
             console.log('\n####################################################');
             console.log('compareOptions = ', compareOptions);
             console.log('####################################################\n');
@@ -422,10 +434,10 @@ class protractorImageComparison {
                     this.nativeWebScreenshot = browserConfig.capabilities.nativeWebScreenshot ? true : false;
                 }
 
-                return browser.driver.executeScript(setCSSAndRetrieveBrowserData, this.platformName, this.disableCSSAnimation);
+                return browser.driver.executeScript(setCSSAndRetrieveBrowserData, this.platformName, this.disableCSSAnimation, this.chromeShadowPadding);
 
                 // Platform name is used for determining height / width which is different for desktop and mobile
-                function setCSSAndRetrieveBrowserData(platformName, disableCSSAnimation) {
+                function setCSSAndRetrieveBrowserData(platformName, disableCSSAnimation, chromeShadowPadding) {
                     var animation = '* {' +
                             '-webkit-transition-duration: 0s !important;' +
                             'transition-duration: 0s !important;' +
@@ -433,7 +445,8 @@ class protractorImageComparison {
                             'animation-duration: 0s !important;' +
                             '}',
                         scrollBar = '*::-webkit-scrollbar { display:none; !important}',
-                        css = disableCSSAnimation ? scrollBar + animation : scrollBar,
+                        androidChrome = 'body{padding-top:' + chromeShadowPadding + 'px !important}',
+                        css = disableCSSAnimation ? scrollBar + animation + androidChrome : scrollBar + androidChrome,
                         head = document.head || document.getElementsByTagName('head')[0],
                         style = document.createElement('style');
 
@@ -443,7 +456,7 @@ class protractorImageComparison {
 
                     return {
                         clientWidth: document.body.clientWidth,
-                        fullPageHeight: document.body.scrollHeight,
+                        fullPageHeight: document.body.scrollHeight - chromeShadowPadding,
                         fullPageWidth: document.body.scrollWidth,
                         height: platformName === '' ? window.outerHeight : window.screen.height,
                         innerHeight: window.innerHeight,
@@ -597,12 +610,13 @@ class protractorImageComparison {
     }
 
     /**
-     * Scroll to static horizontal and a given vertical coordinate on the page and return the current size of the screen
+     * Scroll to static horizontal and a given vertical coordinate on the page and return the current heights.
+     * The innerheight can change on mobile due to the scrolling (addressbar can become smaller or disappear)
      * @param {number} verticalCoordinate The y-coordinate that needs to be scrolled to
      * @returns {Promise}
      * @private
      */
-    _scrollToAndDetermineFullPageHeight(verticalCoordinate) {
+    _scrollToAndDetermineHeights(verticalCoordinate) {
         return browser.driver.executeAsyncScript(_scrollAndReturnFullPageHeight, verticalCoordinate, this.fullPageScrollTimeout);
 
         function _scrollAndReturnFullPageHeight(y, timeout, done) {
@@ -611,7 +625,11 @@ class protractorImageComparison {
             window.scrollTo(0, y);
             intervalId = setTimeout(function () {
                 clearInterval(intervalId);
-                done(document.body.scrollHeight);
+                var heights = {
+                    innerHeight: window.outerHeight,
+                    scrollHeight: document.body.scrollHeight
+                };
+                done(heights);
             }, timeout);
         }
 
@@ -627,38 +645,71 @@ class protractorImageComparison {
      */
     _scrollAndSave(verticalCoordinate, tag, part) {
         const currentVerticalCoordinate = (part - 1) * this.innerHeight;
+        console.log('\nverticalCoordinate = ', verticalCoordinate);
+        console.log('this.innerHeight = ', this.innerHeight);
+        console.log('currentVerticalCoordinate = ', currentVerticalCoordinate);
+        console.log('\n');
 
         let actualFullPageHeight;
         let isLastScreenshot;
 
-        return this._scrollToAndDetermineFullPageHeight(verticalCoordinate)
-            .then(height => {
-                actualFullPageHeight = height;
+        return this._scrollToAndDetermineHeights(verticalCoordinate)
+            .then(heights => {
+                console.log('\nScrolled to = ', verticalCoordinate);
+                actualFullPageHeight = heights.scrollHeight; // with dpr
+                this.innerHeight = heights.innerHeight;
+
                 return browser.takeScreenshot()
             })
             .then(screenshot => {
                 const bufferedScreenshot = new Buffer(screenshot, 'base64');
+                let cropHeight,
+                    cropTopPosition;
+
                 this.screenshotHeight = (bufferedScreenshot.readUInt32BE(20) / this.devicePixelRatio); // width = 16
 
                 // For older webdriver of Firefox and IE11, they make "fullpage" screenshots
-                const isLargeScreenshot = this.screenshotHeight > this.innerHeight;
+                const isLargeScreenshot = this.screenshotHeight > this.innerHeight && !this.nativeWebScreenshot;
 
                 // Determine current fullpageheight
                 if (isLargeScreenshot) {
                     this.fullPageHeight = this.screenshotHeight;
                 } else {
                     // Value can be equal, or bigger due to for example lazyloading
-                    this.fullPageHeight = actualFullPageHeight;
+                    this.fullPageHeight = actualFullPageHeight - this.chromeShadowPadding;
                 }
 
                 // Determine the crop height and postion from where to crop
                 isLastScreenshot = this.innerHeight * part > this.fullPageHeight;
-                const cropHeight = isLastScreenshot ? this.fullPageHeight - currentVerticalCoordinate : this.innerHeight;
-                let cropTopPosition = isLastScreenshot ? this.innerHeight - cropHeight : 0;
 
-                // large image screenshot
-                if (isLargeScreenshot) {
-                    cropTopPosition = isLastScreenshot ? currentVerticalCoordinate : verticalCoordinate;
+                if (this._isMobile() && this.nativeWebScreenshot) {
+                    // iOS + Android determine cropHeight for height
+                    // iOS + Android determine cropTopPosition for y
+                    // @todo, need to rethink the _getAndroid- and _getIOSPosition-, only give element coordinates back
+                    // and do calculation somewhere else. Start with Android
+
+                    let addressBarCurrentHeight = 0;
+                    const statusBarHeight = this.androidOffsets.statusBar;
+                    const addressBarHeight = this.androidOffsets.addressBar;
+                    const toolBarHeight = this.androidOffsets.toolBar;
+
+                    if (this.screenshotHeight === statusBarHeight + addressBarHeight + this.innerHeight + toolBarHeight) {
+                        addressBarCurrentHeight = addressBarHeight;
+                    } else if (this.screenshotHeight === statusBarHeight + addressBarHeight + this.innerHeight) {
+                        addressBarCurrentHeight = addressBarHeight;
+                    }
+
+                    const statusAndAddressBarHeight = statusBarHeight + addressBarCurrentHeight;
+
+                    cropHeight = isLastScreenshot ? this.fullPageHeight - ((this.innerHeight - this.chromeShadowPadding) * (part - 1)) : this.innerHeight - this.chromeShadowPadding;
+                    cropTopPosition = isLastScreenshot ? statusAndAddressBarHeight + this.innerHeight - cropHeight : statusAndAddressBarHeight + this.chromeShadowPadding;
+                } else {
+                    cropHeight = isLastScreenshot ? this.fullPageHeight - currentVerticalCoordinate : this.innerHeight;
+                    cropTopPosition = isLastScreenshot ? this.innerHeight - cropHeight : 0;
+                    // large image screenshot
+                    if (isLargeScreenshot) {
+                        cropTopPosition = isLastScreenshot ? currentVerticalCoordinate : verticalCoordinate;
+                    }
                 }
 
                 const rectangles = this._multiplyObjectValuesAgainstDPR({
@@ -673,6 +724,7 @@ class protractorImageComparison {
                     console.log('OLD fullPageHeight = ', actualFullPageHeight);
                     console.log('NEW fullPageHeight = ', this.fullPageHeight);
                     console.log('this.screenshotHeight = ', this.screenshotHeight);
+                    console.log('this.innerHeight = ', this.innerHeight);
                     console.log('currentVerticalCoordinate = ', currentVerticalCoordinate);
                     console.log('verticalCoordinate = ', verticalCoordinate);
                     console.log('trying part =', part);
@@ -686,7 +738,7 @@ class protractorImageComparison {
                 return this._saveCroppedScreenshot(bufferedScreenshot, this.tempFullScreenFolder, rectangles, `${tag}-${part}`)
             })
             // Or compose and save the screenshot, or scroll and save again
-            .then(() => isLastScreenshot ? this._composeAndSaveFullScreenshot(tag, part, 1) : this._scrollAndSave(this.innerHeight * part, tag, part + 1));
+            .then(() => isLastScreenshot ? this._composeAndSaveFullScreenshot(tag, part, 1) : this._scrollAndSave((this.innerHeight- this.chromeShadowPadding) * part, tag, part + 1));
     }
 
     /**
@@ -834,7 +886,7 @@ class protractorImageComparison {
         this.disableCSSAnimation = saveOptions.disableCSSAnimation || saveOptions.disableCSSAnimation === false ? saveOptions.disableCSSAnimation : this.disableCSSAnimation;
 
         return this._getInstanceData()
-            .then(()=> browser.takeScreenshot())
+            .then(() => browser.takeScreenshot())
             .then(screenshot => {
                 bufferedScreenshot = new Buffer(screenshot, 'base64');
                 this.screenshotHeight = (bufferedScreenshot.readUInt32BE(20) / this.devicePixelRatio); // width = 16
@@ -872,7 +924,7 @@ class protractorImageComparison {
 
         // Start scrolling at y=0
         return this._getInstanceData()
-            .then(()=> this._scrollAndSave(0, tag, 1));
+            .then(() => this._scrollAndSave(0, tag, 1));
     }
 
     /**
