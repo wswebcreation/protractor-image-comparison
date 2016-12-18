@@ -254,13 +254,7 @@ class protractorImageComparison {
         compareOptions.ignoreColors = 'ignoreColors' in compareOptions ? compareOptions.ignoreColors : this.ignoreColors;
         compareOptions.ignoreRectangles = 'ignoreRectangles' in compareOptions ? compareOptions.ignoreRectangles.push(ignoreRectangles) : ignoreRectangles;
 
-        if (this.debug) {
-            console.log('\n####################################################');
-            console.log('compareOptions = ', compareOptions);
-            console.log('####################################################\n');
-        }
-
-        if (this._isMobile() && this.nativeWebScreenshot && compareOptions.isScreen && blockOutStatusBar) {
+        if (this._isMobile() && ((this.nativeWebScreenshot && compareOptions.isScreen) || (this._isIOS())) && blockOutStatusBar) {
             const statusBarHeight = this._isAndroid() ? this.androidOffsets.statusBar : this.iosOffsets.statusBar,
                 statusBarBlockOut = [this._multiplyObjectValuesAgainstDPR({
                     x: 0,
@@ -270,6 +264,12 @@ class protractorImageComparison {
                 })];
 
             compareOptions.ignoreRectangles = statusBarBlockOut;
+        }
+
+        if (this.debug) {
+            console.log('\n####################################################');
+            console.log('compareOptions = ', compareOptions);
+            console.log('####################################################\n');
         }
 
         return new Promise(resolve => {
@@ -738,7 +738,7 @@ class protractorImageComparison {
                 return this._saveCroppedScreenshot(bufferedScreenshot, this.tempFullScreenFolder, rectangles, `${tag}-${part}`)
             })
             // Or compose and save the screenshot, or scroll and save again
-            .then(() => isLastScreenshot ? this._composeAndSaveFullScreenshot(tag, part, 1) : this._scrollAndSave((this.innerHeight- this.chromeShadowPadding) * part, tag, part + 1));
+            .then(() => isLastScreenshot ? this._composeAndSaveFullScreenshot(tag, part, 1) : this._scrollAndSave((this.innerHeight - this.chromeShadowPadding) * part, tag, part + 1));
     }
 
     /**

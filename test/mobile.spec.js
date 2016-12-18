@@ -90,7 +90,7 @@ describe('protractor-protractor-image-comparison', () => {
                     browser.imageComparson = new imageComparison({
                         baselineFolder: './test/baseline/mobile/',
                         blockOutStatusBar: true,
-                        debug: false,
+                        debug: true,
                         formatImageName: `{tag}-${logName}-{width}x{height}-dpr-{dpr}`,
                         nativeWebScreenshot: ADBScreenshot,
                         screenshotPath: './.tmp/'
@@ -139,7 +139,7 @@ describe('protractor-protractor-image-comparison', () => {
 
                     browser.imageComparson = new imageComparison({
                         baselineFolder: './test/baseline/mobile/',
-                        debug: false,
+                        debug: true,
                         formatImageName: `{tag}-${logName}-{width}x{height}-dpr-{dpr}`,
                         nativeWebScreenshot: ADBScreenshot,
                         screenshotPath: './.tmp/'

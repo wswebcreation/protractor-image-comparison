@@ -1,3 +1,24 @@
+<a name="1.0.0"></a>
+# [1.0.0](https://github.com/wswebcreation/protractor-image-comparison/compare/v0.1.5...v1.0.0) (2016-12-18)
+
+
+### Bug Fixes
+
+* **chrome-screenshots:** add new baselinescreenshots ([2624d55](https://github.com/wswebcreation/protractor-image-comparison/commit/2624d55))
+* **mobile:** fix blockOutStatusBar in _executeImageComparison for iOS ([a7ea346](https://github.com/wswebcreation/protractor-image-comparison/commit/a7ea346))
+
+
+### Features
+
+* **fullpage-appium:** first screenshots for appium chromedriver fullpage ([7b91ebb](https://github.com/wswebcreation/protractor-image-comparison/commit/7b91ebb))
+
+
+### BREAKING CHANGES
+
+* chrome-screenshots: the scrollbar in Chrome is hidden by default. This causes a bigger screenshot result and may break with the baseline images of chrome
+
+
+
 <a name="0.1.5"></a>
 ## [0.1.5](https://github.com/wswebcreation/protractor-image-comparison/compare/v0.1.4...v0.1.5) (2016-12-05)
 
@@ -5,6 +26,7 @@
 ### Bug Fixes
 
 * **comparison-api:** incorrect comparison api implementation, do not use version 0.1.4 ([6112bb8](https://github.com/wswebcreation/protractor-image-comparison/commit/6112bb8))
+* **scrollbar:** remove scrollbars during saveScreen ([5a2c1df](https://github.com/wswebcreation/protractor-image-comparison/commit/5a2c1df))
 
 
 
@@ -14,7 +36,9 @@
 
 ### Bug Fixes
 
+* **checkFullPageScreenshot:** add ignoreRectangles ([a9c66a9](https://github.com/wswebcreation/protractor-image-comparison/commit/a9c66a9))
 * **coverage:** optimized tests and coverage to 92.13,80,92.86,92.13 This is starting point ([f5290cf](https://github.com/wswebcreation/protractor-image-comparison/commit/f5290cf))
+* **fullpage:** saveFullPageScreenshot beta for chrome, firefox latest and edge ([f7fb8cf](https://github.com/wswebcreation/protractor-image-comparison/commit/f7fb8cf))
 * **resemble:** fix code issues ([2350f77](https://github.com/wswebcreation/protractor-image-comparison/commit/2350f77))
 * **resemble:** merge resemble.js latest stuff, add tests ([6e5988b](https://github.com/wswebcreation/protractor-image-comparison/commit/6e5988b))
 * **resemble:** merge resemble.js latest stuff, add tests ([306a69a](https://github.com/wswebcreation/protractor-image-comparison/commit/306a69a))
@@ -23,6 +47,9 @@
 
 ### Features
 
+* **fullpage:** add ie11 and firefox for large screenshots ([849c4f9](https://github.com/wswebcreation/protractor-image-comparison/commit/849c4f9))
+* **fullpage:** initial commit of fullpage screenshot. now saved as seperate files ([4f60b6c](https://github.com/wswebcreation/protractor-image-comparison/commit/4f60b6c))
+* **index:** add checkFullPage, testcases and images. Add disableAnimation ([3646829](https://github.com/wswebcreation/protractor-image-comparison/commit/3646829))
 * **resemble:** refactor resemble and add 2 new features, see docs.Add unit tests ([09df28b](https://github.com/wswebcreation/protractor-image-comparison/commit/09df28b))
 
 
@@ -49,6 +76,11 @@
 * **dependencies:** set hard devdependencies ([d38fff8](https://github.com/wswebcreation/protractor-image-comparison/commit/d38fff8))
 * **nativeWebScreenshot:** fix nativeWebScreenshot only overrule if value is false ([94e0636](https://github.com/wswebcreation/protractor-image-comparison/commit/94e0636))
 * **resizeDimensions:** fix false statement ([f3d819e](https://github.com/wswebcreation/protractor-image-comparison/commit/f3d819e))
+
+
+### Features
+
+* **initial:** initial commit ([023df41](https://github.com/wswebcreation/protractor-image-comparison/commit/023df41))
 
 
 

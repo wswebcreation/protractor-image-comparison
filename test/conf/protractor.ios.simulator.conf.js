@@ -7,7 +7,7 @@ config.capabilities = {
     deviceName: 'iPhone 6',
     logName: 'iPhone6',
     platformName: 'ios',
-    platformVersion: '10.0'
+    platformVersion: '10.2'
 };
 
 config.seleniumAddress = 'http://localhost:4726/wd/hub';
