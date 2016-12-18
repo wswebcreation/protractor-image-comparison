@@ -230,48 +230,4 @@ describe('protractor-protractor-image-comparison', () => {
                 .then(() =>expect(browser.imageComparson.checkElement(dangerAlert, 'new-offset-element')).toEqual(0));
         });
     });
-
-    describe('compare fullpage screenshot', () => {
-        beforeEach(function () {
-            browser.getProcessedConfig()
-                .then(_ => {
-                    ADBScreenshot = _.capabilities.nativeWebScreenshot || false;
-
-                    browser.imageComparson = new imageComparison({
-                        baselineFolder: './test/baseline/mobile/',
-                        blockOutStatusBar: true,
-                        debug: true,
-                        formatImageName: `{tag}-${logName}-{width}x{height}-dpr-{dpr}`,
-                        nativeWebScreenshot: ADBScreenshot,
-                        screenshotPath: './.tmp/',
-                        // Custom android offset
-                        androidOffsets: {
-                            statusBar: 50,
-                            addressBar: 100,
-                            toolBar: 60
-                        },
-                        // Custom iOS offset
-                        iosOffsets: {
-                            statusBar: 40,
-                            addressBar: 100
-                        }
-                    });
-
-                    return browser.get(browser.baseUrl);
-                })
-                .then(() => browser.sleep(1500));
-        });
-
-        const exampleFullPage = 'example-fullpage-compare',
-            examplePageFail = `${exampleFullPage}-fail`;
-
-        it('should compare successful with a baseline', () => {
-            expect(browser.imageComparson.checkFullPageScreen(exampleFullPage)).toEqual(0);
-        });
-
-        fit('should fail comparing with a baseline', () => {
-            browser.executeScript('arguments[0].innerHTML = "Test Demo Page"; arguments[1].style.color = "#2d7091";', headerElement.getWebElement(), dangerAlert.getWebElement())
-                .then(() => expect(browser.imageComparson.checkFullPageScreen(examplePageFail)).toBeGreaterThan(0));
-        });
-    });
 });
