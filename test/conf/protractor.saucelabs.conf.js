@@ -12,7 +12,7 @@ config.multiCapabilities = [
     // Mobile
     {
         // SauceLabs
-        appiumVersion: "1.6.0",
+        appiumVersion: "1.6.3",
         browserName: 'Safari',
         deviceName: "iPhone 6 Simulator",
         deviceOrientation: "portrait",
@@ -30,7 +30,7 @@ config.multiCapabilities = [
     },
     {
         // SauceLabs
-        appiumVersion: "1.6.0",
+        appiumVersion: "1.6.3",
         browserName: 'Safari',
         deviceName: "iPad Air 2 Simulator",
         deviceOrientation: "portrait",
