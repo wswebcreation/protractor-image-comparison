@@ -1,14 +1,11 @@
 let config = require('./protractor.shared.conf.js').config;
 
-config.directConnect = true;
-
 config.specs= ['../jasmine.spec.js'];
 
 config.multiCapabilities = [
     {
         browserName: 'chrome',
         logName: "Chrome",
-        maxInstances: 10,
         shardTestFiles: true,
         chromeOptions: { //check args with: chrome://version
             args: [
@@ -19,11 +16,11 @@ config.multiCapabilities = [
                 '--v8-cache-options=off'
             ]
         }
-    },
+    }
+    ,
     {
         browserName: 'firefox',
         logName: 'Firefox',
-        maxInstances: 10,
         shardTestFiles: true
     }
 ];
