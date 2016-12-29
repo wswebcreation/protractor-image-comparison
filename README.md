@@ -14,7 +14,7 @@ You can:
 
 - save or compare screens / elements against a baseline
 - **NEW:** save or compare a fullpage screenshot against a baseline (**only browsers are currently supported**)
-- **NEW:** disbale css animations by default
+- **NEW:** disable css animations by default
 - blockout custom regions during comparison (all)
 - increase the element dimenisions screenshots (all)
 - provide custom iOS and Android offsets for status-/address-/toolbar (mobile only)
