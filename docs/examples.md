@@ -12,7 +12,7 @@ exports.config = {
         browser. protractorImageComparison = new protractorImageComparison(
             {
                 baselineFolder: 'path/to/baseline/',
-                screenshotPath: 'path/to/diff/'
+                screenshotPath: 'path/to/save/actual/screenshots/'
             }
         );
     },
