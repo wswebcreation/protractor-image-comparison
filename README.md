@@ -77,7 +77,8 @@ See [CONTRIBUTING.md](./docs/CONTRIBUTING.md).
 - Comparison core of `./lib/resemble.js` [node-resemble](https://github.com/lksv/node-resemble.js) + [ResembleJS](https://github.com/Huddle/Resemble.js)
 
 ## TODO
+* Provide an option to automatically copy a file to the baseline if it doesn't exists
+* Provide an option to clean the given `screenshotPath` before running
+* Be able to use `saveFullPageScreens` and `checkFullPageScreen` for mobile
 * Update documentation for Mobile
-* Update tests
 * New (mobile friendly) testpage
-* Add `clean` method to clean the given `screenshotPath` before running
