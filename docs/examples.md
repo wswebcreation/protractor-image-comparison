@@ -11,8 +11,8 @@ exports.config = {
         const protractorImageComparison = require('protractor-image-comparison');
         browser. protractorImageComparison = new protractorImageComparison(
             {
-                basePath: 'path/to/baseline/',
-                diffPath: 'path/to/diff/'
+                baselineFolder: 'path/to/baseline/',
+                screenshotPath: 'path/to/diff/'
             }
         );
     },
