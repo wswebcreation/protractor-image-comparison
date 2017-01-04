@@ -32,6 +32,7 @@ Code details and example usage can be found [here](./index.md).
 
 * `baselineFolder` Defines the path to the reference images that are to be compared.
 * `screenshotPath` Defines the path to where the "actual" captured images need to be saved.
+* `autoSaveBaseline` If no baseline image is found the image is automatically copied to the baselinefolder (default:false)
 * `debug` Will add extra logging to the console (default:false)
 * `formatImageName` Naming format for images (default: `{tag}-{browserName}-{width}x{height}-dpr-{dpr}`), see **Conventions: image naming** for more info
 * `disableCSSAnimation` Disable all css animations on a page (default: false).

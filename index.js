@@ -1,14 +1,5 @@
 'use strict';
 
-const assert = require('assert'),
-    camelCase = require('camel-case'),
-    fs = require('fs'),
-    mkdirp = require('mkdirp'),
-    path = require('path'),
-    PNGImage = require('png-image'),
-    PNGJSImage = require('pngjs-image'),
-    resembleJS = require('./lib/resemble');
-
 /**
  * image-diff protractor plugin class
  *
@@ -17,6 +8,7 @@ const assert = require('assert'),
  * @param {object} options
  * @param {string} options.baselineFolder Path to the baseline folder
  * @param {string} options.screenshotPath Path to the folder where the screenshots are saved
+ * @param {string} options.autoSaveBaseline If no baseline image is found the image is automatically copied to the baselinefolder
  * @param {boolean} options.debug Add some extra logging and always save the image difference (default:false)
  * @param {string} options.formatImageOptions Custom variables for Image Name (default:{tag}-{browserName}-{width}x{height}-dpr-{dpr})
  * @param {boolean} options.disableCSSAnimation Disable all css animations on a page (default:false)
@@ -38,6 +30,14 @@ const assert = require('assert'),
  * @property {int} fullPageScrollTimeout Default timeout to wait after a scroll
  */
 
+const assert = require('assert'),
+    camelCase = require('camel-case'),
+    fs = require('fs-extra'),
+    path = require('path'),
+    PNGImage = require('png-image'),
+    PNGJSImage = require('pngjs-image'),
+    resembleJS = require('./lib/resemble');
+
 class protractorImageComparison {
     constructor(options) {
         assert.ok(options.baselineFolder, 'Image baselineFolder not given.');
@@ -45,9 +45,10 @@ class protractorImageComparison {
 
         this.baselineFolder = path.normalize(options.baselineFolder);
         this.baseFolder = path.normalize(options.screenshotPath);
+        this.autoSaveBaseline = options.autoSaveBaseline || false;
         this.debug = options.debug || false;
-        this.formatString = options.formatImageName || '{tag}-{browserName}-{width}x{height}-dpr-{dpr}';
         this.disableCSSAnimation = options.disableCSSAnimation || false;
+        this.formatString = options.formatImageName || '{tag}-{browserName}-{width}x{height}-dpr-{dpr}';
 
         this.nativeWebScreenshot = options.nativeWebScreenshot ? true : false;
         this.blockOutStatusBar = options.blockOutStatusBar ? true : false;
@@ -84,21 +85,10 @@ class protractorImageComparison {
         this.tempFullScreenFolder = path.join(this.baseFolder, 'tempFullScreen');
         this.fullPageScrollTimeout = 1000;
 
-        if (!fs.existsSync(this.diffFolder) || !fs.statSync(this.diffFolder).isDirectory()) {
-            mkdirp.sync(this.diffFolder);
-        }
-
-        if (!fs.existsSync(this.baselineFolder) || !fs.statSync(this.baselineFolder).isDirectory()) {
-            mkdirp.sync(this.baselineFolder);
-        }
-
-        if (!fs.existsSync(this.actualFolder) || !fs.statSync(this.actualFolder).isDirectory()) {
-            mkdirp.sync(this.actualFolder);
-        }
-
-        if (!fs.existsSync(this.tempFullScreenFolder) || !fs.statSync(this.tempFullScreenFolder).isDirectory()) {
-            mkdirp.sync(this.tempFullScreenFolder);
-        }
+        fs.ensureDirSync(this.actualFolder);
+        fs.ensureDirSync(this.baselineFolder);
+        fs.ensureDirSync(this.diffFolder);
+        fs.ensureDirSync(this.tempFullScreenFolder);
     }
 
     /**
@@ -111,10 +101,18 @@ class protractorImageComparison {
         return new Promise((resolve, reject) => {
             fs.access(path.join(this.baselineFolder, this._formatFileName(tag)), fs.F_OK, error => {
                 if (error) {
-                    reject('Image not found, saving current image as new baseline.');
-                } else {
-                    resolve();
+                    if (this.baselineFolder) {
+                        try {
+                            fs.copySync(path.join(this.actualFolder, this._formatFileName(tag)), path.join(this.baselineFolder, this._formatFileName(tag)));
+                            console.log(`\nINFO: Autosaved the image to ${path.join(this.baselineFolder, this._formatFileName(tag))}\n`);
+                        } catch (error) {
+                            reject(`Image could not be copied. The following error was thrown: ${error}`);
+                        }
+                    } else {
+                        reject('Image not found, saving current image as new baseline.');
+                    }
                 }
+                resolve();
             });
         });
     }
@@ -254,7 +252,7 @@ class protractorImageComparison {
             compareOptions.ignoreRectangles = statusBarBlockOut;
         }
 
-        if(this.debug){
+        if (this.debug) {
             console.log('\n####################################################');
             console.log('compareOptions = ', compareOptions);
             console.log('####################################################\n');
@@ -834,7 +832,7 @@ class protractorImageComparison {
         this.disableCSSAnimation = saveOptions.disableCSSAnimation || saveOptions.disableCSSAnimation === false ? saveOptions.disableCSSAnimation : this.disableCSSAnimation;
 
         return this._getInstanceData()
-            .then(()=> browser.takeScreenshot())
+            .then(() => browser.takeScreenshot())
             .then(screenshot => {
                 bufferedScreenshot = new Buffer(screenshot, 'base64');
                 this.screenshotHeight = (bufferedScreenshot.readUInt32BE(20) / this.devicePixelRatio); // width = 16
@@ -872,7 +870,7 @@ class protractorImageComparison {
 
         // Start scrolling at y=0
         return this._getInstanceData()
-            .then(()=> this._scrollAndSave(0, tag, 1));
+            .then(() => this._scrollAndSave(0, tag, 1));
     }
 
     /**

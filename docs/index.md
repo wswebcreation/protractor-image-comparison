@@ -1,7 +1,7 @@
 ## Classes
 
 <dl>
-<dt><a href="#protractorImageComparison">protractorImageComparison</a></dt>
+<dt><a href="#assert">assert</a></dt>
 <dd><p>protractorImageComparison</p>
 </dd>
 </dl>
@@ -29,9 +29,9 @@
 </dd>
 </dl>
 
-<a name="protractorImageComparison"></a>
+<a name="assert"></a>
 
-## protractorImageComparison
+## assert
 protractorImageComparison
 
 **Kind**: global class  
@@ -49,15 +49,18 @@ protractorImageComparison
 | tempFullScreenFolder | <code>string</code> | Path where the temporary fullscreens are saved |
 | fullPageScrollTimeout | <code>int</code> | Default timeout to wait after a scroll |
 
-<a name="new_protractorImageComparison_new"></a>
+<a name="new_assert_new"></a>
 
-### new protractorImageComparison(options)
+### new assert(options)
+image-diff protractor plugin class
+
 
 | Param | Type | Description |
 | --- | --- | --- |
 | options | <code>object</code> |  |
 | options.baselineFolder | <code>string</code> | Path to the baseline folder |
 | options.screenshotPath | <code>string</code> | Path to the folder where the screenshots are saved |
+| options.autoSaveBaseline | <code>string</code> | If no baseline image is found the image is automatically copied to the baselinefolder |
 | options.debug | <code>boolean</code> | Add some extra logging and always save the image difference (default:false) |
 | options.formatImageOptions | <code>string</code> | Custom variables for Image Name (default:{tag}-{browserName}-{width}x{height}-dpr-{dpr}) |
 | options.disableCSSAnimation | <code>boolean</code> | Disable all css animations on a page (default:false) |
