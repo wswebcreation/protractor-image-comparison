@@ -62,7 +62,7 @@ image-diff protractor plugin class
 | options.screenshotPath | <code>string</code> | Path to the folder where the screenshots are saved |
 | options.autoSaveBaseline | <code>string</code> | If no baseline image is found the image is automatically copied to the baselinefolder |
 | options.debug | <code>boolean</code> | Add some extra logging and always save the image difference (default:false) |
-| options.formatImageOptions | <code>string</code> | Custom variables for Image Name (default:{tag}-{browserName}-{width}x{height}-dpr-{dpr}) |
+| options.formatImageName | <code>string</code> | Custom variables for Image Name (default:{tag}-{browserName}-{width}x{height}-dpr-{dpr}) |
 | options.disableCSSAnimation | <code>boolean</code> | Disable all css animations on a page (default:false) |
 | options.nativeWebScreenshot | <code>boolean</code> | If a native screenshot of a device (complete screenshot) needs to be taken (default:false) |
 | options.blockOutStatusBar | <code>boolean</code> | If the statusbar on mobile / tablet needs to blocked out by default |
