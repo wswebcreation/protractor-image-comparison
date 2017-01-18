@@ -1,5 +1,6 @@
-var program = require('commander'),
-    run = require('./conf/');
+'use strict';
+const program = require('commander');
+const run = require('./conf/');
 
 program
     .command('image-comparison')
