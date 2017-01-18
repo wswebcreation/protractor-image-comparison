@@ -30,13 +30,13 @@
  * @property {int} fullPageScrollTimeout Default timeout to wait after a scroll
  */
 
-const assert = require('assert'),
-    camelCase = require('camel-case'),
-    fs = require('fs-extra'),
-    path = require('path'),
-    PNGImage = require('png-image'),
-    PNGJSImage = require('pngjs-image'),
-    resembleJS = require('./lib/resemble');
+const assert = require('assert');
+const camelCase = require('camel-case');
+const fs = require('fs-extra');
+const path = require('path');
+const PNGImage = require('png-image');
+const PNGJSImage = require('pngjs-image');
+const resembleJS = require('./lib/resemble');
 
 class protractorImageComparison {
     constructor(options) {
@@ -57,17 +57,17 @@ class protractorImageComparison {
         this.ignoreColors = options.ignoreColors || false;
 
         // OS offsets
-        let androidOffsets = options.androidOffsets && typeof options.androidOffsets === 'object' ? options.androidOffsets : {},
-            iosOffsets = options.iosOffsets && typeof options.iosOffsets === 'object' ? options.iosOffsets : {},
-            androidDefaultOffsets = {
-                statusBar: 24,
-                addressBar: 56,
-                toolBar: 48
-            },
-            iosDefaultOffsets = {
-                statusBar: 20,
-                addressBar: 44
-            };
+        let androidOffsets = options.androidOffsets && typeof options.androidOffsets === 'object' ? options.androidOffsets : {};
+        let iosOffsets = options.iosOffsets && typeof options.iosOffsets === 'object' ? options.iosOffsets : {};
+        let androidDefaultOffsets = {
+            statusBar: 24,
+            addressBar: 56,
+            toolBar: 48
+        };
+        let iosDefaultOffsets = {
+            statusBar: 20,
+            addressBar: 44
+        };
 
         this.androidOffsets = this._mergeDefaultOptions(androidDefaultOffsets, androidOffsets);
         this.iosOffsets = this._mergeDefaultOptions(iosDefaultOffsets, iosOffsets);
@@ -92,16 +92,16 @@ class protractorImageComparison {
     }
 
     /**
-     * Checks if image exists as a baseline image
+     * Checks if image exists as a baseline image, if not, create a baseline image if needed
      * @param {string} tag
      * @returns {Promise}
      * @private
      */
     _checkImageExists(tag) {
         return new Promise((resolve, reject) => {
-            fs.access(path.join(this.baselineFolder, this._formatFileName(tag)), fs.F_OK, error => {
+            fs.access(path.join(this.baselineFolder, this._formatFileName(tag)), error => {
                 if (error) {
-                    if (this.baselineFolder) {
+                    if (this.autoSaveBaseline) {
                         try {
                             fs.copySync(path.join(this.actualFolder, this._formatFileName(tag)), path.join(this.baselineFolder, this._formatFileName(tag)));
                             console.log(`\nINFO: Autosaved the image to ${path.join(this.baselineFolder, this._formatFileName(tag))}\n`);
@@ -136,10 +136,7 @@ class protractorImageComparison {
         if (part === 1) {
             imageOutput = PNGJSImage.createImage(imageWidth, imageHeight);
         } else if (part > parts) {
-            return new Promise(resolve => {
-                imageOutput.writeImageSync(path.join(this.actualFolder, this._formatFileName(tag)));
-                resolve();
-            });
+            return Promise.resolve(imageOutput.writeImageSync(path.join(this.actualFolder, this._formatFileName(tag))));
         }
 
         const stitchImage = PNGJSImage.readImageSync(path.join(this.tempFullScreenFolder, this._formatFileName(`${tag}-${part}`)));
@@ -155,11 +152,11 @@ class protractorImageComparison {
      * @private
      */
     _determineRectangles(element) {
-        let height,
-            rect,
-            width,
-            x,
-            y;
+        let height;
+        let rect;
+        let width;
+        let x;
+        let y;
 
         return element.getSize()
             .then(elementSize => {
@@ -209,8 +206,8 @@ class protractorImageComparison {
      * @private
      */
     _determineImageComparisonPaths(tag) {
-        const imageComparisonPaths = {},
-            tagName = this._formatFileName(tag);
+        const imageComparisonPaths = {};
+        const tagName = this._formatFileName(tag);
 
         imageComparisonPaths['actualImage'] = path.join(this.actualFolder, tagName);
         imageComparisonPaths['baselineImage'] = path.join(this.baselineFolder, tagName);
@@ -222,11 +219,11 @@ class protractorImageComparison {
     /**
      * Compare images against each other
      * @param {string} tag The tag that is used
-     * @param {object} options comparison options
-     * @param {object} options.blockOut blockout with x, y, width and height values
-     * @param {boolean} options.blockOutStatusBar blockout the statusbar yes or no, it will override the global
-     * @param {boolean} options.ignoreAntialiasing compare images an discard anti aliasing
-     * @param {boolean} options.ignoreColors Even though the images are in colour, the comparison wil compare 2 black/white images
+     * @param {object} compareOptions comparison options
+     * @param {object} compareOptions.blockOut blockout with x, y, width and height values
+     * @param {boolean} compareOptions.blockOutStatusBar blockout the statusbar yes or no, it will override the global
+     * @param {boolean} compareOptions.ignoreAntialiasing compare images an discard anti aliasing
+     * @param {boolean} compareOptions.ignoreColors Even though the images are in colour, the comparison wil compare 2 black/white images
      * @returns {Promise}
      * @private
      */
@@ -310,17 +307,17 @@ class protractorImageComparison {
      */
     _formatFileName(tag) {
         let defaults = {
-                'browserName': this.browserName,
-                'deviceName': this.deviceName,
-                'dpr': this.devicePixelRatio,
-                'height': this.height,
-                'logName': camelCase(this.logName),
-                'mobile': this._isMobile() && this.testInBrowser ? this.browserName : this._isMobile() ? 'app' : '',
-                'name': this.name,
-                'tag': tag,
-                'width': this.width
-            },
-            formatString = this.formatString;
+            'browserName': this.browserName,
+            'deviceName': this.deviceName,
+            'dpr': this.devicePixelRatio,
+            'height': this.height,
+            'logName': camelCase(this.logName),
+            'mobile': this._isMobile() && this.testInBrowser ? this.browserName : this._isMobile() ? 'app' : '',
+            'name': this.name,
+            'tag': tag,
+            'width': this.width
+        };
+        let formatString = this.formatString;
 
         defaults = this._mergeDefaultOptions(defaults, this.formatOptions);
 
@@ -554,7 +551,7 @@ class protractorImageComparison {
     _mergeDefaultOptions(optionsA, optionsB) {
         optionsB = (typeof optionsB === 'object') ? optionsB : {};
 
-        for (var option in optionsB) {
+        for (let option in optionsB) {
             if (optionsA.hasOwnProperty(option)) {
                 optionsA[option] = optionsB[option];
             }
@@ -632,6 +629,7 @@ class protractorImageComparison {
         return this._scrollToAndDetermineFullPageHeight(verticalCoordinate)
             .then(height => {
                 actualFullPageHeight = height;
+
                 return browser.takeScreenshot()
             })
             .then(screenshot => {
@@ -825,8 +823,8 @@ class protractorImageComparison {
      * @public
      */
     saveElement(element, tag, options) {
-        let saveOptions = options || [],
-            bufferedScreenshot;
+        let saveOptions = options || [];
+        let bufferedScreenshot;
 
         this.resizeDimensions = saveOptions.resizeDimensions ? saveOptions.resizeDimensions : this.resizeDimensions;
         this.disableCSSAnimation = saveOptions.disableCSSAnimation || saveOptions.disableCSSAnimation === false ? saveOptions.disableCSSAnimation : this.disableCSSAnimation;
