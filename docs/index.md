@@ -60,7 +60,7 @@ image-diff protractor plugin class
 | options | <code>object</code> |  |
 | options.baselineFolder | <code>string</code> | Path to the baseline folder |
 | options.screenshotPath | <code>string</code> | Path to the folder where the screenshots are saved |
-| options.autoSaveBaseline | <code>string</code> | If no baseline image is found the image is automatically copied to the baselinefolder |
+| options.autoSaveBaseline | <code>boolean</code> | If no baseline image is found the image is automatically copied to the baselinefolder |
 | options.debug | <code>boolean</code> | Add some extra logging and always save the image difference (default:false) |
 | options.formatImageName | <code>string</code> | Custom variables for Image Name (default:{tag}-{browserName}-{width}x{height}-dpr-{dpr}) |
 | options.disableCSSAnimation | <code>boolean</code> | Disable all css animations on a page (default:false) |

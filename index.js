@@ -8,7 +8,7 @@
  * @param {object} options
  * @param {string} options.baselineFolder Path to the baseline folder
  * @param {string} options.screenshotPath Path to the folder where the screenshots are saved
- * @param {string} options.autoSaveBaseline If no baseline image is found the image is automatically copied to the baselinefolder
+ * @param {boolean} options.autoSaveBaseline If no baseline image is found the image is automatically copied to the baselinefolder
  * @param {boolean} options.debug Add some extra logging and always save the image difference (default:false)
  * @param {string} options.formatImageName Custom variables for Image Name (default:{tag}-{browserName}-{width}x{height}-dpr-{dpr})
  * @param {boolean} options.disableCSSAnimation Disable all css animations on a page (default:false)

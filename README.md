@@ -78,7 +78,6 @@ See [CONTRIBUTING.md](./docs/CONTRIBUTING.md).
 - Comparison core of `./lib/resemble.js` [node-resemble](https://github.com/lksv/node-resemble.js) + [ResembleJS](https://github.com/Huddle/Resemble.js)
 
 ## TODO
-* Provide an option to clean the given `screenshotPath` before running
 * Be able to use `saveFullPageScreens` and `checkFullPageScreen` for mobile
 * Update documentation for Mobile
 * New (mobile friendly) testpage
