@@ -17,6 +17,7 @@ You can:
 - **NEW:** disable css animations by default
 - **NEW** ignore anti-aliasing differences
 - **NEW** compare images by ignoring their colors (do a grayscale comparison)
+- **NEW** automatically create a baseline when no baseline is there
 - blockout custom regions during comparison (all)
 - increase the element dimenisions screenshots (all)
 - provide custom iOS and Android offsets for status-/address-/toolbar (mobile only)
@@ -52,7 +53,7 @@ If you run for the first time without having a baseline the `check`-methods will
     `Image not found, saving current image as new baseline.`
 
 This means that the current screenshot is saved and you **manually need to copy it to your baseline**. 
-In a following release an option will be provided to automatically copy it to your baseline folder.
+If you instantiate `protractor-image-comparsion` with `autoSaveBaseline: true`, see [docs](./docs/index.md), the image will automatically be saved into the baselinefolder.
 
 
 *protractor-image-comparison* provides:
@@ -77,7 +78,6 @@ See [CONTRIBUTING.md](./docs/CONTRIBUTING.md).
 - Comparison core of `./lib/resemble.js` [node-resemble](https://github.com/lksv/node-resemble.js) + [ResembleJS](https://github.com/Huddle/Resemble.js)
 
 ## TODO
-* Provide an option to automatically copy a file to the baseline if it doesn't exists
 * Provide an option to clean the given `screenshotPath` before running
 * Be able to use `saveFullPageScreens` and `checkFullPageScreen` for mobile
 * Update documentation for Mobile

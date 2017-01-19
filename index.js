@@ -1,14 +1,5 @@
 'use strict';
 
-const assert = require('assert'),
-    camelCase = require('camel-case'),
-    fs = require('fs'),
-    mkdirp = require('mkdirp'),
-    path = require('path'),
-    PNGImage = require('png-image'),
-    PNGJSImage = require('pngjs-image'),
-    resembleJS = require('./lib/resemble');
-
 /**
  * image-diff protractor plugin class
  *
@@ -17,8 +8,9 @@ const assert = require('assert'),
  * @param {object} options
  * @param {string} options.baselineFolder Path to the baseline folder
  * @param {string} options.screenshotPath Path to the folder where the screenshots are saved
+ * @param {string} options.autoSaveBaseline If no baseline image is found the image is automatically copied to the baselinefolder
  * @param {boolean} options.debug Add some extra logging and always save the image difference (default:false)
- * @param {string} options.formatImageOptions Custom variables for Image Name (default:{tag}-{browserName}-{width}x{height}-dpr-{dpr})
+ * @param {string} options.formatImageName Custom variables for Image Name (default:{tag}-{browserName}-{width}x{height}-dpr-{dpr})
  * @param {boolean} options.disableCSSAnimation Disable all css animations on a page (default:false)
  * @param {boolean} options.nativeWebScreenshot If a native screenshot of a device (complete screenshot) needs to be taken (default:false)
  * @param {boolean} options.blockOutStatusBar  If the statusbar on mobile / tablet needs to blocked out by default
@@ -38,6 +30,14 @@ const assert = require('assert'),
  * @property {int} fullPageScrollTimeout Default timeout to wait after a scroll
  */
 
+const assert = require('assert');
+const camelCase = require('camel-case');
+const fs = require('fs-extra');
+const path = require('path');
+const PNGImage = require('png-image');
+const PNGJSImage = require('pngjs-image');
+const resembleJS = require('./lib/resemble');
+
 class protractorImageComparison {
     constructor(options) {
         assert.ok(options.baselineFolder, 'Image baselineFolder not given.');
@@ -45,9 +45,10 @@ class protractorImageComparison {
 
         this.baselineFolder = path.normalize(options.baselineFolder);
         this.baseFolder = path.normalize(options.screenshotPath);
+        this.autoSaveBaseline = options.autoSaveBaseline || false;
         this.debug = options.debug || false;
-        this.formatString = options.formatImageName || '{tag}-{browserName}-{width}x{height}-dpr-{dpr}';
         this.disableCSSAnimation = options.disableCSSAnimation || false;
+        this.formatString = options.formatImageName || '{tag}-{browserName}-{width}x{height}-dpr-{dpr}';
 
         this.nativeWebScreenshot = options.nativeWebScreenshot ? true : false;
         this.blockOutStatusBar = options.blockOutStatusBar ? true : false;
@@ -56,17 +57,17 @@ class protractorImageComparison {
         this.ignoreColors = options.ignoreColors || false;
 
         // OS offsets
-        let androidOffsets = options.androidOffsets && typeof options.androidOffsets === 'object' ? options.androidOffsets : {},
-            iosOffsets = options.iosOffsets && typeof options.iosOffsets === 'object' ? options.iosOffsets : {},
-            androidDefaultOffsets = {
-                statusBar: 24,
-                addressBar: 56,
-                toolBar: 48
-            },
-            iosDefaultOffsets = {
-                statusBar: 20,
-                addressBar: 44
-            };
+        let androidOffsets = options.androidOffsets && typeof options.androidOffsets === 'object' ? options.androidOffsets : {};
+        let iosOffsets = options.iosOffsets && typeof options.iosOffsets === 'object' ? options.iosOffsets : {};
+        let androidDefaultOffsets = {
+            statusBar: 24,
+            addressBar: 56,
+            toolBar: 48
+        };
+        let iosDefaultOffsets = {
+            statusBar: 20,
+            addressBar: 44
+        };
 
         this.androidOffsets = this._mergeDefaultOptions(androidDefaultOffsets, androidOffsets);
         this.iosOffsets = this._mergeDefaultOptions(iosDefaultOffsets, iosOffsets);
@@ -84,37 +85,34 @@ class protractorImageComparison {
         this.tempFullScreenFolder = path.join(this.baseFolder, 'tempFullScreen');
         this.fullPageScrollTimeout = 1000;
 
-        if (!fs.existsSync(this.diffFolder) || !fs.statSync(this.diffFolder).isDirectory()) {
-            mkdirp.sync(this.diffFolder);
-        }
-
-        if (!fs.existsSync(this.baselineFolder) || !fs.statSync(this.baselineFolder).isDirectory()) {
-            mkdirp.sync(this.baselineFolder);
-        }
-
-        if (!fs.existsSync(this.actualFolder) || !fs.statSync(this.actualFolder).isDirectory()) {
-            mkdirp.sync(this.actualFolder);
-        }
-
-        if (!fs.existsSync(this.tempFullScreenFolder) || !fs.statSync(this.tempFullScreenFolder).isDirectory()) {
-            mkdirp.sync(this.tempFullScreenFolder);
-        }
+        fs.ensureDirSync(this.actualFolder);
+        fs.ensureDirSync(this.baselineFolder);
+        fs.ensureDirSync(this.diffFolder);
+        fs.ensureDirSync(this.tempFullScreenFolder);
     }
 
     /**
-     * Checks if image exists as a baseline image
+     * Checks if image exists as a baseline image, if not, create a baseline image if needed
      * @param {string} tag
      * @returns {Promise}
      * @private
      */
     _checkImageExists(tag) {
         return new Promise((resolve, reject) => {
-            fs.access(path.join(this.baselineFolder, this._formatFileName(tag)), fs.F_OK, error => {
+            fs.access(path.join(this.baselineFolder, this._formatFileName(tag)), error => {
                 if (error) {
-                    reject('Image not found, saving current image as new baseline.');
-                } else {
-                    resolve();
+                    if (this.autoSaveBaseline) {
+                        try {
+                            fs.copySync(path.join(this.actualFolder, this._formatFileName(tag)), path.join(this.baselineFolder, this._formatFileName(tag)));
+                            console.log(`\nINFO: Autosaved the image to ${path.join(this.baselineFolder, this._formatFileName(tag))}\n`);
+                        } catch (error) {
+                            reject(`Image could not be copied. The following error was thrown: ${error}`);
+                        }
+                    } else {
+                        reject('Image not found, saving current image as new baseline.');
+                    }
                 }
+                resolve();
             });
         });
     }
@@ -138,10 +136,7 @@ class protractorImageComparison {
         if (part === 1) {
             imageOutput = PNGJSImage.createImage(imageWidth, imageHeight);
         } else if (part > parts) {
-            return new Promise(resolve => {
-                imageOutput.writeImageSync(path.join(this.actualFolder, this._formatFileName(tag)));
-                resolve();
-            });
+            return Promise.resolve(imageOutput.writeImageSync(path.join(this.actualFolder, this._formatFileName(tag))));
         }
 
         const stitchImage = PNGJSImage.readImageSync(path.join(this.tempFullScreenFolder, this._formatFileName(`${tag}-${part}`)));
@@ -157,11 +152,11 @@ class protractorImageComparison {
      * @private
      */
     _determineRectangles(element) {
-        let height,
-            rect,
-            width,
-            x,
-            y;
+        let height;
+        let rect;
+        let width;
+        let x;
+        let y;
 
         return element.getSize()
             .then(elementSize => {
@@ -211,8 +206,8 @@ class protractorImageComparison {
      * @private
      */
     _determineImageComparisonPaths(tag) {
-        const imageComparisonPaths = {},
-            tagName = this._formatFileName(tag);
+        const imageComparisonPaths = {};
+        const tagName = this._formatFileName(tag);
 
         imageComparisonPaths['actualImage'] = path.join(this.actualFolder, tagName);
         imageComparisonPaths['baselineImage'] = path.join(this.baselineFolder, tagName);
@@ -224,11 +219,11 @@ class protractorImageComparison {
     /**
      * Compare images against each other
      * @param {string} tag The tag that is used
-     * @param {object} options comparison options
-     * @param {object} options.blockOut blockout with x, y, width and height values
-     * @param {boolean} options.blockOutStatusBar blockout the statusbar yes or no, it will override the global
-     * @param {boolean} options.ignoreAntialiasing compare images an discard anti aliasing
-     * @param {boolean} options.ignoreColors Even though the images are in colour, the comparison wil compare 2 black/white images
+     * @param {object} compareOptions comparison options
+     * @param {object} compareOptions.blockOut blockout with x, y, width and height values
+     * @param {boolean} compareOptions.blockOutStatusBar blockout the statusbar yes or no, it will override the global
+     * @param {boolean} compareOptions.ignoreAntialiasing compare images an discard anti aliasing
+     * @param {boolean} compareOptions.ignoreColors Even though the images are in colour, the comparison wil compare 2 black/white images
      * @returns {Promise}
      * @private
      */
@@ -254,7 +249,7 @@ class protractorImageComparison {
             compareOptions.ignoreRectangles = statusBarBlockOut;
         }
 
-        if(this.debug){
+        if (this.debug) {
             console.log('\n####################################################');
             console.log('compareOptions = ', compareOptions);
             console.log('####################################################\n');
@@ -312,17 +307,17 @@ class protractorImageComparison {
      */
     _formatFileName(tag) {
         let defaults = {
-                'browserName': this.browserName,
-                'deviceName': this.deviceName,
-                'dpr': this.devicePixelRatio,
-                'height': this.height,
-                'logName': camelCase(this.logName),
-                'mobile': this._isMobile() && this.testInBrowser ? this.browserName : this._isMobile() ? 'app' : '',
-                'name': this.name,
-                'tag': tag,
-                'width': this.width
-            },
-            formatString = this.formatString;
+            'browserName': this.browserName,
+            'deviceName': this.deviceName,
+            'dpr': this.devicePixelRatio,
+            'height': this.height,
+            'logName': camelCase(this.logName),
+            'mobile': this._isMobile() && this.testInBrowser ? this.browserName : this._isMobile() ? 'app' : '',
+            'name': this.name,
+            'tag': tag,
+            'width': this.width
+        };
+        let formatString = this.formatString;
 
         defaults = this._mergeDefaultOptions(defaults, this.formatOptions);
 
@@ -556,7 +551,7 @@ class protractorImageComparison {
     _mergeDefaultOptions(optionsA, optionsB) {
         optionsB = (typeof optionsB === 'object') ? optionsB : {};
 
-        for (var option in optionsB) {
+        for (let option in optionsB) {
             if (optionsA.hasOwnProperty(option)) {
                 optionsA[option] = optionsB[option];
             }
@@ -634,6 +629,7 @@ class protractorImageComparison {
         return this._scrollToAndDetermineFullPageHeight(verticalCoordinate)
             .then(height => {
                 actualFullPageHeight = height;
+
                 return browser.takeScreenshot()
             })
             .then(screenshot => {
@@ -827,14 +823,14 @@ class protractorImageComparison {
      * @public
      */
     saveElement(element, tag, options) {
-        let saveOptions = options || [],
-            bufferedScreenshot;
+        let saveOptions = options || [];
+        let bufferedScreenshot;
 
         this.resizeDimensions = saveOptions.resizeDimensions ? saveOptions.resizeDimensions : this.resizeDimensions;
         this.disableCSSAnimation = saveOptions.disableCSSAnimation || saveOptions.disableCSSAnimation === false ? saveOptions.disableCSSAnimation : this.disableCSSAnimation;
 
         return this._getInstanceData()
-            .then(()=> browser.takeScreenshot())
+            .then(() => browser.takeScreenshot())
             .then(screenshot => {
                 bufferedScreenshot = new Buffer(screenshot, 'base64');
                 this.screenshotHeight = (bufferedScreenshot.readUInt32BE(20) / this.devicePixelRatio); // width = 16
@@ -872,7 +868,7 @@ class protractorImageComparison {
 
         // Start scrolling at y=0
         return this._getInstanceData()
-            .then(()=> this._scrollAndSave(0, tag, 1));
+            .then(() => this._scrollAndSave(0, tag, 1));
     }
 
     /**

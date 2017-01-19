@@ -1,59 +1,77 @@
 'use strict';
-let fs = require('fs'),
-    camelCase = require('camel-case'),
-    imageComparison = require('../'),
-    path = require('path'),
-    screenshotPath = path.resolve(__dirname, '../.tmp/actual/'),
-    differencePath = path.resolve(__dirname, '../.tmp/diff/');
+
+const fs = require('fs');
+const camelCase = require('camel-case');
+const imageComparison = require('../');
+const path = require('path');
+const screenshotPath = path.resolve(__dirname, '../.tmp/actual/');
+const differencePath = path.resolve(__dirname, '../.tmp/diff/');
+const helpers = require('./helpers');
 
 describe('protractor-image-comparison', () => {
-    beforeEach(() => {
+    beforeEach(done => {
         browser.imageComparson = new imageComparison({
             baselineFolder: './test/baseline/desktop/',
-            debug: true,
             formatImageName: `{tag}-${logName}-{width}x{height}-dpr-{dpr}`,
             screenshotPath: './.tmp/'
         });
 
         browser.get(browser.baseUrl)
-            .then(()=> browser.sleep(500));
+            .then(() => browser.sleep(500))
+            .then(done);
     });
 
     // Chrome remembers the last postion when the url is loaded again, this will reset it.
     afterEach(() => browser.executeScript('window.scrollTo(0, 0);'));
 
-    const logName = camelCase(browser.logName),
-        resolution = '1366x768',
-        dangerAlert = element(by.css('.uk-alert-danger')),
-        headerElement = element(by.css('h1.uk-heading-large'));
+    const logName = camelCase(browser.logName);
+    const resolution = '1366x768';
+    const dangerAlert = element(by.css('.uk-alert-danger'));
+    const headerElement = element(by.css('h1.uk-heading-large'));
 
     describe('basics', () => {
         it('should save the screen', () => {
             const tagName = 'examplePage';
 
             browser.imageComparson.saveScreen(tagName)
-                .then(() => expect(fs.existsSync(`${screenshotPath}/${tagName}-${logName}-${resolution}-dpr-1.png`)).toBe(true));
+                .then(() => expect(helpers.fileExistSync(`${screenshotPath}/${tagName}-${logName}-${resolution}-dpr-1.png`)).toBe(true));
         });
 
         it('should save an element', () => {
             const tagName = 'examplePageElement';
 
             browser.imageComparson.saveElement(headerElement, tagName)
-                .then(() => expect(fs.existsSync(`${screenshotPath}/${tagName}-${logName}-${resolution}-dpr-1.png`)).toBe(true));
+                .then(() => expect(helpers.fileExistSync(`${screenshotPath}/${tagName}-${logName}-${resolution}-dpr-1.png`)).toBe(true));
         });
 
         it('should save a fullpage screenshot', () => {
             const tagName = 'fullPage';
 
-            browser.imageComparson.saveFullPageScreens(tagName, {timeout:'1500a'})
-                .then(() => expect(fs.existsSync(`${screenshotPath}/${tagName}-${logName}-${resolution}-dpr-1.png`)).toBe(true));
+            browser.imageComparson.saveFullPageScreens(tagName, {timeout: '1500a'})
+                .then(() => expect(helpers.fileExistSync(`${screenshotPath}/${tagName}-${logName}-${resolution}-dpr-1.png`)).toBe(true));
 
+        });
+
+        it('should copy an image to the baseline when autoSaveBaseline is true', () => {
+            const tagName = 'autoSaveBaseline';
+            const baselineFolder = path.resolve(__dirname, '../.tmp/baseline/desktop/');
+
+            browser.imageComparson = new imageComparison({
+                baselineFolder: baselineFolder,
+                autoSaveBaseline: true,
+                formatImageName: `{tag}-${logName}-{width}x{height}-dpr-{dpr}`,
+                screenshotPath: './.tmp/'
+            });
+
+            expect(helpers.fileExistSync(`${baselineFolder}/${tagName}-${logName}-${resolution}-dpr-1.png`)).toBe(false, 'Error: Baseline image already exists.');
+            browser.imageComparson.checkScreen(tagName)
+                .then(() => expect(helpers.fileExistSync(`${baselineFolder}/${tagName}-${logName}-${resolution}-dpr-1.png`)).toBe(true, 'File is saved in the baseline'));
         });
     });
 
     describe('compare screen', () => {
-        const examplePage = 'example-page-compare',
-            examplePageFail = `${examplePage}-fail`;
+        const examplePage = 'example-page-compare';
+        const examplePageFail = `${examplePage}-fail`;
 
         it('should compare successful with a baseline', () => {
             expect(browser.imageComparson.checkScreen(examplePage)).toEqual(0);
@@ -62,7 +80,7 @@ describe('protractor-image-comparison', () => {
         it('should save a difference after failure', () => {
             browser.executeScript('arguments[0].innerHTML = "Test Demo Page";', headerElement.getWebElement());
             browser.imageComparson.checkScreen(examplePageFail)
-                .then(() => expect(fs.existsSync(`${differencePath}/${examplePageFail}-${logName}-${resolution}-dpr-1.png`)).toBe(true));
+                .then(() => expect(helpers.fileExistSync(`${differencePath}/${examplePageFail}-${logName}-${resolution}-dpr-1.png`)).toBe(true));
         });
 
         it('should fail comparing with a baseline', () => {
@@ -78,8 +96,8 @@ describe('protractor-image-comparison', () => {
     });
 
     describe('compare element', () => {
-        const dangerAlertElement = 'dangerAlert-compare',
-            dangerAlertElementFail = `${dangerAlertElement}-fail`;
+        const dangerAlertElement = 'dangerAlert-compare';
+        const dangerAlertElementFail = `${dangerAlertElement}-fail`;
 
         it('should compare successful with a baseline', () => {
             browser.executeScript('arguments[0].scrollIntoView();', dangerAlert.getWebElement())
@@ -101,7 +119,7 @@ describe('protractor-image-comparison', () => {
         it('should save a difference after failure', () => {
             browser.executeScript('arguments[0].scrollIntoView(); arguments[0].style.color = "#2d7091";', dangerAlert.getWebElement());
             browser.imageComparson.checkElement(dangerAlert, dangerAlertElementFail)
-                .then(() => expect(fs.existsSync(`${differencePath}/${dangerAlertElementFail}-${logName}-${resolution}-dpr-1.png`)).toBe(true));
+                .then(() => expect(helpers.fileExistSync(`${differencePath}/${dangerAlertElementFail}-${logName}-${resolution}-dpr-1.png`)).toBe(true));
         });
 
         it('should fail comparing with a baseline', () => {
@@ -135,8 +153,8 @@ describe('protractor-image-comparison', () => {
     });
 
     describe('compare fullpage screenshot', () => {
-        const exampleFullPage = 'example-fullpage-compare',
-            examplePageFail = `${exampleFullPage}-fail`;
+        const exampleFullPage = 'example-fullpage-compare';
+        const examplePageFail = `${exampleFullPage}-fail`;
 
         it('should compare successful with a baseline', () => {
             expect(browser.imageComparson.checkFullPageScreen(exampleFullPage)).toEqual(0);
