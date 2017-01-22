@@ -14,13 +14,14 @@ You can:
 
 - save or compare screens / elements against a baseline
 - **NEW:** save or compare a fullpage screenshot against a baseline (**only browsers are currently supported**)
-- **NEW:** disbale css animations by default
+- **NEW:** disable css animations by default
+- **NEW** ignore anti-aliasing differences
+- **NEW** compare images by ignoring their colors (do a grayscale comparison)
+- **NEW** automatically create a baseline when no baseline is there
 - blockout custom regions during comparison (all)
 - increase the element dimenisions screenshots (all)
 - provide custom iOS and Android offsets for status-/address-/toolbar (mobile only)
 - automatically exclude a statusbar during screencomparison (mobile only)
-- **NEW** ignore anti-aliasing differences
-- **NEW** compare images by ignoring their colors (do a grayscale comparison)
 
 Comparison is based on [ResembleJS](https://github.com/Huddle/Resemble.js).
 
@@ -45,13 +46,21 @@ npm install --save-dev protractor-image-comparison
 - mobile / tablet browsers (Chrome / Safari on emulators / real devices) via Appium
 - Hybrid apps via Appium
 
-For more information about mobile testing see the [Appium](./docs/appium.md) documentation. 
+For more information about mobile testing see the [Appium](./docs/appium.md) documentation.
+
+If you run for the first time without having a baseline the `check`-methods will reject the promise with the following warning:
+
+    `Image not found, saving current image as new baseline.`
+
+This means that the current screenshot is saved and you **manually need to copy it to your baseline**. 
+If you instantiate `protractor-image-comparsion` with `autoSaveBaseline: true`, see [docs](./docs/index.md), the image will automatically be saved into the baselinefolder.
+
 
 *protractor-image-comparison* provides:
 
 - two comparison methods `checkScreen` and `checkElement`.
-- two helper methods `saveScreen` and `saveElement` for saving images.
-- **NEW** two helper methods `saveFullPageScreens` and `checkFullPageScreen` for saving a fullpage screenshot.
+- two helper methods `saveElement` and `saveElement` for saving images.
+- **NEW** a helper `saveFullPageScreens` and a comparison method `checkFullPageScreen` for saving and comparing a fullpage screenshot.
 
 The comparison methods return a result in percentages like `0` or `3.94`.
 *protractor-image-comparison* can work with Jasmine and Cucumber.js. See [Examples](./docs/examples.md) for or a *protractor*-config setup, or a Jasmine or a CucumberJS implementation.
@@ -69,8 +78,6 @@ See [CONTRIBUTING.md](./docs/CONTRIBUTING.md).
 - Comparison core of `./lib/resemble.js` [node-resemble](https://github.com/lksv/node-resemble.js) + [ResembleJS](https://github.com/Huddle/Resemble.js)
 
 ## TODO
+* Be able to use `saveFullPageScreens` and `checkFullPageScreen` for mobile
 * Update documentation for Mobile
-* Update tests
 * New (mobile friendly) testpage
-* Add `debug` method
-* Add `clean` method to clean the given `screenshotPath` before running

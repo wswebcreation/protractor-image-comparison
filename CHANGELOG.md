@@ -1,3 +1,19 @@
+<a name="1.1.0"></a>
+# [1.1.0](https://github.com/wswebcreation/protractor-image-comparison/compare/v1.0.0...v1.1.0) (2017-01-19)
+
+
+### Bug Fixes
+
+* fix dependency, update travis, fix docs ([b9ac27c](https://github.com/wswebcreation/protractor-image-comparison/commit/b9ac27c))
+
+
+### Features
+
+* **auto-baseline:** update core with autoSaveBaseline and update docs ([020f7c9](https://github.com/wswebcreation/protractor-image-comparison/commit/020f7c9))
+* add option to automatically copy a file to the baseline if it doesn't exists incl tests ([0974fdd](https://github.com/wswebcreation/protractor-image-comparison/commit/0974fdd))
+
+
+
 <a name="1.0.0"></a>
 # [1.0.0](https://github.com/wswebcreation/protractor-image-comparison/compare/v0.1.5...v1.0.0) (2016-12-18)
 

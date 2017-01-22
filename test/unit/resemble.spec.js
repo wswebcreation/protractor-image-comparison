@@ -1,17 +1,17 @@
 'use strict';
 
-const fs = require('fs'),
-    path = require('path'),
-    resemble = require('../../lib/resemble.js');
+const fs = require('fs');
+const path = require('path');
+const resemble = require('../../lib/resemble.js');
 
 describe('node-resemble.js', () => {
-    const peopleImage = path.resolve(__dirname, './example/People.png'),
-        peopleBlackWhiteImage = path.resolve(__dirname, './example/PeopleBW.png'),
-        peopleTwoImage = path.resolve(__dirname, './example/People2.png'),
-        largeImage = path.resolve(__dirname, './example/LargeImage.png'),
-        smallImage = path.resolve(__dirname, './example/SmallImage.png'),
-        withAntiAliasing = path.resolve(__dirname, './example/withAntiAliasing.png'),
-        withoutAntiAliasing = path.resolve(__dirname, './example/withoutAntiAliasing.png');
+    const peopleImage = path.resolve(__dirname, './example/People.png');
+    const peopleBlackWhiteImage = path.resolve(__dirname, './example/PeopleBW.png');
+    const peopleTwoImage = path.resolve(__dirname, './example/People2.png');
+    const largeImage = path.resolve(__dirname, './example/LargeImage.png');
+    const smallImage = path.resolve(__dirname, './example/SmallImage.png');
+    const withAntiAliasing = path.resolve(__dirname, './example/withAntiAliasing.png');
+    const withoutAntiAliasing = path.resolve(__dirname, './example/withoutAntiAliasing.png');
 
     describe('compareTo', () => {
         describe('defaults', () => {
@@ -123,7 +123,6 @@ describe('node-resemble.js', () => {
     });
 
     describe('outputSettings', () => {
-
         it('should save a difference when 2 non identical images fail comparing', done => {
             resemble(peopleImage, peopleTwoImage)
                 .onComplete(data => {

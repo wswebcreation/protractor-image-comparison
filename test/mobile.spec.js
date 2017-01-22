@@ -1,38 +1,38 @@
 'use strict';
 
-let fs = require('fs'),
-    camelCase = require('camel-case'),
-    imageComparison = require('../'),
-    path = require('path'),
-    screenshotPath = path.resolve(__dirname, '../.tmp/actual/'),
-    differencePath = path.resolve(__dirname, '../.tmp/diff/');
+const fs = require('fs');
+const camelCase = require('camel-case');
+const imageComparison = require('../');
+const path = require('path');
+const screenshotPath = path.resolve(__dirname, '../.tmp/actual/');
+const differencePath = path.resolve(__dirname, '../.tmp/diff/');
+const helpers = require('./helpers');
 
 describe('protractor-protractor-image-comparison', () => {
-
-    const logName = camelCase(browser.logName),
-        devices = {
-            iPhone_6SimulatorSafari: {
-                name: `${logName}-375x667-dpr-2`
-            },
-            iPadAir_2SimulatorSafari: {
-                name: `${logName}-768x1024-dpr-2`
-            },
-            nexus_5ByGoogleAdb: {
-                name: `${logName}-360x640-dpr-3`
-            },
-            nexus_5ByGoogleChromeDriver: {
-                name: `${logName}-360x640-dpr-3`
-            },
-            perfectoAppleIPhone_7Safari: {
-                blockOut: [{x: 0, y: 1246, width: 750, height: 88}],
-                name: `${logName}-375x667-dpr-2`
-            },
-            perfectoSamsungGalaxyS6Chrome: {
-                name: `${logName}-360x640-dpr-4`
-            }
+    const logName = camelCase(browser.logName);
+    const devices = {
+        iPhone_6SimulatorSafari: {
+            name: `${logName}-375x667-dpr-2`
         },
-        dangerAlert = element(by.css('.uk-alert-danger')),
-        headerElement = element(by.css('h1.uk-heading-large'));
+        iPadAir_2SimulatorSafari: {
+            name: `${logName}-768x1024-dpr-2`
+        },
+        nexus_5ByGoogleAdb: {
+            name: `${logName}-360x640-dpr-3`
+        },
+        nexus_5ByGoogleChromeDriver: {
+            name: `${logName}-360x640-dpr-3`
+        },
+        perfectoAppleIPhone_7Safari: {
+            blockOut: [{x: 0, y: 1246, width: 750, height: 88}],
+            name: `${logName}-375x667-dpr-2`
+        },
+        perfectoSamsungGalaxyS6Chrome: {
+            name: `${logName}-360x640-dpr-4`
+        }
+    };
+    const dangerAlert = element(by.css('.uk-alert-danger'));
+    const headerElement = element(by.css('h1.uk-heading-large'));
 
     let ADBScreenshot;
 
@@ -40,7 +40,7 @@ describe('protractor-protractor-image-comparison', () => {
     afterEach(() => browser.executeScript('window.scrollTo(0, 0);'));
 
     describe('basics', () => {
-        beforeEach(function () {
+        beforeEach(done => {
             browser.getProcessedConfig()
                 .then(_ => {
                     ADBScreenshot = _.capabilities.nativeWebScreenshot || false;
@@ -55,34 +55,38 @@ describe('protractor-protractor-image-comparison', () => {
 
                     return browser.get(browser.baseUrl);
                 })
-                .then(() => browser.sleep(1000));
+                .then(() => browser.sleep(1000))
+                .then(done);
         });
 
         it('should save the screen', () => {
             const tagName = 'examplePage';
 
             browser.imageComparson.saveScreen(tagName)
-                .then(() => expect(fs.existsSync(`${screenshotPath}/${tagName}-${devices[logName]['name']}.png`)).toBe(true));
+                .then(() => {
+                    expect(helpers.fileExistSync(`${screenshotPath}/${tagName}-${devices[logName]['name']}.png`)).toBe(true);
+                });
         });
 
         it('should save an element', () => {
             const tagName = 'examplePageElement';
 
             browser.imageComparson.saveElement(headerElement, tagName)
-                .then(() => expect(fs.existsSync(`${screenshotPath}/${tagName}-${devices[logName]['name']}.png`)).toBe(true));
+                .then(() => expect(helpers.fileExistSync(`${screenshotPath}/${tagName}-${devices[logName]['name']}.png`)).toBe(true));
         });
 
-        it('should save a fullpage screenshot', () => {
-            const tagName = 'fullPage';
+        fit('should save a fullpage screenshot', () => {
+            // const tagName = 'wswebcreation';
+            // const tagName = 'detesters';
+            const tagName = 'verloskundigenpraktijkmorgenland';
 
-            browser.imageComparson.saveFullPageScreens(tagName, {timeout:'1500a'})
-                .then(() => expect(fs.existsSync(`${screenshotPath}/${tagName}-${devices[logName]['name']}.png`)).toBe(true));
-
+            browser.imageComparson.saveFullPageScreens(tagName, {timeout: '1500a'})
+                .then(() => expect(helpers.fileExistSync(`${screenshotPath}/${tagName}-${devices[logName]['name']}.png`)).toBe(true));
         });
     });
 
     describe('compare screen', () => {
-        beforeEach(function () {
+        beforeEach(done => {
             browser.getProcessedConfig()
                 .then(_ => {
                     ADBScreenshot = _.capabilities.nativeWebScreenshot || false;
@@ -90,7 +94,6 @@ describe('protractor-protractor-image-comparison', () => {
                     browser.imageComparson = new imageComparison({
                         baselineFolder: './test/baseline/mobile/',
                         blockOutStatusBar: true,
-                        debug: true,
                         formatImageName: `{tag}-${logName}-{width}x{height}-dpr-{dpr}`,
                         nativeWebScreenshot: ADBScreenshot,
                         screenshotPath: './.tmp/'
@@ -98,11 +101,12 @@ describe('protractor-protractor-image-comparison', () => {
 
                     return browser.get(browser.baseUrl);
                 })
-                .then(() => browser.sleep(1000));
+                .then(() => browser.sleep(1000))
+                .then(done);
         });
 
-        const examplePage = 'example-page-compare',
-            examplePageFail = `${examplePage}-fail`;
+        const examplePage = 'example-page-compare';
+        const examplePageFail = `${examplePage}-fail`;
 
         it('should compare successful with a baseline', () => {
             expect(browser.imageComparson.checkScreen(examplePage)).toEqual(0);
@@ -112,7 +116,7 @@ describe('protractor-protractor-image-comparison', () => {
             browser.executeScript('arguments[0].innerHTML = "Test Demo Page";', headerElement.getWebElement())
                 .then(() => browser.sleep(1000))
                 .then(() => browser.imageComparson.checkScreen(examplePageFail))
-                .then(() => expect(fs.existsSync(`${differencePath}/${examplePageFail}-${devices[logName]['name']}.png`)).toBe(true));
+                .then(() => expect(helpers.fileExistSync(`${differencePath}/${examplePageFail}-${devices[logName]['name']}.png`)).toBe(true));
         });
 
         it('should fail comparing with a baseline', () => {
@@ -132,14 +136,13 @@ describe('protractor-protractor-image-comparison', () => {
     });
 
     describe('compare element', () => {
-        beforeEach(function () {
+        beforeEach(done => {
             browser.getProcessedConfig()
                 .then(_ => {
                     ADBScreenshot = _.capabilities.nativeWebScreenshot || false;
 
                     browser.imageComparson = new imageComparison({
                         baselineFolder: './test/baseline/mobile/',
-                        debug: true,
                         formatImageName: `{tag}-${logName}-{width}x{height}-dpr-{dpr}`,
                         nativeWebScreenshot: ADBScreenshot,
                         screenshotPath: './.tmp/'
@@ -147,10 +150,12 @@ describe('protractor-protractor-image-comparison', () => {
 
                     return browser.get(browser.baseUrl);
                 })
-                .then(() => browser.sleep(1000));
+                .then(() => browser.sleep(1000))
+                .then(done);
         });
-        const dangerAlertElement = 'dangerAlert-compare',
-            dangerAlertElementFail = `${dangerAlertElement}-fail`;
+
+        const dangerAlertElement = 'dangerAlert-compare';
+        const dangerAlertElementFail = `${dangerAlertElement}-fail`;
 
         it('should compare successful with a baseline', () => {
             browser.executeScript('arguments[0].scrollIntoView();', dangerAlert.getWebElement())
@@ -172,7 +177,7 @@ describe('protractor-protractor-image-comparison', () => {
             browser.executeScript('arguments[0].scrollIntoView(); arguments[0].style.color = "#2d7091";', dangerAlert.getWebElement())
                 .then(() => browser.sleep(1000))
                 .then(() => browser.imageComparson.checkElement(dangerAlert, dangerAlertElementFail))
-                .then(() => expect(fs.existsSync(`${differencePath}/${dangerAlertElementFail}-${devices[logName]['name']}.png`)).toBe(true));
+                .then(() => expect(helpers.fileExistSync(`${differencePath}/${dangerAlertElementFail}-${devices[logName]['name']}.png`)).toBe(true));
         });
 
         it('should fail comparing with a baseline', () => {
@@ -192,7 +197,7 @@ describe('protractor-protractor-image-comparison', () => {
     });
 
     describe('override default offsets', () => {
-        beforeEach(function () {
+        beforeEach(done => {
             browser.getProcessedConfig()
                 .then(_ => {
                     ADBScreenshot = _.capabilities.nativeWebScreenshot || false;
@@ -200,7 +205,6 @@ describe('protractor-protractor-image-comparison', () => {
                     browser.imageComparson = new imageComparison({
                         baselineFolder: './test/baseline/mobile/offsets/',
                         blockOutStatusBar: true,
-                        debug: false,
                         formatImageName: `{tag}-${logName}-{width}x{height}-dpr-{dpr}`,
                         nativeWebScreenshot: ADBScreenshot,
                         screenshotPath: './.tmp/',
@@ -219,11 +223,12 @@ describe('protractor-protractor-image-comparison', () => {
 
                     return browser.get(browser.baseUrl);
                 })
-                .then(() => browser.sleep(1500));
+                .then(() => browser.sleep(1500))
+                .then(done);
         });
 
         // The baseline image has a bigger black bar for blocking out the status bar.
-        it('should compare a screenshot successful with a baseline', ()=> {
+        it('should compare a screenshot successful with a baseline', () => {
             expect(browser.imageComparson.checkScreen('new-offsets')).toEqual(0);
         });
 
@@ -231,7 +236,7 @@ describe('protractor-protractor-image-comparison', () => {
         it('should compare an element successful with a baseline', () => {
             browser.executeScript('arguments[0].scrollIntoView();', dangerAlert.getWebElement())
                 .then(() => browser.sleep(1000))
-                .then(() =>expect(browser.imageComparson.checkElement(dangerAlert, 'new-offset-element')).toEqual(0));
+                .then(() => expect(browser.imageComparson.checkElement(dangerAlert, 'new-offset-element')).toEqual(0));
         });
     });
 
@@ -254,8 +259,8 @@ describe('protractor-protractor-image-comparison', () => {
                 .then(() => browser.sleep(1500));
         });
 
-        const exampleFullPage = 'example-fullpage-compare',
-            examplePageFail = `${exampleFullPage}-fail`;
+        const exampleFullPage = 'example-fullpage-compare';
+        const examplePageFail = `${exampleFullPage}-fail`;
 
         it('should compare successful with a baseline', () => {
             expect(browser.imageComparson.checkFullPageScreen(exampleFullPage)).toEqual(0);

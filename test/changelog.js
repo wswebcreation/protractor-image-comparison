@@ -1,7 +1,9 @@
-const chalk = require('chalk'),
-    conventionalChangelog = require('conventional-changelog'),
-    fs = require('fs'),
-    path = require('path');
+'use strict';
+
+const chalk = require('chalk');
+const conventionalChangelog = require('conventional-changelog');
+const fs = require('fs');
+const path = require('path');
 
 generateChangelog();
 
@@ -11,8 +13,8 @@ generateChangelog();
  * @returns {String} new content
  */
 function fixSlashPrefixCompareUrls(data) {
-    const compareUrlSlashPrefixNeedle = /\/http/g,
-        compareUrlSlashPrefixReplacement = 'http';
+    const compareUrlSlashPrefixNeedle = /\/http/g;
+    const compareUrlSlashPrefixReplacement = 'http';
 
     return data.replace(compareUrlSlashPrefixNeedle, compareUrlSlashPrefixReplacement);
 }

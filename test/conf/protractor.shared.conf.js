@@ -1,7 +1,11 @@
+'use strict';
+
 const SpecReporter = require('jasmine-spec-reporter');
 
 exports.config = {
-    baseUrl: 'https://wswebcreation.github.io/protractor-image-comparison/',
+    // baseUrl: 'https://wswebcreation.github.io/protractor-image-comparison/',
+    baseUrl: 'http://www.verloskundigenpraktijkmorgenland.nl/',
+    // baseUrl: 'http://www.detesters.nl/',
     framework: 'jasmine2',
     jasmineNodeOpts: {
         showColors: true,
@@ -12,7 +16,7 @@ exports.config = {
     onPrepare: function () {
         browser.ignoreSynchronization = true;
 
-        var env = jasmine.getEnv();
+        const env = jasmine.getEnv();
 
         env.clearReporters();
 
@@ -32,9 +36,10 @@ exports.config = {
                 if (!('platformName' in _.capabilities)) {
                     return browser.driver.manage().window().setSize(1366, 768);
                 } else if ('platformName' in _.capabilities) {
-                    var wd = require('wd'),
-                        protractor = require('protractor'),
-                        wdBridge = require('wd-bridge')(protractor, wd);
+                    const wd = require('wd');
+                    const protractor = require('protractor');
+                    const wdBridge = require('wd-bridge')(protractor, wd);
+
                     wdBridge.initFromProtractor(exports.config);
                 }
             });

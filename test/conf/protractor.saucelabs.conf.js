@@ -1,9 +1,11 @@
+'use strict';
+
 let config = require('./protractor.shared.conf.js').config;
 
-const SAUCE_USERNAME = process.env.SAUCE_USERNAME ? process.env.SAUCE_USERNAME : process.env.IC_SAUCE_USERNAME,
-    SAUCE_ACCESS_KEY = process.env.SAUCE_ACCESS_KEY ? process.env.SAUCE_ACCESS_KEY : process.env.IC_SAUCE_ACCESS_KEY,
-    deskSpecs = ['../jasmine.spec.js'],
-    mobileSpecs = ['../mobile.spec.js'];
+const SAUCE_USERNAME = process.env.SAUCE_USERNAME ? process.env.SAUCE_USERNAME : process.env.IC_SAUCE_USERNAME;
+const SAUCE_ACCESS_KEY = process.env.SAUCE_ACCESS_KEY ? process.env.SAUCE_ACCESS_KEY : process.env.IC_SAUCE_ACCESS_KEY;
+const deskSpecs = ['../jasmine.spec.js'];
+const mobileSpecs = ['../mobile.spec.js'];
 
 config.seleniumAddress = 'http://ondemand.saucelabs.com:80/wd/hub';
 
