@@ -14,6 +14,9 @@ describe('protractor-protractor-image-comparison', () => {
         iPhone_6SimulatorSafari: {
             name: `${logName}-375x667-dpr-2`
         },
+        iPhone6: {
+            name: `${logName}-375x667-dpr-2`
+        },
         iPadAir_2SimulatorSafari: {
             name: `${logName}-768x1024-dpr-2`
         },
@@ -47,7 +50,7 @@ describe('protractor-protractor-image-comparison', () => {
 
                     browser.imageComparson = new imageComparison({
                         baselineFolder: './test/baseline/mobile/',
-                        debug: true,
+                        debug: false,
                         formatImageName: `{tag}-${logName}-{width}x{height}-dpr-{dpr}`,
                         nativeWebScreenshot: ADBScreenshot,
                         screenshotPath: './.tmp/'
@@ -75,10 +78,8 @@ describe('protractor-protractor-image-comparison', () => {
                 .then(() => expect(helpers.fileExistSync(`${screenshotPath}/${tagName}-${devices[logName]['name']}.png`)).toBe(true));
         });
 
-        fit('should save a fullpage screenshot', () => {
-            // const tagName = 'wswebcreation';
-            // const tagName = 'detesters';
-            const tagName = 'verloskundigenpraktijkmorgenland';
+        it('should save a fullpage screenshot', () => {
+            const tagName = 'fullPage';
 
             browser.imageComparson.saveFullPageScreens(tagName, {timeout: '1500a'})
                 .then(() => expect(helpers.fileExistSync(`${screenshotPath}/${tagName}-${devices[logName]['name']}.png`)).toBe(true));
@@ -248,7 +249,7 @@ describe('protractor-protractor-image-comparison', () => {
 
                     browser.imageComparson = new imageComparison({
                         baselineFolder: './test/baseline/mobile/',
-                        debug: true,
+                        debug: false,
                         formatImageName: `{tag}-${logName}-{width}x{height}-dpr-{dpr}`,
                         nativeWebScreenshot: ADBScreenshot,
                         screenshotPath: './.tmp/'

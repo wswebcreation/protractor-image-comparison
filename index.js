@@ -28,6 +28,7 @@
  * @property {int} resizeDimensions dimensions that will be used to make the the element coordinates bigger. This needs to be in pixels
  * @property {string} tempFullScreenFolder Path where the temporary fullscreens are saved
  * @property {int} fullPageScrollTimeout Default timeout to wait after a scroll
+ * @property {object} saveType Object that will the type of save that is being executed
  */
 
 const assert = require('assert');
@@ -82,10 +83,14 @@ class protractorImageComparison {
 
         this.resizeDimensions = 0;
 
-        this.chromeShadowPadding = 6;
-
         this.tempFullScreenFolder = path.join(this.baseFolder, 'tempFullScreen');
         this.fullPageScrollTimeout = 1500;
+
+        this.saveType = {
+            element: false,
+            fullPage: false,
+            screen: false
+        }
 
         fs.ensureDirSync(this.actualFolder);
         fs.ensureDirSync(this.baselineFolder);
@@ -129,20 +134,10 @@ class protractorImageComparison {
      * @private
      */
     _composeAndSaveFullScreenshot(tag, parts, part, image) {
-        const imageHeight = (this.fullPageHeight * this.devicePixelRatio) - (this.chromeShadowPadding* this.devicePixelRatio);
+        const imageHeight = this.fullPageHeight * this.devicePixelRatio;
         // const imageWidth = this.fullPageWidth * this.devicePixelRatio; // @todo: changed this for mobile to clientWidth
         const imageWidth = this.clientWidth * this.devicePixelRatio;
-        const height = (this.innerHeight - this.chromeShadowPadding) * (part - 1) * this.devicePixelRatio;
-
-        // if (this.debug) {
-        //     console.log('\n####################################################');
-        //     console.log('_composeAndSaveFullScreenshot()');
-        //     console.log('imageHeight = ', imageHeight);
-        //     console.log('innerHeight = ', this.innerHeight);
-        //     console.log('imageWidth = ', imageWidth);
-        //     console.log('height = ', height);
-        //     console.log('####################################################\n');
-        // }
+        const height = (this.innerHeight - this.addressBarShadowPadding - this.toolBarShadowPadding) * (part - 1) * this.devicePixelRatio;
 
         let imageOutput = image || null;
 
@@ -229,6 +224,86 @@ class protractorImageComparison {
         return imageComparisonPaths;
     }
 
+
+    /**
+     * Determine the fullpage cropdata for a desktopbrowser
+     * @param {object} cropParameters An object with all the cropparameters
+     * @return {object} desktopCropData object that will hold cropHeight, cropTopPosition, isLastScreenshot
+     * @private
+     */
+    _determineFullPageDesktopCropData(cropParameters) {
+        let desktopCropData = {
+            'cropHeight': 0,
+            'cropTopPosition': 0,
+            'isLastScreenshot': false
+        };
+
+        // For older webdriver of Firefox and IE11, they make large (fullpage) screenshots by default
+        const isLargeScreenshot = this.screenshotHeight > this.innerHeight;
+
+        // Value can be equal, or bigger due to for example lazyloading
+        this.fullPageHeight = isLargeScreenshot ? this.screenshotHeight : cropParameters.actualFullPageHeight;
+
+        // @todo: refactor this amount of shorthand if's, not clear enough
+        desktopCropData.isLastScreenshot = this.innerHeight * cropParameters.currentScreenshotNumber > this.fullPageHeight;
+        desktopCropData.cropHeight = desktopCropData.isLastScreenshot ? this.fullPageHeight - cropParameters.previousVerticalCoordinate : this.innerHeight;
+        desktopCropData.cropTopPosition = desktopCropData.isLastScreenshot ? this.innerHeight - desktopCropData.cropHeight : 0;
+
+        if (isLargeScreenshot) {
+            desktopCropData.cropTopPosition = desktopCropData.isLastScreenshot ? cropParameters.previousVerticalCoordinate : cropParameters.newVerticalCoordinate;
+        }
+
+        return desktopCropData;
+    }
+
+
+    /**
+     * Determine the fullpage cropdata for a desktopbrowser
+     * @param {object} cropParameters An object with all the cropparameters
+     * @return {object} mobileCropData object that will hold cropHeight, cropTopPosition, isLastScreenshot
+     * @private
+     */
+    _determineFullPageMobileCropData(cropParameters) {
+        let mobileCropData = {
+            'cropTopPosition': 0,
+            'cropHeight': 0,
+            'isLastScreenshot': false
+        };
+
+        this.fullPageHeight = cropParameters.actualFullPageHeight;
+
+        if (this._isAndroid()) {
+            return this._getAndroidChromeStatusPlusAddressBarHeight()
+                .then(statusPlusAddressBarHeight => {
+                    mobileCropData.isLastScreenshot = (this.innerHeight - this.addressBarShadowPadding - this.toolBarShadowPadding) * cropParameters.currentScreenshotNumber > this.fullPageHeight;
+
+                    if (mobileCropData.isLastScreenshot) {
+                        mobileCropData.cropHeight = this.fullPageHeight - ((this.innerHeight - this.addressBarShadowPadding - this.toolBarShadowPadding) * (cropParameters.currentScreenshotNumber - 1));
+                        mobileCropData.cropTopPosition = statusPlusAddressBarHeight + this.innerHeight - mobileCropData.cropHeight;
+                    } else {
+                        mobileCropData.cropHeight = this.innerHeight - this.addressBarShadowPadding - this.toolBarShadowPadding;
+                        mobileCropData.cropTopPosition = statusPlusAddressBarHeight + this.addressBarShadowPadding;
+                    }
+
+                    return mobileCropData;
+                });
+        } else {
+            const statusPlusAddressBarHeight = this.iosOffsets.statusBar + this.iosOffsets.addressBar;
+
+            mobileCropData.isLastScreenshot = (this.innerHeight - this.addressBarShadowPadding - this.toolBarShadowPadding) * cropParameters.currentScreenshotNumber > this.fullPageHeight;
+
+            if (mobileCropData.isLastScreenshot) {
+                mobileCropData.cropHeight = this.fullPageHeight - ((this.innerHeight - this.addressBarShadowPadding - this.toolBarShadowPadding) * (cropParameters.currentScreenshotNumber - 1));
+                mobileCropData.cropTopPosition = statusPlusAddressBarHeight + this.innerHeight - mobileCropData.cropHeight - this.toolBarShadowPadding;
+            } else {
+                mobileCropData.cropHeight = this.innerHeight - this.addressBarShadowPadding - this.toolBarShadowPadding;
+                mobileCropData.cropTopPosition = statusPlusAddressBarHeight + this.addressBarShadowPadding;
+            }
+
+            return mobileCropData;
+        }
+    }
+
     /**
      * Compare images against each other
      * @param {string} tag The tag that is used
@@ -280,39 +355,6 @@ class protractorImageComparison {
     }
 
     /**
-     * This methods determines the position of the element to the top of the screenshot based on the fact that a
-     * screenshot on Android is a device screenshot including:
-     * - statusbar (given default height = 24 px)
-     * - addressbar (can variate in height in Chrome. In chrome is can be max 56px but after scroll it will be smaller, the app
-     *   doesn't have a navbar)
-     * - the view
-     * @param {Promise} element The ElementFinder that is used to get the position
-     * @returns {Promise} The x/y position of the element
-     * @private
-     */
-    _getAndroidPosition(element) {
-        function getDataObject(element, statusBarHeight, addressBarHeight, toolBarHeight) {
-            var elementPosition = element.getBoundingClientRect(),
-                screenHeight = window.screen.height,
-                windowInnerHeight = window.innerHeight,
-                addressBarCurrentHeight = 0;
-
-            if (screenHeight === (statusBarHeight + addressBarHeight + windowInnerHeight + toolBarHeight)) {
-                addressBarCurrentHeight = addressBarHeight;
-            } else if (screenHeight === (statusBarHeight + addressBarHeight + windowInnerHeight )) {
-                addressBarCurrentHeight = addressBarHeight;
-            }
-
-            return {
-                x: elementPosition.left,
-                y: statusBarHeight + addressBarCurrentHeight + elementPosition.top
-            };
-        }
-
-        return browser.driver.executeScript(getDataObject, element.getWebElement(), this.androidOffsets.statusBar, this.androidOffsets.addressBar, this.androidOffsets.toolBar);
-    }
-
-    /**
      * _formatFileName
      * @param {string} tag The tag that is used
      * @returns {string} Returns a formated string
@@ -342,6 +384,102 @@ class protractorImageComparison {
     }
 
     /**
+     * This methods determines the position of the element to the top of the screenshot based on a given statusbar and
+     * addressbar height
+     * @param {Promise} element The ElementFinder that is used to get the position
+     * @param {number} statusPlusAddressBarHeight The statusbar plus addressbar height
+     * @param {number} addressBarShadowPadding The height of the addressbar shadow
+     * @returns {Promise} The x/y position of the element
+     * @private
+     */
+    _getAndroidChromeElementPosition(element, statusPlusAddressBarHeight, addressBarShadowPadding) {
+        function getDataObject(element, statusPlusAddressBarHeight, addressBarShadowPadding) {
+            var elementPosition = element.getBoundingClientRect();
+
+            return {
+                x: elementPosition.left,
+                y: statusPlusAddressBarHeight + elementPosition.top - addressBarShadowPadding
+            };
+        }
+
+        return browser.driver.executeScript(getDataObject, element.getWebElement(), statusPlusAddressBarHeight, addressBarShadowPadding);
+    }
+
+    /**
+     * Get the height of the statusbar and addressbar of Android Chrome browser based on the fact that a
+     * screenshot on Android is a device screenshot including:
+     * - statusbar (given default height = 24 px)
+     * - addressbar (can variate in height in Chrome. In chrome is can be max 56px but after scroll it will be smaller, the app
+     *   doesn't have a navbar)
+     * - the viewport
+     * - sometimes a toolbar
+     * @return {Promise.<number>}
+     * @private
+     */
+    _getAndroidChromeStatusPlusAddressBarHeight() {
+        let addressBarCurrentHeight = 0;
+
+        return this._getBrowserData()
+            .then(browserData => {
+                // Addressbar is there including a toolbar
+                if (browserData.height === (this.androidOffsets.statusBar + this.androidOffsets.addressBar + browserData.innerHeight + this.androidOffsets.toolBar)) {
+                    addressBarCurrentHeight = this.androidOffsets.addressBar;
+                } else if (browserData.height === (this.androidOffsets.statusBar + this.androidOffsets.addressBar + browserData.innerHeight)) {
+                    // Addressbar is there without a toolbar
+                    addressBarCurrentHeight = this.androidOffsets.addressBar;
+                }
+
+                return this.androidOffsets.statusBar + addressBarCurrentHeight;
+            });
+    }
+
+    /**
+     * Return browserdata containing sizes, heights and so on
+     * @return {Promise.<object>} The object that will hold the requested data
+     * @private
+     * @todo: refactor name and return key names
+     */
+    _getBrowserData() {
+        return browser.driver.executeScript(retrieveData, this._isMobile(), this.addressBarShadowPadding, this.toolBarShadowPadding);
+
+        function retrieveData(isMobile, addressBarShadowPadding, toolBarShadowPadding) {
+            return {
+                clientWidth: document.body.clientWidth,
+                fullPageHeight: document.body.scrollHeight - addressBarShadowPadding, toolBarShadowPadding,
+                fullPageWidth: document.body.scrollWidth,
+                height: isMobile ? window.screen.height : window.outerHeight,
+                innerHeight: window.innerHeight,
+                pixelRatio: window.devicePixelRatio,
+                width: isMobile ? window.screen.width : window.outerWidth
+            };
+        }
+    }
+
+    /**
+     * Get the position of the element based on OS / Browser / Device.
+     * Some webdrivers make a screenshot of the complete page, not of the visbile part.
+     * A device can make a complete screenshot of the screen, including statusbar and addressbar / buttonbar, but it can
+     * also be created with ChromeDriver. Then a screenshot will be made of the viewport and the calculation is the same
+     * as for a Chrome desktop browser.
+     * The rest of the browsers make a screenshot of the visible part.
+     * @param {Promise} element The ElementFinder that is used to get the position
+     * @returns {Promise} The x/y position of the element
+     * @private
+     */
+    _getElementPosition(element) {
+        if (this._isIOS()) {
+            return this._getIOSPosition(element);
+        } else if (this._isAndroid() && this.nativeWebScreenshot) {
+            return this._getAndroidChromeStatusPlusAddressBarHeight()
+                .then(statusPlusAddressBarHeight => this._getAndroidChromeElementPosition(element, statusPlusAddressBarHeight, this.addressBarShadowPadding))
+        } else if (this.screenshotHeight > this.innerHeight && !this._isAndroid()) {
+            return this._getElementPositionTopPage(element);
+        }
+
+        return this._getElementPositionTopWindow(element);
+    }
+
+    /**
      * Get the position of a given element according to the TOP of the PAGE
      * @param {Promise} element The ElementFinder that is used to get the position
      * @returns {Promise} The x/y position of the element
@@ -368,29 +506,6 @@ class protractorImageComparison {
     }
 
     /**
-     * Get the position of the element based on OS / Browser / Device.
-     * Some webdrivers make a screenshot of the complete page, not of the visbile part.
-     * A device can make a complete screenshot of the screen, including statusbar and addressbar / buttonbar, but it can
-     * also be created with ChromeDriver. Then a screenshot will be made of the viewport and the calculation is the same
-     * as for a Chrome desktop browser.
-     * The rest of the browsers make a screenshot of the visible part.
-     * @param {Promise} element The ElementFinder that is used to get the position
-     * @returns {Promise} The x/y position of the element
-     * @private
-     */
-    _getElementPosition(element) {
-        if (this._isIOS()) {
-            return this._getIOSPosition(element);
-        } else if (this._isAndroid() && this.nativeWebScreenshot) {
-            return this._getAndroidPosition(element);
-        } else if (this.screenshotHeight > this.innerHeight && !this._isAndroid()) {
-            return this._getElementPositionTopPage(element);
-        }
-
-        return this._getElementPositionTopWindow(element);
-    }
-
-    /**
      * Get the data of the instance that is running
      *
      * @property {string} browserName name of the browser that is used to execute the test on
@@ -402,6 +517,8 @@ class protractorImageComparison {
      * @property {string} platformName mobile OS platform to use
      * @property {string} deviceName the kind of mobile device or emulator to use
      * @property {boolean} nativeWebScreenshot  Android can take screenshots of the webview (with Chromedriver) or a complete screenshot (like SauceLabs or Perfecto does)
+     * @property {boolean} addressBarShadowPadding The address bar on a mobile browser can have a shadow. This is default 6px
+     * @property {boolean} toolBarShadowPadding The tool bar on a mobile browser can have a shadow. This is default 6px
      *
      * @property {number} devicePixelRatio Ratio of the (vertical) size of one physical pixel on the current display device to the size of one device independent pixels(dips)
      * @property {number} fullPageHeight fullPageHeight of the browser
@@ -427,48 +544,25 @@ class protractorImageComparison {
                 this.deviceName = browserConfig.capabilities.deviceName ? browserConfig.capabilities.deviceName.toLowerCase() : '';
                 // this.nativeWebScreenshot of the constructor can be overruled by the capabilities when the constructor value is false
                 if (!this.nativeWebScreenshot) {
-                    this.nativeWebScreenshot = browserConfig.capabilities.nativeWebScreenshot ? true : false;
+                    this.nativeWebScreenshot = !!browserConfig.capabilities.nativeWebScreenshot;
                 }
 
-                return browser.driver.executeScript(setCSSAndRetrieveBrowserData, this.platformName, this.disableCSSAnimation, this.chromeShadowPadding);
+                this.addressBarShadowPadding = (this.saveType.fullPage && this._isMobile() && this.testInBrowser && ((this.nativeWebScreenshot && this._isAndroid()) || this._isIOS())) ? 6 : 0;
+                this.toolBarShadowPadding = (this.saveType.fullPage && this._isMobile() && this.testInBrowser && this._isIOS()) ? 6 : 0;
 
-                // Platform name is used for determining height / width which is different for desktop and mobile
-                function setCSSAndRetrieveBrowserData(platformName, disableCSSAnimation, chromeShadowPadding) {
-                    var animation = '* {' +
-                            '-webkit-transition-duration: 0s !important;' +
-                            'transition-duration: 0s !important;' +
-                            '-webkit-animation-duration: 0s !important;' +
-                            'animation-duration: 0s !important;' +
-                            '}',
-                        scrollBar = '*::-webkit-scrollbar { display:none; !important}',
-                        androidChrome = 'body{padding-top:' + chromeShadowPadding + 'px !important}',
-                        css = disableCSSAnimation ? scrollBar + animation + androidChrome : scrollBar + androidChrome,
-                        head = document.head || document.getElementsByTagName('head')[0],
-                        style = document.createElement('style');
-
-                    style.type = 'text/css';
-                    style.appendChild(document.createTextNode(css));
-                    head.appendChild(style);
-
-                    return {
-                        clientWidth: document.body.clientWidth,
-                        fullPageHeight: document.body.scrollHeight - chromeShadowPadding,
-                        fullPageWidth: document.body.scrollWidth,
-                        height: platformName === '' ? window.outerHeight : window.screen.height,
-                        innerHeight: window.innerHeight,
-                        pixelRatio: window.devicePixelRatio,
-                        width: platformName === '' ? window.outerWidth : window.screen.width
-                    };
-                }
+                return this._setCustomTestCSS();
             })
+            .then(() => this._getBrowserData())
             .then(browserData => {
+                // clientWidth is the screen width
+                this.clientWidth = browserData.clientWidth;
                 // Firefox creates screenshots in a different way. Although it could be taken on a Retina screen,
                 // the screenshot is returned in its original (no factor x is used) dimensions
                 this.devicePixelRatio = this._isFirefox() ? this.devicePixelRatio : browserData.pixelRatio;
                 this.fullPageHeight = browserData.fullPageHeight;
+                // fullPageWidth can be wider when there are scrollbars
                 this.fullPageWidth = browserData.fullPageWidth;
                 this.innerHeight = browserData.innerHeight;
-                this.clientWidth = browserData.clientWidth;
                 this.height = browserData.height;
                 this.width = browserData.width;
             });
@@ -487,6 +581,7 @@ class protractorImageComparison {
      * @param {Promise} element The ElementFinder that is used to get the position
      * @returns {Promise} The x/y position of the element
      * @private
+     * @todo: refactor this method, extract the heights in a seperate function
      */
     _getIOSPosition(element) {
         function getDataObject(element, addressBar, statusBar) {
@@ -613,113 +708,70 @@ class protractorImageComparison {
      * @private
      */
     _scrollToAndDetermineFullPageHeight(verticalCoordinate) {
-        return browser.driver.executeAsyncScript(_scrollAndReturnFullPageHeight, verticalCoordinate, this.fullPageScrollTimeout);
+        return browser.driver.executeScript('window.scrollTo(0, arguments[0]);', verticalCoordinate)
+            .then(() => browser.sleep(this.fullPageScrollTimeout))
+            .then(() => browser.driver.executeScript(_determineFullPageHeights, this.addressBarShadowPadding, this.toolBarShadowPadding));
 
-        function _scrollAndReturnFullPageHeight(y, timeout, done) {
-            var intervalId;
-
-            window.scrollTo(0, y);
-            intervalId = setTimeout(function () {
-                clearInterval(intervalId);
-                var heights = {
-                    innerHeight: window.outerHeight,
-                    scrollHeight: document.body.scrollHeight
-                };
-                done(heights);
-            }, timeout);
+        function _determineFullPageHeights(addressBarShadowPadding, toolBarShadowPadding) {
+            return {
+                innerHeight: window.innerHeight,
+                scrollHeight: document.body.scrollHeight - addressBarShadowPadding - toolBarShadowPadding
+            }
         }
-
     }
 
     /**
      * Scroll to a given vertical coordinate and save the screenshot
-     * @param {number} verticalCoordinate The vertical coordinate that needs to be scrolled to
+     * @param {number} newVerticalCoordinate The vertical coordinate that needs to be scrolled to
      * @param {string} tag The tag that is used
-     * @param {number} part The part of the screen that is being processed
+     * @param {number} currentScreenshotNumber The currentScreenshotNumber of the screen that is being processed
      * @returns {Promise}
      * @private
+     * @todo: refactor this method, rethink about debug logging
      */
-    _scrollAndSave(verticalCoordinate, tag, part) {
-        const currentVerticalCoordinate = (part - 1) * this.innerHeight;
-        console.log('\nverticalCoordinate = ', verticalCoordinate);
-        console.log('this.innerHeight = ', this.innerHeight);
-        console.log('currentVerticalCoordinate = ', currentVerticalCoordinate);
-        console.log('\n');
+    _scrollAndSave(newVerticalCoordinate, tag, currentScreenshotNumber) {
+        const previousVerticalCoordinate = (currentScreenshotNumber - 1) * this.innerHeight;
 
         let actualFullPageHeight;
+        let bufferedScreenshot;
+        let cropData;
         let isLastScreenshot;
 
-        return this._scrollToAndDetermineFullPageHeight(verticalCoordinate)
+        return this._scrollToAndDetermineFullPageHeight(newVerticalCoordinate)
             .then(heights => {
-                // actualFullPageHeight = height;
-                console.log('\nScrolled to = ', verticalCoordinate);
                 actualFullPageHeight = heights.scrollHeight; // with dpr
                 this.innerHeight = heights.innerHeight;
 
                 return browser.takeScreenshot()
             })
             .then(screenshot => {
-                const bufferedScreenshot = new Buffer(screenshot, 'base64');
-                let cropHeight,
-                    cropTopPosition;
+                // @todo: refactor code to a method?
+                bufferedScreenshot = new Buffer(screenshot, 'base64');
+
+                let cropParameters = {
+                    'actualFullPageHeight': actualFullPageHeight,
+                    'currentScreenshotNumber': currentScreenshotNumber,
+                    'newVerticalCoordinate': newVerticalCoordinate,
+                    'previousVerticalCoordinate': previousVerticalCoordinate,
+                };
 
                 this.screenshotHeight = (bufferedScreenshot.readUInt32BE(20) / this.devicePixelRatio); // width = 16
 
-                // For older webdriver of Firefox and IE11, they make "fullpage" screenshots
-                const isLargeScreenshot = this.screenshotHeight > this.innerHeight && !this.nativeWebScreenshot;
-
-                // Determine current fullpageheight
-                if (isLargeScreenshot) {
-                    this.fullPageHeight = this.screenshotHeight;
+                if (this._isMobile() && ((this.nativeWebScreenshot && this.testInBrowser) || (this._isIOS() && this.testInBrowser))) {
+                    return this._determineFullPageMobileCropData(cropParameters);
                 } else {
-                    // Value can be equal, or bigger due to for example lazyloading
-                    // this.fullPageHeight = actualFullPageHeight - this.chromeShadowPadding; // @todo: changed this for mobile
-                    this.fullPageHeight = actualFullPageHeight;
+                    return this._determineFullPageDesktopCropData(cropParameters);
                 }
-
-                if (this._isMobile() && this.nativeWebScreenshot) {
-                    // Determine the crop height and postion from where to crop
-                    isLastScreenshot = (this.innerHeight - this.chromeShadowPadding) * part > this.fullPageHeight;
-
-                    // iOS + Android determine cropHeight for height
-                    // iOS + Android determine cropTopPosition for y
-                    // @todo, need to rethink the _getAndroid- and _getIOSPosition-, only give element coordinates back
-                    // and do calculation somewhere else. Start with Android
-
-                    let addressBarCurrentHeight = 0;
-                    const statusBarHeight = this.androidOffsets.statusBar;
-                    const addressBarHeight = this.androidOffsets.addressBar;
-                    const toolBarHeight = this.androidOffsets.toolBar;
-
-                    if (this.screenshotHeight === statusBarHeight + addressBarHeight + this.innerHeight + toolBarHeight) {
-                        addressBarCurrentHeight = addressBarHeight;
-                    } else if (this.screenshotHeight === statusBarHeight + addressBarHeight + this.innerHeight) {
-                        addressBarCurrentHeight = addressBarHeight;
-                    }
-
-                    const statusAndAddressBarHeight = statusBarHeight + addressBarCurrentHeight;
-
-                    // still got 6px extra black on the last screenshot, need to get this out, then it is good
-                    cropHeight = isLastScreenshot ? this.fullPageHeight - ((this.innerHeight - this.chromeShadowPadding) * (part - 1)) - this.chromeShadowPadding: this.innerHeight - this.chromeShadowPadding;
-                    cropTopPosition = isLastScreenshot ? statusAndAddressBarHeight + this.innerHeight - cropHeight : statusAndAddressBarHeight + this.chromeShadowPadding;
-                } else {
-                    // Determine the crop height and postion from where to crop
-                    isLastScreenshot = this.innerHeight * part > this.fullPageHeight;
-
-                    cropHeight = isLastScreenshot ? this.fullPageHeight - currentVerticalCoordinate : this.innerHeight;
-                    cropTopPosition = isLastScreenshot ? this.innerHeight - cropHeight : 0;
-                    // large image screenshot
-                    if (isLargeScreenshot) {
-                        cropTopPosition = isLastScreenshot ? currentVerticalCoordinate : verticalCoordinate;
-                    }
-                }
-
+            })
+            .then(cropData => {
                 const rectangles = this._multiplyObjectValuesAgainstDPR({
-                    height: cropHeight,
+                    height: cropData.cropHeight,
                     width: this.clientWidth,
                     x: 0,
-                    y: cropTopPosition
+                    y: cropData.cropTopPosition
                 });
+
+                isLastScreenshot = cropData.isLastScreenshot;
 
                 if (this.debug) {
                     console.log('\n####################################################');
@@ -727,21 +779,56 @@ class protractorImageComparison {
                     console.log('NEW fullPageHeight = ', this.fullPageHeight);
                     console.log('this.screenshotHeight = ', this.screenshotHeight);
                     console.log('this.innerHeight = ', this.innerHeight);
-                    console.log('currentVerticalCoordinate = ', currentVerticalCoordinate);
-                    console.log('verticalCoordinate = ', verticalCoordinate);
-                    console.log('trying part =', part);
-                    console.log('isLastScreenshot = ', isLastScreenshot);
-                    console.log(`(this.innerHeight * part) - this.chromeShadowPadding > this.fullPageHeight = ${(this.innerHeight * part) - this.chromeShadowPadding} > ${this.fullPageHeight}`);
-                    console.log('cropHeight = ', cropHeight);
-                    console.log('cropTopPosition = ', cropTopPosition);
+                    console.log('previousVerticalCoordinate = ', previousVerticalCoordinate);
+                    console.log('newVerticalCoordinate = ', newVerticalCoordinate);
+                    console.log('trying currentScreenshotNumber =', currentScreenshotNumber);
+                    console.log('isLastScreenshot = ', cropData.isLastScreenshot);
+                    console.log(`(this.innerHeight * part) - this.chromeShadowPadding > this.fullPageHeight = ${(this.innerHeight * currentScreenshotNumber) - this.addressBarShadowPadding - this.toolBarShadowPadding} > ${this.fullPageHeight}`);
+                    console.log('cropTopPosition = ', cropData.cropTopPosition);
                     console.log('rectangles =', rectangles);
                     console.log('####################################################\n');
                 }
 
-                return this._saveCroppedScreenshot(bufferedScreenshot, this.tempFullScreenFolder, rectangles, `${tag}-${part}`)
+                return this._saveCroppedScreenshot(bufferedScreenshot, this.tempFullScreenFolder, rectangles, `${tag}-${currentScreenshotNumber}`);
             })
             // Or compose and save the screenshot, or scroll and save again
-            .then(() => isLastScreenshot ? this._composeAndSaveFullScreenshot(tag, part, 1) : this._scrollAndSave((this.innerHeight - this.chromeShadowPadding) * part, tag, part + 1));
+            .then(() => {
+                if (isLastScreenshot) {
+                    return this._composeAndSaveFullScreenshot(tag, currentScreenshotNumber, 1);
+                } else {
+                    return this._scrollAndSave((this.innerHeight - this.addressBarShadowPadding - this.toolBarShadowPadding) * currentScreenshotNumber, tag, currentScreenshotNumber + 1);
+                }
+            });
+    }
+
+    /**
+     * Set inline CSS on the page under test that is needed to execute the image comparison.
+     * @return {Promise}
+     * @private
+     * @todo: - add abitlity to add custom css to for example fix menu to the top and so on. custom CSS needs to be for
+     *          set per save / check
+     */
+    _setCustomTestCSS() {
+        return browser.driver.executeScript(setCSS, this.disableCSSAnimation, this.addressBarShadowPadding, this.toolBarShadowPadding);
+
+        function setCSS(disableCSSAnimation, addressBarShadowPadding, toolBarShadowPadding) {
+            var animation = '* {' +
+                    '-webkit-transition-duration: 0s !important;' +
+                    'transition-duration: 0s !important;' +
+                    '-webkit-animation-duration: 0s !important;' +
+                    'animation-duration: 0s !important;' +
+                    '}',
+                scrollBar = '*::-webkit-scrollbar { display:none; !important}',
+                bodyTopPadding = addressBarShadowPadding === 0 ? '' : 'body{padding-top:' + addressBarShadowPadding + 'px !important}',
+                bodyBottomPadding = toolBarShadowPadding === 0 ? '' : 'body{padding-bottom:' + toolBarShadowPadding + 'px !important}',
+                css = disableCSSAnimation ? scrollBar + animation + bodyTopPadding + bodyBottomPadding : scrollBar + bodyTopPadding + bodyBottomPadding,
+                head = document.head || document.getElementsByTagName('head')[0],
+                style = document.createElement('style');
+
+            style.type = 'text/css';
+            style.appendChild(document.createTextNode(css));
+            head.appendChild(style);
+        }
     }
 
     /**
@@ -885,6 +972,7 @@ class protractorImageComparison {
         let saveOptions = options || [];
         let bufferedScreenshot;
 
+        this.saveType.element = true;
         this.resizeDimensions = saveOptions.resizeDimensions ? saveOptions.resizeDimensions : this.resizeDimensions;
         this.disableCSSAnimation = saveOptions.disableCSSAnimation || saveOptions.disableCSSAnimation === false ? saveOptions.disableCSSAnimation : this.disableCSSAnimation;
 
@@ -922,6 +1010,7 @@ class protractorImageComparison {
     saveFullPageScreens(tag, options) {
         let saveOptions = options || [];
 
+        this.saveType.fullPage = true;
         this.fullPageScrollTimeout = saveOptions.fullPageScrollTimeout && parseInt(saveOptions.fullPageScrollTimeout, 10) > this.fullPageScrollTimeout ? saveOptions.fullPageScrollTimeout : this.fullPageScrollTimeout;
         this.disableCSSAnimation = saveOptions.disableCSSAnimation || saveOptions.disableCSSAnimation === false ? saveOptions.disableCSSAnimation : this.disableCSSAnimation;
 
@@ -950,12 +1039,11 @@ class protractorImageComparison {
     saveScreen(tag, options) {
         let saveOptions = options || [];
 
+        this.saveType.screen = true;
         this.disableCSSAnimation = saveOptions.disableCSSAnimation || saveOptions.disableCSSAnimation === false ? saveOptions.disableCSSAnimation : this.disableCSSAnimation;
 
         return this._getInstanceData()
-            .then(() => {
-                return browser.takeScreenshot()
-            })
+            .then(() => browser.takeScreenshot())
             .then(screenshot => {
                 const bufferedScreenshot = new Buffer(screenshot, 'base64');
                 this.screenshotHeight = (bufferedScreenshot.readUInt32BE(20) / this.devicePixelRatio); // width = 16
@@ -968,7 +1056,6 @@ class protractorImageComparison {
                 });
                 return this._saveCroppedScreenshot(bufferedScreenshot, this.actualFolder, rectangles, tag);
             });
-
     }
 }
 

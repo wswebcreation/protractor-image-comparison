@@ -3,9 +3,7 @@
 const SpecReporter = require('jasmine-spec-reporter');
 
 exports.config = {
-    // baseUrl: 'https://wswebcreation.github.io/protractor-image-comparison/',
-    baseUrl: 'http://www.verloskundigenpraktijkmorgenland.nl/',
-    // baseUrl: 'http://www.detesters.nl/',
+    baseUrl: 'https://wswebcreation.github.io/protractor-image-comparison/',
     framework: 'jasmine2',
     jasmineNodeOpts: {
         showColors: true,
