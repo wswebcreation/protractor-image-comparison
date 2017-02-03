@@ -110,7 +110,7 @@ describe('protractor-protractor-image-comparison', () => {
         const examplePageFail = `${examplePage}-fail`;
 
         it('should compare successful with a baseline', () => {
-            expect(browser.imageComparson.checkScreen(examplePage)).toEqual(0);
+            expect(browser.imageComparson.checkScreen(examplePage, {ignoreAntialiasing: true})).toEqual(0);
         });
 
         it('should save a difference after failure', () => {
@@ -123,7 +123,7 @@ describe('protractor-protractor-image-comparison', () => {
         it('should fail comparing with a baseline', () => {
             browser.executeScript('arguments[0].innerHTML = "Test Demo Page";', headerElement.getWebElement())
                 .then(() => browser.sleep(1000))
-                .then(() => expect(browser.imageComparson.checkScreen(examplePageFail)).toBeGreaterThan(0));
+                .then(() => expect(browser.imageComparson.checkScreen(examplePageFail, {ignoreAntialiasing: true})).toBeGreaterThan(0));
         });
 
         it('should throw an error when no baseline is found', () => {
@@ -161,17 +161,23 @@ describe('protractor-protractor-image-comparison', () => {
         it('should compare successful with a baseline', () => {
             browser.executeScript('arguments[0].scrollIntoView();', dangerAlert.getWebElement())
                 .then(() => browser.sleep(1000))
-                .then(() => expect(browser.imageComparson.checkElement(dangerAlert, dangerAlertElement)).toEqual(0));
+                .then(() => expect(browser.imageComparson.checkElement(dangerAlert, dangerAlertElement, {ignoreAntialiasing: true})).toEqual(0));
         });
 
         it('should compare successful with a baseline with custom dimensions that is NOT scrolled', () => {
-            expect(browser.imageComparson.checkElement(headerElement, 'resizeDimensions-header-element', {resizeDimensions: 15})).toEqual(0);
+            expect(browser.imageComparson.checkElement(headerElement, 'resizeDimensions-header-element', {
+                ignoreAntialiasing: true,
+                resizeDimensions: 15
+            })).toEqual(0);
         });
 
         it('should compare successful with a baseline with custom dimensions that is scrolled', () => {
             browser.executeScript('arguments[0].scrollIntoView();', dangerAlert.getWebElement())
                 .then(() => browser.sleep(1000))
-                .then(() => expect(browser.imageComparson.checkElement(dangerAlert, `resizeDimensions-${dangerAlertElement}`, {resizeDimensions: 15})).toEqual(0));
+                .then(() => expect(browser.imageComparson.checkElement(dangerAlert, `resizeDimensions-${dangerAlertElement}`, {
+                    ignoreAntialiasing: true,
+                    resizeDimensions: 15
+                })).toEqual(0));
         });
 
         it('should save a difference after failure', () => {
@@ -184,7 +190,7 @@ describe('protractor-protractor-image-comparison', () => {
         it('should fail comparing with a baseline', () => {
             browser.executeScript('arguments[0].scrollIntoView(); arguments[0].style.color = "#2d7091";', dangerAlert.getWebElement())
                 .then(() => browser.sleep(1000))
-                .then(() => expect(browser.imageComparson.checkElement(dangerAlert, dangerAlertElementFail)).toBeGreaterThan(0));
+                .then(() => expect(browser.imageComparson.checkElement(dangerAlert, dangerAlertElementFail, {ignoreAntialiasing: true})).toBeGreaterThan(0));
 
         });
 
@@ -230,14 +236,14 @@ describe('protractor-protractor-image-comparison', () => {
 
         // The baseline image has a bigger black bar for blocking out the status bar.
         it('should compare a screenshot successful with a baseline', () => {
-            expect(browser.imageComparson.checkScreen('new-offsets')).toEqual(0);
+            expect(browser.imageComparson.checkScreen('new-offsets', {ignoreAntialiasing: true})).toEqual(0);
         });
 
         // This testcase will result in an image that is not equal to the element, but that's the case we are testing here
         it('should compare an element successful with a baseline', () => {
             browser.executeScript('arguments[0].scrollIntoView();', dangerAlert.getWebElement())
                 .then(() => browser.sleep(1000))
-                .then(() => expect(browser.imageComparson.checkElement(dangerAlert, 'new-offset-element')).toEqual(0));
+                .then(() => expect(browser.imageComparson.checkElement(dangerAlert, 'new-offset-element', {ignoreAntialiasing: true})).toEqual(0));
         });
     });
 
@@ -264,12 +270,12 @@ describe('protractor-protractor-image-comparison', () => {
         const examplePageFail = `${exampleFullPage}-fail`;
 
         it('should compare successful with a baseline', () => {
-            expect(browser.imageComparson.checkFullPageScreen(exampleFullPage)).toEqual(0);
+            expect(browser.imageComparson.checkFullPageScreen(exampleFullPage, {ignoreAntialiasing: true})).toEqual(0);
         });
 
         it('should fail comparing with a baseline', () => {
             browser.executeScript('arguments[0].innerHTML = "Test Demo Page"; arguments[1].style.color = "#2d7091";', headerElement.getWebElement(), dangerAlert.getWebElement())
-                .then(() => expect(browser.imageComparson.checkFullPageScreen(examplePageFail)).toBeGreaterThan(0));
+                .then(() => expect(browser.imageComparson.checkFullPageScreen(examplePageFail, {ignoreAntialiasing: true})).toBeGreaterThan(0));
         });
     });
 });

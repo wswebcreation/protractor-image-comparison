@@ -563,9 +563,9 @@ class protractorImageComparison {
                 this.addressBarShadowPadding = (!this.saveType.screen && this._isMobile() && this.testInBrowser && ((this.nativeWebScreenshot && this._isAndroid()) || this._isIOS())) ? this.addressBarShadowPadding : 0;
                 this.toolBarShadowPadding = (!this.saveType.screen && this._isMobile() && this.testInBrowser && this._isIOS()) ? this.toolBarShadowPadding : 0;
 
-                return this._getBrowserData();
+                return this._setCustomTestCSS();
             })
-            .then(() => this._setCustomTestCSS());
+            .then(() => this._getBrowserData());
     }
 
     /**
@@ -752,7 +752,6 @@ class protractorImageComparison {
             .then(() => this._getBrowserData())
             .then(() => browser.takeScreenshot())
             .then(screenshot => {
-                // @todo: refactor code to a method?
                 bufferedScreenshot = new Buffer(screenshot, 'base64');
 
                 let cropParameters = {
@@ -807,8 +806,6 @@ class protractorImageComparison {
      * Set inline CSS on the page under test that is needed to execute the image comparison.
      * @return {Promise}
      * @private
-     * @todo: - add abitlity to add custom css to for example fix menu to the top and so on. custom CSS needs to be for
-     *          set per save / check
      */
     _setCustomTestCSS() {
         return browser.driver.executeScript(setCSS, this.disableCSSAnimation, this.addressBarShadowPadding, this.toolBarShadowPadding);
