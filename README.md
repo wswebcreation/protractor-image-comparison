@@ -13,7 +13,7 @@ protractor-image-comparison
 You can:
 
 - save or compare screens / elements against a baseline
-- **NEW:** save or compare a fullpage screenshot against a baseline (**desktop AND monile are now supported**)
+- **NEW:** save or compare a fullpage screenshot against a baseline (**desktop AND mobile are now supported**)
 - **NEW** automatically create a baseline when no baseline is there
 - disable css animations by default
 - ignore anti-aliasing differences
