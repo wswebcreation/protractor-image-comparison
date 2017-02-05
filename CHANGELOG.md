@@ -1,3 +1,13 @@
+<a name="1.2.0"></a>
+# [1.2.0](https://github.com/wswebcreation/protractor-image-comparison/compare/v1.1.0...v1.2.0) (2017-02-05)
+
+
+### Features
+
+* add mobile fullpage support for iOS and Android ([c8310b1](https://github.com/wswebcreation/protractor-image-comparison/commit/c8310b1))
+
+
+
 <a name="1.1.0"></a>
 # [1.1.0](https://github.com/wswebcreation/protractor-image-comparison/compare/v1.0.0...v1.1.0) (2017-01-19)
 
@@ -27,6 +37,7 @@
 ### Features
 
 * **fullpage-appium:** first screenshots for appium chromedriver fullpage ([7b91ebb](https://github.com/wswebcreation/protractor-image-comparison/commit/7b91ebb))
+* **mobile-fullpage:** initial commit for mobile android support, needs to be refactored ([592d135](https://github.com/wswebcreation/protractor-image-comparison/commit/592d135))
 
 
 ### BREAKING CHANGES
