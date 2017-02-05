@@ -95,3 +95,5 @@ function CucumberSteps() {
 
 module.exports = CucumberSteps;
 ```
+
+For more examples / usage see the [desktop](../test/jasmine.spec.js) or [mobile](../test/jasmine.spec.js) testcases.

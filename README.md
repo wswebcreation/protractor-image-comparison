@@ -13,11 +13,11 @@ protractor-image-comparison
 You can:
 
 - save or compare screens / elements against a baseline
-- **NEW:** save or compare a fullpage screenshot against a baseline (**only browsers are currently supported**)
-- **NEW:** disable css animations by default
-- **NEW** ignore anti-aliasing differences
-- **NEW** compare images by ignoring their colors (do a grayscale comparison)
+- **NEW:** save or compare a fullpage screenshot against a baseline (**desktop AND monile are now supported**)
 - **NEW** automatically create a baseline when no baseline is there
+- disable css animations by default
+- ignore anti-aliasing differences
+- compare images by ignoring their colors (do a grayscale comparison)
 - blockout custom regions during comparison (all)
 - increase the element dimenisions screenshots (all)
 - provide custom iOS and Android offsets for status-/address-/toolbar (mobile only)
@@ -78,6 +78,5 @@ See [CONTRIBUTING.md](./docs/CONTRIBUTING.md).
 - Comparison core of `./lib/resemble.js` [node-resemble](https://github.com/lksv/node-resemble.js) + [ResembleJS](https://github.com/Huddle/Resemble.js)
 
 ## TODO
-* Be able to use `saveFullPageScreens` and `checkFullPageScreen` for mobile
 * Update documentation for Mobile
 * New (mobile friendly) testpage

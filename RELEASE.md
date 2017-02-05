@@ -15,7 +15,7 @@ Before releasing the following steps needs to be executed:
   - [] run against SauceLabs `npm t -- -e saucelabs`
   - [] run against Android ADB Emulator `npm t -- -e android.adb`
   - [] run against Android ChromeDriver Emulator `npm t -- -e android.chromedriver`
-  - [] run against Perfecto `pm t -- -e perfecto`
+  - [] run against Perfecto `npm t -- -e perfecto`
   - [] run unit tests `npm run unit-test`
 - [] run the docs with `npm run docs`, check them and commit + push them
 - [] upgrade `package.json` based on SEM-VER

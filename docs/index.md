@@ -1,7 +1,7 @@
 ## Classes
 
 <dl>
-<dt><a href="#assert">assert</a></dt>
+<dt><a href="#protractorImageComparison">protractorImageComparison</a></dt>
 <dd><p>protractorImageComparison</p>
 </dd>
 </dl>
@@ -29,9 +29,9 @@
 </dd>
 </dl>
 
-<a name="assert"></a>
+<a name="protractorImageComparison"></a>
 
-## assert
+## protractorImageComparison
 protractorImageComparison
 
 **Kind**: global class  
@@ -40,20 +40,33 @@ protractorImageComparison
 | Name | Type | Description |
 | --- | --- | --- |
 | actualFolder | <code>string</code> | Path where the actual screenshots are saved |
-| diffFolder | <code>string</code> | Path where the differences are saved |
-| devicePixelRatio | <code>int</code> | Ratio of the (vertical) size of one physical pixel on the current display device to the size of one device independent pixels(dips) |
+| addressBarShadowPadding | <code>number</code> | Mobile Chrome and mobile Safari have a shadow below the addressbar, this property will make sure that it wont be seen in the image |
 | androidOffsets | <code>object</code> | Object that will hold de defaults for the statusBar, addressBar and toolBar |
+| browserHeight | <code>number</code> | height of the browser |
+| browserName | <code>string</code> | name of the browser that is used to execute the test on |
+| browserWidth | <code>number</code> | width of the browser |
+| deviceName | <code>string</code> | the kind of mobile device or emulator to use |
+| diffFolder | <code>string</code> | Path where the differences are saved |
+| devicePixelRatio | <code>number</code> | Ratio of the (vertical) size of one physical pixel on the current display device to the size of one device independent pixels(dips) |
+| fullPageHeight | <code>number</code> | fullPageHeight of the browser including scrollbars |
+| fullPageWidth | <code>number</code> | fullPageWidth of the browser including scrollbars * |
 | iosOffsets | <code>object</code> | Object that will hold de defaults for the statusBar and addressBar |
-| screenshotHeight | <code>int</code> | height of the screenshot of the page |
-| resizeDimensions | <code>int</code> | dimensions that will be used to make the the element coordinates bigger. This needs to be in pixels |
+| isLastScreenshot | <code>boolean</code> | boolean tells if it is the last fullpage screenshot |
+| logName | <code>string</code> | logName from the capabilities |
+| name | <code>string</code> | Name from the capabilities |
+| platformName | <code>string</code> | mobile OS platform to use |
+| resizeDimensions | <code>number</code> | dimensions that will be used to make the the element coordinates bigger. This needs to be in pixels |
+| screenshotHeight | <code>number</code> | height of the screenshot of the page |
 | tempFullScreenFolder | <code>string</code> | Path where the temporary fullscreens are saved |
-| fullPageScrollTimeout | <code>int</code> | Default timeout to wait after a scroll |
+| fullPageScrollTimeout | <code>number</code> | Default timeout to wait after a scroll |
+| saveType | <code>object</code> | Object that will the type of save that is being executed |
+| testInBrowser | <code>boolean</code> | boolean that determines if the test is executed in a browser or not |
+| toolBarShadowPadding | <code>number</code> | Mobile mobile Safari has a shadow above the toolbar, this property will make sure that it wont be seen in the image |
+| viewPortHeight | <code>number</code> | is the height of the browser window's viewport (was innerHeight |
 
-<a name="new_assert_new"></a>
+<a name="new_protractorImageComparison_new"></a>
 
-### new assert(options)
-image-diff protractor plugin class
-
+### new protractorImageComparison(options)
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -68,8 +81,8 @@ image-diff protractor plugin class
 | options.blockOutStatusBar | <code>boolean</code> | If the statusbar on mobile / tablet needs to blocked out by default |
 | options.ignoreAntialiasing | <code>boolean</code> | compare images an discard anti aliasing |
 | options.ignoreColors | <code>boolean</code> | Even though the images are in colour, the comparison wil compare 2 black/white images |
-| options.androidOffsets | <code>object</code> | Object that will hold custom values for the statusBar, addressBar and toolBar |
-| options.iosOffsets | <code>object</code> | Object that will hold the custom values for the statusBar and addressBar |
+| options.androidOffsets | <code>object</code> | Object that will hold custom values for the statusBar, addressBar, addressBarScrolled and toolBar |
+| options.iosOffsets | <code>object</code> | Object that will hold the custom values for the statusBar, addressBar, addressBarScrolled and toolBar |
 
 <a name="checkElement"></a>
 

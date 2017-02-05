@@ -12,6 +12,7 @@ describe('protractor-image-comparison', () => {
     beforeEach(done => {
         browser.imageComparson = new imageComparison({
             baselineFolder: './test/baseline/desktop/',
+            debug: false,
             formatImageName: `{tag}-${logName}-{width}x{height}-dpr-{dpr}`,
             screenshotPath: './.tmp/'
         });

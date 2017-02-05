@@ -146,24 +146,23 @@ config.multiCapabilities = [
         shardTestFiles: true,
         specs: deskSpecs
     }
-    // //,
-    // // Not supporting Async with 2.53
-    // // {
-    // //     // SauceLabs
-    // //     browserName: 'safari',
-    // //     platform: "OS X 10.11",
-    // //     version: "10",
-    // //     screenResolution: "1600x1200",
-    // //     username: SAUCE_USERNAME,
-    // //     accessKey: SAUCE_ACCESS_KEY,
-    // //     build: process.env.TRAVIS_JOB_NUMBER,
-    // //     passed: true,
-    // //     public: "public",
-    // //     "tunnel-identifier": process.env.TRAVIS_JOB_NUMBER,
-    // //     logName: "Safari 10",
-    // //     shardTestFiles: true,
-    // //     specs: deskSpecs
-    // // }
+    ,
+    {
+        // SauceLabs
+        browserName: 'safari',
+        platform: "OS X 10.11",
+        version: "10",
+        screenResolution: "1600x1200",
+        username: SAUCE_USERNAME,
+        accessKey: SAUCE_ACCESS_KEY,
+        build: process.env.TRAVIS_JOB_NUMBER,
+        passed: true,
+        public: "public",
+        "tunnel-identifier": process.env.TRAVIS_JOB_NUMBER,
+        logName: "Safari 10",
+        shardTestFiles: true,
+        specs: deskSpecs
+    }
 ];
 
 exports.config = config;
