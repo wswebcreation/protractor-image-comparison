@@ -1,11 +1,14 @@
 'use strict';
 
 let config = require('./protractor.shared.conf.js').config;
+let SauceLabs = require('saucelabs');
 
 const SAUCE_USERNAME = process.env.SAUCE_USERNAME ? process.env.SAUCE_USERNAME : process.env.IC_SAUCE_USERNAME;
 const SAUCE_ACCESS_KEY = process.env.SAUCE_ACCESS_KEY ? process.env.SAUCE_ACCESS_KEY : process.env.IC_SAUCE_ACCESS_KEY;
 const deskSpecs = ['../jasmine.spec.js'];
 const mobileSpecs = ['../mobile.spec.js'];
+
+let JOB_ID;
 
 config.seleniumAddress = 'http://ondemand.saucelabs.com:80/wd/hub';
 
@@ -23,7 +26,6 @@ config.multiCapabilities = [
         username: SAUCE_USERNAME,
         accessKey: SAUCE_ACCESS_KEY,
         build: process.env.TRAVIS_JOB_NUMBER,
-        passed: true,
         public: "public",
         "tunnel-identifier": process.env.TRAVIS_JOB_NUMBER,
         logName: "iPhone 6 Simulator Safari",
@@ -41,7 +43,6 @@ config.multiCapabilities = [
         username: SAUCE_USERNAME,
         accessKey: SAUCE_ACCESS_KEY,
         build: process.env.TRAVIS_JOB_NUMBER,
-        passed: true,
         public: "public",
         "tunnel-identifier": process.env.TRAVIS_JOB_NUMBER,
         logName: "iPad Air 2 Simulator Safari",
@@ -58,7 +59,7 @@ config.multiCapabilities = [
         username: SAUCE_USERNAME,
         accessKey: SAUCE_ACCESS_KEY,
         build: process.env.TRAVIS_JOB_NUMBER,
-        passed: true,
+        // passed: true,
         public: "public",
         "tunnel-identifier": process.env.TRAVIS_JOB_NUMBER,
         logName: "Chrome latest",
@@ -74,7 +75,6 @@ config.multiCapabilities = [
         username: SAUCE_USERNAME,
         accessKey: SAUCE_ACCESS_KEY,
         build: process.env.TRAVIS_JOB_NUMBER,
-        passed: true,
         public: "public",
         "tunnel-identifier": process.env.TRAVIS_JOB_NUMBER,
         logName: "Firefox latest",
@@ -90,7 +90,6 @@ config.multiCapabilities = [
         username: SAUCE_USERNAME,
         accessKey: SAUCE_ACCESS_KEY,
         build: process.env.TRAVIS_JOB_NUMBER,
-        passed: true,
         public: "public",
         "tunnel-identifier": process.env.TRAVIS_JOB_NUMBER,
         logName: "Firefox 47",
@@ -106,7 +105,6 @@ config.multiCapabilities = [
         username: SAUCE_USERNAME,
         accessKey: SAUCE_ACCESS_KEY,
         build: process.env.TRAVIS_JOB_NUMBER,
-        passed: true,
         public: "public",
         "tunnel-identifier": process.env.TRAVIS_JOB_NUMBER,
         logName: "IE11",
@@ -122,7 +120,6 @@ config.multiCapabilities = [
         username: SAUCE_USERNAME,
         accessKey: SAUCE_ACCESS_KEY,
         build: process.env.TRAVIS_JOB_NUMBER,
-        passed: true,
         public: "public",
         "tunnel-identifier": process.env.TRAVIS_JOB_NUMBER,
         logName: "Microsoft Edge latest",
@@ -139,14 +136,12 @@ config.multiCapabilities = [
         username: SAUCE_USERNAME,
         accessKey: SAUCE_ACCESS_KEY,
         build: process.env.TRAVIS_JOB_NUMBER,
-        passed: true,
         public: "public",
         "tunnel-identifier": process.env.TRAVIS_JOB_NUMBER,
         logName: "Safari 9",
         shardTestFiles: true,
         specs: deskSpecs
-    }
-    ,
+    },
     {
         // SauceLabs
         browserName: 'safari',
@@ -156,7 +151,6 @@ config.multiCapabilities = [
         username: SAUCE_USERNAME,
         accessKey: SAUCE_ACCESS_KEY,
         build: process.env.TRAVIS_JOB_NUMBER,
-        passed: true,
         public: "public",
         "tunnel-identifier": process.env.TRAVIS_JOB_NUMBER,
         logName: "Safari 10",
@@ -164,5 +158,27 @@ config.multiCapabilities = [
         specs: deskSpecs
     }
 ];
+
+config.onComplete = function () {
+    return browser.getSession()
+        .then(session => {
+            JOB_ID = session.getId();
+        })
+};
+
+config.onCleanUp = function (exitCode) {
+    const saucelabs = new SauceLabs({
+        username: SAUCE_USERNAME,
+        password: SAUCE_ACCESS_KEY
+    });
+
+    return new Promise((resolve, reject) => {
+        saucelabs.updateJob(JOB_ID, {
+                passed: exitCode === 0,
+            },
+            () => resolve(),
+            error => reject('Error:', error));
+    });
+};
 
 exports.config = config;

@@ -1,6 +1,6 @@
 'use strict';
 
-const fs = require('fs');
+const fs = require('fs-extra');
 const path = require('path');
 const resemble = require('../../lib/resemble.js');
 
@@ -127,6 +127,7 @@ describe('node-resemble.js', () => {
             resemble(peopleImage, peopleTwoImage)
                 .onComplete(data => {
                     const filePath = path.resolve(process.cwd(), '.tmp/diff.png');
+                    fs.ensureDirSync(filePath);
 
                     expect(data.misMatchPercentage).toEqual('8.66');
 
