@@ -302,7 +302,7 @@ class protractorImageComparison {
 
                     if (this.isLastScreenshot) {
                         mobileCropData.cropHeight = this.fullPageHeight - ((this.viewPortHeight - this.addressBarShadowPadding - this.toolBarShadowPadding) * (cropParameters.currentScreenshotNumber - 1));
-                        mobileCropData.cropTopPosition = statusPlusAddressBarHeight + this.viewPortHeight - mobileCropData.cropHeight;
+                        mobileCropData.cropTopPosition = statusPlusAddressBarHeight + (this.viewPortHeight- this.toolBarShadowPadding) - mobileCropData.cropHeight;
                     } else {
                         mobileCropData.cropHeight = this.viewPortHeight - this.addressBarShadowPadding - this.toolBarShadowPadding;
                         mobileCropData.cropTopPosition = statusPlusAddressBarHeight + this.addressBarShadowPadding;
@@ -317,7 +317,7 @@ class protractorImageComparison {
 
                     if (this.isLastScreenshot) {
                         mobileCropData.cropHeight = this.fullPageHeight - ((this.viewPortHeight - this.addressBarShadowPadding - this.toolBarShadowPadding) * (cropParameters.currentScreenshotNumber - 1));
-                        mobileCropData.cropTopPosition = safariHeights.addressBarCurrentHeight + this.viewPortHeight - mobileCropData.cropHeight;
+                        mobileCropData.cropTopPosition = safariHeights.addressBarCurrentHeight + (this.viewPortHeight- this.toolBarShadowPadding) - mobileCropData.cropHeight;
                     } else {
                         mobileCropData.cropHeight = this.viewPortHeight - this.addressBarShadowPadding - this.toolBarShadowPadding;
                         mobileCropData.cropTopPosition = safariHeights.addressBarCurrentHeight + this.addressBarShadowPadding;
@@ -478,7 +478,7 @@ class protractorImageComparison {
         // For viewPortWidth use document.body.clientWidth so we don't get the scrollbar included in the size
         function retrieveData(isMobile, addressBarShadowPadding, toolBarShadowPadding) {
             return {
-                fullPageHeight: document.body.scrollHeight - addressBarShadowPadding, toolBarShadowPadding,
+                fullPageHeight: document.body.scrollHeight - addressBarShadowPadding - toolBarShadowPadding,
                 fullPageWidth: document.body.scrollWidth,
                 height: isMobile ? window.screen.height : window.outerHeight,
                 pixelRatio: window.devicePixelRatio,

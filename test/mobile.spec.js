@@ -161,7 +161,7 @@ describe('protractor-protractor-image-comparison', () => {
         it('should compare successful with a baseline', () => {
             browser.executeScript('arguments[0].scrollIntoView();', dangerAlert.getWebElement())
                 .then(() => browser.sleep(1000))
-                .then(() => expect(browser.imageComparson.checkElement(dangerAlert, dangerAlertElement, {ignoreAntialiasing: true})).toEqual(0));
+                .then(() => expect(browser.imageComparson.checkElement(dangerAlert, dangerAlertElement)).toEqual(0));
         });
 
         it('should compare successful with a baseline with custom dimensions that is NOT scrolled', () => {
@@ -190,7 +190,7 @@ describe('protractor-protractor-image-comparison', () => {
         it('should fail comparing with a baseline', () => {
             browser.executeScript('arguments[0].scrollIntoView(); arguments[0].style.color = "#2d7091";', dangerAlert.getWebElement())
                 .then(() => browser.sleep(1000))
-                .then(() => expect(browser.imageComparson.checkElement(dangerAlert, dangerAlertElementFail, {ignoreAntialiasing: true})).toBeGreaterThan(0));
+                .then(() => expect(browser.imageComparson.checkElement(dangerAlert, dangerAlertElementFail)).toBeGreaterThan(0));
 
         });
 
