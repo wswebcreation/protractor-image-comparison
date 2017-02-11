@@ -1,7 +1,7 @@
 'use strict';
 
 let config = require('./protractor.shared.conf.js').config;
-let SauceLabs = require('sauceLabs');
+let SauceLabs = require('saucelabs');
 
 const SAUCE_USERNAME = process.env.SAUCE_USERNAME ? process.env.SAUCE_USERNAME : process.env.IC_SAUCE_USERNAME;
 const SAUCE_ACCESS_KEY = process.env.SAUCE_ACCESS_KEY ? process.env.SAUCE_ACCESS_KEY : process.env.IC_SAUCE_ACCESS_KEY;
