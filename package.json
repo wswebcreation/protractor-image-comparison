@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "changelog": "node ./test/changelog.js",
+    "commitmsg": "validate-commit-msg",
     "docs": "jsdoc2md ./index.js > ./docs/index.md",
     "test": "node ./test/cli image-comparison",
     "unit-test": "JASMINE_CONFIG_PATH=test/unit/jasmine.json jasmine",
@@ -40,18 +41,13 @@
     "chalk": "1.1.3",
     "commander": "2.9.0",
     "conventional-changelog": "1.1.0",
-    "ghooks": "1.3.2",
+    "husky": "^0.13.1",
     "istanbul": "0.4.5",
     "jasmine-spec-reporter": "3.2.0",
     "jsdoc-to-markdown": "2.0.1",
     "protractor": "^5.1.0",
     "saucelabs": "^1.3.0",
-    "validate-commit-msg": "2.8.2"
-  },
-  "config": {
-    "ghooks": {
-      "commit-msg": "validate-commit-msg"
-    }
+    "validate-commit-msg": "^2.11.1"
   },
   "engines": {
     "npm": ">=3.0.0",
