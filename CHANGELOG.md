@@ -1,3 +1,18 @@
+<a name="1.2.1"></a>
+## [1.2.1](https://github.com/wswebcreation/protractor-image-comparison/compare/v1.2.0...v1.2.1) (2017-02-11)
+
+
+### Bug Fixes
+
+* **dependencies:** update dependencies ([c7c19f3](https://github.com/wswebcreation/protractor-image-comparison/commit/c7c19f3))
+* **dependency:** update dev dependencies for commits ([930b405](https://github.com/wswebcreation/protractor-image-comparison/commit/930b405))
+* **IE11:** fix retrieveData syntax error ([5189622](https://github.com/wswebcreation/protractor-image-comparison/commit/5189622))
+* **resemblejs:** update resemblejs to latest version with less heap allocations ([55266de](https://github.com/wswebcreation/protractor-image-comparison/commit/55266de))
+* **sauceconf:** fix type in sauceconf ([35da109](https://github.com/wswebcreation/protractor-image-comparison/commit/35da109))
+* **saucelabs:** fix for update endstatus ([a2dfbac](https://github.com/wswebcreation/protractor-image-comparison/commit/a2dfbac))
+
+
+
 <a name="1.2.0"></a>
 # [1.2.0](https://github.com/wswebcreation/protractor-image-comparison/compare/v1.1.0...v1.2.0) (2017-02-05)
 
