@@ -464,8 +464,8 @@ class protractorImageComparison {
     _getBrowserData() {
         return browser.driver.executeScript(retrieveData, this._isMobile(), this.addressBarShadowPadding, this.toolBarShadowPadding)
             .then(browserData => {
-                this.browserHeight = browserData.height;
-                this.browserWidth = browserData.width;
+                this.browserHeight = browserData.height !== 0 ? browserData.height : browserData.viewPortHeight;
+                this.browserWidth = browserData.width !== 0 ? browserData.width : browserData.viewPortWidth;
                 // Firefox creates screenshots in a different way. Although it could be taken on a Retina screen,
                 // the screenshot is returned in its original (no factor x is used) dimensions
                 this.devicePixelRatio = this._isFirefox() ? this.devicePixelRatio : browserData.pixelRatio;
