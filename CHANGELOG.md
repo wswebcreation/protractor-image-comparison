@@ -1,5 +1,10 @@
-<a name="1.2.2"></a>
-## [1.2.2](https://github.com/wswebcreation/protractor-image-comparison/compare/v1.2.1...v1.2.2) (2017-03-18)
+<a name="1.2.3"></a>
+## [1.2.3](https://github.com/wswebcreation/protractor-image-comparison/compare/v1.2.2...v1.2.3) (2017-03-23)
+
+
+### Bug Fixes
+
+* **chromium:** fix chromium position top bug ([d3e3471](https://github.com/wswebcreation/protractor-image-comparison/commit/d3e3471))
 
 
 
