@@ -415,14 +415,31 @@ class protractorImageComparison {
      * @param {number} addressBarShadowPadding The height of the addressbar shadow
      * @returns {Promise} The x/y position of the element
      * @private
+     *
+     * There is a bug in chromium to determine the correct position to the top, see:
+     * https://bugs.chromium.org/p/chromium/issues/detail?id=489206#c43
+     *
+     * `var elementPosition = element.getBoundingClientRect();` will not give a correct top in all cases
      */
     _getAndroidChromeElementPosition(element, statusPlusAddressBarHeight, addressBarShadowPadding) {
         function getDataObject(element, statusPlusAddressBarHeight, addressBarShadowPadding) {
-            var elementPosition = element.getBoundingClientRect();
+            var picDummy = document.getElementById('pic-dummy');
+
+            if (picDummy === null) {
+                var dummyEl = document.createElement('div');
+                dummyEl.id = "pic-dummy";
+                dummyEl.style = 'position: absolute; left: 0px; top: 0px; width: 1px; height: 1px; visibility: hidden';
+                document.body.appendChild(dummyEl);
+            }
+
+            picDummy = document.getElementById('pic-dummy');
+
+            var elementPositionTop = Math.abs(document.body.scrollTop - (element.getBoundingClientRect().top - picDummy.getBoundingClientRect().top));
+            var elementPositionLeft = element.getBoundingClientRect().left;
 
             return {
-                x: elementPosition.left,
-                y: statusPlusAddressBarHeight + elementPosition.top - addressBarShadowPadding
+                x: elementPositionLeft,
+                y: statusPlusAddressBarHeight + elementPositionTop - addressBarShadowPadding
             };
         }
 
