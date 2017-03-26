@@ -5,7 +5,7 @@ let SauceLabs = require('saucelabs');
 
 const SAUCE_USERNAME = process.env.SAUCE_USERNAME ? process.env.SAUCE_USERNAME : process.env.IC_SAUCE_USERNAME;
 const SAUCE_ACCESS_KEY = process.env.SAUCE_ACCESS_KEY ? process.env.SAUCE_ACCESS_KEY : process.env.IC_SAUCE_ACCESS_KEY;
-const deskSpecs = ['../jasmine.spec.js'];
+const deskSpecs = ['../desktop.spec.js'];
 const mobileSpecs = ['../mobile.spec.js'];
 
 let JOB_ID;
