@@ -40,12 +40,18 @@ describe('protractor-image-comparison', () => {
     const resolution = '1366x768';
     const dangerAlert = element(by.css('.uk-alert-danger'));
     const headerElement = element(by.css('h1.uk-heading-large'));
+    const dangerAlertElement = 'dangerAlert-compare';
+    const dangerAlertElementFail = `${dangerAlertElement}-fail`;
+    const exampleFullPage = 'example-fullpage-compare';
+    const exampleFullPageFail = `${exampleFullPage}-fail`;
+    const examplePage = 'example-page-compare';
+    const examplePageFail = `${examplePage}-fail`;
+    const tagName = 'examplePage';
 
     // Only test this on chrome, also for ci
     if (browser.browserName === 'chrome') {
         describe('basics', () => {
             it('should save the screen', () => {
-                const tagName = 'examplePage';
 
                 browser.imageComparson.saveScreen(tagName)
                     .then(() => expect(helpers.fileExistSync(`${screenshotPath}/${tagName}-${logName}-${resolution}.png`)).toBe(true));
@@ -94,8 +100,6 @@ describe('protractor-image-comparison', () => {
 
 
     describe('compare screen', () => {
-        const examplePage = 'example-page-compare';
-        const examplePageFail = `${examplePage}-fail`;
 
         it('should compare successful with a baseline', () => {
             expect(browser.imageComparson.checkScreen(examplePage)).toEqual(0);
@@ -120,9 +124,6 @@ describe('protractor-image-comparison', () => {
     });
 
     describe('compare element', () => {
-        const dangerAlertElement = 'dangerAlert-compare';
-        const dangerAlertElementFail = `${dangerAlertElement}-fail`;
-
         it('should compare successful with a baseline', () => {
             browser.executeScript('arguments[0].scrollIntoView();', dangerAlert.getWebElement())
                 .then(() => browser.sleep(500))
@@ -161,8 +162,6 @@ describe('protractor-image-comparison', () => {
     });
 
     describe('compare fullpage screenshot', () => {
-        const exampleFullPage = 'example-fullpage-compare';
-        const examplePageFail = `${exampleFullPage}-fail`;
 
         it('should compare successful with a baseline', () => {
             expect(browser.imageComparson.checkFullPageScreen(exampleFullPage)).toEqual(0);
@@ -170,7 +169,7 @@ describe('protractor-image-comparison', () => {
 
         it('should fail comparing with a baseline', () => {
             browser.executeScript('arguments[0].innerHTML = "Test Demo Page"; arguments[1].style.color = "#2d7091";', headerElement.getWebElement(), dangerAlert.getWebElement())
-                .then(() => expect(browser.imageComparson.checkFullPageScreen(examplePageFail)).toBeGreaterThan(0));
+                .then(() => expect(browser.imageComparson.checkFullPageScreen(exampleFullPageFail)).toBeGreaterThan(0));
         });
     });
 });
