@@ -21,12 +21,6 @@ If you never installed a local webdriver, follow steps 1 and 2, else start the w
 2. then `webdriver-manager update` to download all the webdrivers
 3. then `webdriver-manager start`, this will start a webdriver on `localhost:4444`
 
-## Travis-ci with Sauce Labs
-- `npm run test.ci`: This command is used to test the build through [Travis-ci](https://travis-ci.org/wswebcreation/protractor-image-comparison/). 
-It will test against a lot of configurations that can be found [here](./test/conf/protractor.saucelabs.conf.js).
-
-All PR's are automatically checked against SauceLabs.
-
 ## local on Appium (not needed for a PR)
 **First make sure Appium v 1.5.3 or higher is installed**
 
@@ -51,3 +45,12 @@ All PR's are automatically checked against SauceLabs.
  - Samsung Android on Chrom in the cloud
  
 **Credentials are needed to be able to test this**
+
+## Travis-ci with Sauce Labs (not needed for a PR)
+The command below is used to test the build on [Travis-ci](https://travis-ci.org/wswebcreation/protractor-image-comparison/), it can only be used there and not for local development.
+
+`npm run test.ci`
+
+It will test against a lot of configurations that can be found [here](./test/conf/protractor.saucelabs.conf.js).
+
+All PR's are automatically checked against Sauce Labs.
