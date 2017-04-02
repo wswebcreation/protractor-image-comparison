@@ -3,6 +3,7 @@
 const fs = require('fs');
 const camelCase = require('camel-case');
 const imageComparison = require('../');
+const localConfig = require('../local.config.json');
 const path = require('path');
 const screenshotPath = path.resolve(__dirname, '../.tmp/actual/');
 const differencePath = path.resolve(__dirname, '../.tmp/diff/');
@@ -53,7 +54,7 @@ describe('protractor-protractor-image-comparison', () => {
                         debug: false,
                         formatImageName: `{tag}-${logName}-{width}x{height}-dpr-{dpr}`,
                         nativeWebScreenshot: ADBScreenshot,
-                        screenshotPath: './.tmp/'
+                        screenshotPath: localConfig.screenshotFolder
                     });
 
                     return browser.get(browser.baseUrl);
@@ -97,7 +98,7 @@ describe('protractor-protractor-image-comparison', () => {
                         blockOutStatusBar: true,
                         formatImageName: `{tag}-${logName}-{width}x{height}-dpr-{dpr}`,
                         nativeWebScreenshot: ADBScreenshot,
-                        screenshotPath: './.tmp/'
+                        screenshotPath: localConfig.screenshotFolder
                     });
 
                     return browser.get(browser.baseUrl);
@@ -146,7 +147,7 @@ describe('protractor-protractor-image-comparison', () => {
                         baselineFolder: './test/baseline/mobile/',
                         formatImageName: `{tag}-${logName}-{width}x{height}-dpr-{dpr}`,
                         nativeWebScreenshot: ADBScreenshot,
-                        screenshotPath: './.tmp/'
+                        screenshotPath: localConfig.screenshotFolder
                     });
 
                     return browser.get(browser.baseUrl);
@@ -214,7 +215,7 @@ describe('protractor-protractor-image-comparison', () => {
                         blockOutStatusBar: true,
                         formatImageName: `{tag}-${logName}-{width}x{height}-dpr-{dpr}`,
                         nativeWebScreenshot: ADBScreenshot,
-                        screenshotPath: './.tmp/',
+                        screenshotPath: localConfig.screenshotFolder,
                         // Custom android offset
                         androidOffsets: {
                             statusBar: 50,
@@ -258,7 +259,7 @@ describe('protractor-protractor-image-comparison', () => {
                         debug: false,
                         formatImageName: `{tag}-${logName}-{width}x{height}-dpr-{dpr}`,
                         nativeWebScreenshot: ADBScreenshot,
-                        screenshotPath: './.tmp/'
+                        screenshotPath: localConfig.screenshotFolder
                     });
 
                     return browser.get(browser.baseUrl);

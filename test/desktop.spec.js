@@ -1,22 +1,33 @@
 'use strict';
 
-const fs = require('fs');
 const camelCase = require('camel-case');
+const fs = require('fs-extra');
 const imageComparison = require('../');
+const localConfig = require('../local.config.json');
 const path = require('path');
-const screenshotPath = path.resolve(__dirname, '../.tmp/actual/');
-const differencePath = path.resolve(__dirname, '../.tmp/diff/');
+const screenshotPath = path.resolve(__dirname, `../${localConfig.screenshotFolder}/actual/`);
+const differencePath = path.resolve(__dirname, `../${localConfig.screenshotFolder}/diff/`);
 const helpers = require('./helpers');
+
+// Determine if a localBaseline is created
+const environment = process.argv.slice(3, 4)[0].split('=')[1];
+const localBaseline = path.resolve(__dirname, `../${localConfig.localBaseline}/`);
+let baselineFolder;
+
+if (environment === 'saucelabs') {
+    baselineFolder = './test/baseline/desktop/';
+} else {
+    baselineFolder = `./${localConfig.localBaseline}/desktop/`;
+}
 
 describe('protractor-image-comparison', () => {
     beforeEach(done => {
         browser.imageComparson = new imageComparison({
-            baselineFolder: './test/baseline/desktop/',
+            baselineFolder: baselineFolder,
             debug: false,
-            formatImageName: `{tag}-${logName}-{width}x{height}-dpr-{dpr}`,
-            screenshotPath: './.tmp/'
+            formatImageName: `{tag}-${logName}-{width}x{height}`,
+            screenshotPath: localConfig.screenshotFolder
         });
-
         browser.get(browser.baseUrl)
             .then(() => browser.sleep(500))
             .then(done);
@@ -29,50 +40,68 @@ describe('protractor-image-comparison', () => {
     const resolution = '1366x768';
     const dangerAlert = element(by.css('.uk-alert-danger'));
     const headerElement = element(by.css('h1.uk-heading-large'));
+    const dangerAlertElement = 'dangerAlert-compare';
+    const dangerAlertElementFail = `${dangerAlertElement}-fail`;
+    const exampleFullPage = 'example-fullpage-compare';
+    const exampleFullPageFail = `${exampleFullPage}-fail`;
+    const examplePage = 'example-page-compare';
+    const examplePageFail = `${examplePage}-fail`;
+    const tagName = 'examplePage';
 
-    describe('basics', () => {
-        it('should save the screen', () => {
-            const tagName = 'examplePage';
+    // Only test this on chrome, also for ci
+    if (browser.browserName === 'chrome') {
+        describe('basics', () => {
+            it('should save the screen', () => {
 
-            browser.imageComparson.saveScreen(tagName)
-                .then(() => expect(helpers.fileExistSync(`${screenshotPath}/${tagName}-${logName}-${resolution}-dpr-1.png`)).toBe(true));
-        });
-
-        it('should save an element', () => {
-            const tagName = 'examplePageElement';
-
-            browser.imageComparson.saveElement(headerElement, tagName)
-                .then(() => expect(helpers.fileExistSync(`${screenshotPath}/${tagName}-${logName}-${resolution}-dpr-1.png`)).toBe(true));
-        });
-
-        it('should save a fullpage screenshot', () => {
-            const tagName = 'fullPage';
-
-            browser.imageComparson.saveFullPageScreens(tagName, {timeout: '1500a'})
-                .then(() => expect(helpers.fileExistSync(`${screenshotPath}/${tagName}-${logName}-${resolution}-dpr-1.png`)).toBe(true));
-
-        });
-
-        it('should copy an image to the baseline when autoSaveBaseline is true', () => {
-            const tagName = 'autoSaveBaseline';
-            const baselineFolder = path.resolve(__dirname, '../.tmp/baseline/desktop/');
-
-            browser.imageComparson = new imageComparison({
-                baselineFolder: baselineFolder,
-                autoSaveBaseline: true,
-                formatImageName: `{tag}-${logName}-{width}x{height}-dpr-{dpr}`,
-                screenshotPath: './.tmp/'
+                browser.imageComparson.saveScreen(tagName)
+                    .then(() => expect(helpers.fileExistSync(`${screenshotPath}/${tagName}-${logName}-${resolution}.png`)).toBe(true));
             });
 
-            expect(helpers.fileExistSync(`${baselineFolder}/${tagName}-${logName}-${resolution}-dpr-1.png`)).toBe(false, 'Error: Baseline image already exists.');
-            browser.imageComparson.checkScreen(tagName)
-                .then(() => expect(helpers.fileExistSync(`${baselineFolder}/${tagName}-${logName}-${resolution}-dpr-1.png`)).toBe(true, 'File is saved in the baseline'));
+            it('should save an element', () => {
+                const tagName = 'examplePageElement';
+
+                browser.imageComparson.saveElement(headerElement, tagName)
+                    .then(() => expect(helpers.fileExistSync(`${screenshotPath}/${tagName}-${logName}-${resolution}.png`)).toBe(true));
+            });
+
+            it('should save a fullpage screenshot', () => {
+                const tagName = 'fullPage';
+
+                browser.imageComparson.saveFullPageScreens(tagName, {timeout: '1500a'})
+                    .then(() => expect(helpers.fileExistSync(`${screenshotPath}/${tagName}-${logName}-${resolution}.png`)).toBe(true));
+
+            });
+
+            it('should copy an image to the baseline when autoSaveBaseline is true', () => {
+                const tagName = 'autoSaveBaseline';
+                const autoSaveBaselineFolder = path.resolve(__dirname, '../.tmp/baseline/desktop/');
+
+                browser.imageComparson = new imageComparison({
+                    baselineFolder: autoSaveBaselineFolder,
+                    autoSaveBaseline: true,
+                    formatImageName: `{tag}-${logName}-{width}x{height}`,
+                    screenshotPath: localConfig.screenshotFolder
+                });
+
+                expect(helpers.fileExistSync(`${baselineFolder}/${tagName}-${logName}-${resolution}.png`)).toBe(false, 'Error: Baseline image already exists.');
+                browser.imageComparson.checkScreen(tagName)
+                    .then(() => expect(helpers.fileExistSync(`${autoSaveBaselineFolder}/${tagName}-${logName}-${resolution}.png`)).toBe(true, 'File is saved in the baseline'));
+            });
+
+            if(environment === 'saucelabs') {
+                describe('resemble api', () => {
+                    it('should succeed comparing 2 non identical images with each other with ignoreAntialiasing enabled', () => {
+                        browser.executeScript('arguments[0].scrollIntoView(); arguments[0].style.color = "#2d7091";', dangerAlert.getWebElement())
+                            .then(() => browser.sleep(500))
+                            .then(() => expect(browser.imageComparson.checkElement(dangerAlert, `${dangerAlertElementFail}-ignore-antialiasing`, {ignoreAntialiasing: true})).toEqual(0));
+                    });
+                });
+            }
         });
-    });
+    }
+
 
     describe('compare screen', () => {
-        const examplePage = 'example-page-compare';
-        const examplePageFail = `${examplePage}-fail`;
 
         it('should compare successful with a baseline', () => {
             expect(browser.imageComparson.checkScreen(examplePage)).toEqual(0);
@@ -81,7 +110,7 @@ describe('protractor-image-comparison', () => {
         it('should save a difference after failure', () => {
             browser.executeScript('arguments[0].innerHTML = "Test Demo Page";', headerElement.getWebElement());
             browser.imageComparson.checkScreen(examplePageFail)
-                .then(() => expect(helpers.fileExistSync(`${differencePath}/${examplePageFail}-${logName}-${resolution}-dpr-1.png`)).toBe(true));
+                .then(() => expect(helpers.fileExistSync(`${differencePath}/${examplePageFail}-${logName}-${resolution}.png`)).toBe(true));
         });
 
         it('should fail comparing with a baseline', () => {
@@ -97,9 +126,6 @@ describe('protractor-image-comparison', () => {
     });
 
     describe('compare element', () => {
-        const dangerAlertElement = 'dangerAlert-compare';
-        const dangerAlertElementFail = `${dangerAlertElement}-fail`;
-
         it('should compare successful with a baseline', () => {
             browser.executeScript('arguments[0].scrollIntoView();', dangerAlert.getWebElement())
                 .then(() => browser.sleep(500))
@@ -120,7 +146,7 @@ describe('protractor-image-comparison', () => {
         it('should save a difference after failure', () => {
             browser.executeScript('arguments[0].scrollIntoView(); arguments[0].style.color = "#2d7091";', dangerAlert.getWebElement());
             browser.imageComparson.checkElement(dangerAlert, dangerAlertElementFail)
-                .then(() => expect(helpers.fileExistSync(`${differencePath}/${dangerAlertElementFail}-${logName}-${resolution}-dpr-1.png`)).toBe(true));
+                .then(() => expect(helpers.fileExistSync(`${differencePath}/${dangerAlertElementFail}-${logName}-${resolution}.png`)).toBe(true));
         });
 
         it('should fail comparing with a baseline', () => {
@@ -135,27 +161,9 @@ describe('protractor-image-comparison', () => {
                 .then(() => fail(new Error('This should not succeed')))
                 .catch((error) => expect(error).toEqual('Image not found, saving current image as new baseline.'));
         });
-
-        if (browser.browserName === 'chrome') {
-            describe('resemble api', () => {
-                it('should succeed comparing 2 non identical images with each other with ignoreAntialiasing enabled', () => {
-                    browser.executeScript('arguments[0].scrollIntoView(); arguments[0].style.color = "#2d7091";', dangerAlert.getWebElement())
-                        .then(() => browser.sleep(500))
-                        .then(() => expect(browser.imageComparson.checkElement(dangerAlert, `${dangerAlertElementFail}-ignore-antialiasing`, {ignoreAntialiasing: true})).toEqual(0));
-                });
-
-                it('should fail comparing 2 non identical images with each other with ignoreColors enabled', () => {
-                    browser.executeScript('arguments[0].scrollIntoView(); arguments[0].style.color = "#2d7091";', dangerAlert.getWebElement())
-                        .then(() => browser.sleep(500))
-                        .then(() => expect(browser.imageComparson.checkElement(dangerAlert, `${dangerAlertElementFail}-ignore-colors`, {ignoreColors: true})).toEqual(1.08));
-                });
-            });
-        }
     });
 
     describe('compare fullpage screenshot', () => {
-        const exampleFullPage = 'example-fullpage-compare';
-        const examplePageFail = `${exampleFullPage}-fail`;
 
         it('should compare successful with a baseline', () => {
             expect(browser.imageComparson.checkFullPageScreen(exampleFullPage)).toEqual(0);
@@ -163,7 +171,7 @@ describe('protractor-image-comparison', () => {
 
         it('should fail comparing with a baseline', () => {
             browser.executeScript('arguments[0].innerHTML = "Test Demo Page"; arguments[1].style.color = "#2d7091";', headerElement.getWebElement(), dangerAlert.getWebElement())
-                .then(() => expect(browser.imageComparson.checkFullPageScreen(examplePageFail)).toBeGreaterThan(0));
+                .then(() => expect(browser.imageComparson.checkFullPageScreen(exampleFullPageFail)).toBeGreaterThan(0));
         });
     });
 });
