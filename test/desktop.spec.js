@@ -88,13 +88,15 @@ describe('protractor-image-comparison', () => {
                     .then(() => expect(helpers.fileExistSync(`${autoSaveBaselineFolder}/${tagName}-${logName}-${resolution}.png`)).toBe(true, 'File is saved in the baseline'));
             });
 
-            describe('resemble api', () => {
-                it('should succeed comparing 2 non identical images with each other with ignoreAntialiasing enabled', () => {
-                    browser.executeScript('arguments[0].scrollIntoView(); arguments[0].style.color = "#2d7091";', dangerAlert.getWebElement())
-                        .then(() => browser.sleep(500))
-                        .then(() => expect(browser.imageComparson.checkElement(dangerAlert, `${dangerAlertElementFail}-ignore-antialiasing`, {ignoreAntialiasing: true})).toEqual(0));
+            if(environment === 'saucelabs') {
+                describe('resemble api', () => {
+                    it('should succeed comparing 2 non identical images with each other with ignoreAntialiasing enabled', () => {
+                        browser.executeScript('arguments[0].scrollIntoView(); arguments[0].style.color = "#2d7091";', dangerAlert.getWebElement())
+                            .then(() => browser.sleep(500))
+                            .then(() => expect(browser.imageComparson.checkElement(dangerAlert, `${dangerAlertElementFail}-ignore-antialiasing`, {ignoreAntialiasing: true})).toEqual(0));
+                    });
                 });
-            });
+            }
         });
     }
 
