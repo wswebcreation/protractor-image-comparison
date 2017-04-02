@@ -7,8 +7,7 @@ protractor-image-comparison
 
 [![Sauce Test Status](https://saucelabs.com/browser-matrix/wswebcreation-nl.svg)](https://saucelabs.com/u/wswebcreation-nl)
 
-##What can it do?
-
+## What can it do?
 *protractor-image-comparison* is a lightweight *protractor* plugin for browsers / mobile browsers / hybrid apps to do image comparison on screens or elements.
 
 You can:
@@ -26,8 +25,7 @@ You can:
 
 Comparison is based on [ResembleJS](https://github.com/Huddle/Resemble.js).
 
-##Installation
-
+## Installation
 Install this module locally with the following command:
 
 ```shell
@@ -41,8 +39,7 @@ npm install --save protractor-image-comparison
 npm install --save-dev protractor-image-comparison
 ```
 
-##Usage
-
+## Usage
 *protractor-image-comparison* can be used for:
 
 - desktop browsers (Chrome / Firefox / Safari / Internet Explorer 11 / Microsoft Edge)
