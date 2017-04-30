@@ -127,7 +127,7 @@ describe('node-resemble.js', () => {
             resemble(peopleImage, peopleTwoImage)
                 .onComplete(data => {
                     const folder = path.resolve(process.cwd(), '.tmp');
-                    const filePath = path.resolve(process.cwd(), '.tmp/diff.png');
+                    const filePath = path.resolve(process.cwd(), folder, 'diff.png');
                     fs.ensureDirSync(folder);
 
                     expect(data.misMatchPercentage).toEqual('8.66');
