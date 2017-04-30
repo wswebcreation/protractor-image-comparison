@@ -126,8 +126,9 @@ describe('node-resemble.js', () => {
         it('should save a difference when 2 non identical images fail comparing', done => {
             resemble(peopleImage, peopleTwoImage)
                 .onComplete(data => {
+                    const folder = path.resolve(process.cwd(), '.tmp');
                     const filePath = path.resolve(process.cwd(), '.tmp/diff.png');
-                    fs.ensureDirSync(filePath);
+                    fs.ensureDirSync(folder);
 
                     expect(data.misMatchPercentage).toEqual('8.66');
 
