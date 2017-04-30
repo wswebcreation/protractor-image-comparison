@@ -49,6 +49,41 @@ config.multiCapabilities = [
         shardTestFiles: true,
         specs: mobileSpecs
     },
+    {
+        // SauceLabs
+        appiumVersion: "1.6.3",
+        browserName: 'Chrome',
+        deviceName: "Android GoogleAPI Emulator",
+        deviceOrientation: "portrait",
+        platformName: 'Android',
+        platformVersion: '7.0',
+        username: SAUCE_USERNAME,
+        accessKey: SAUCE_ACCESS_KEY,
+        build: process.env.TRAVIS_JOB_NUMBER,
+        public: "public",
+        "tunnel-identifier": process.env.TRAVIS_JOB_NUMBER,
+        logName: "Android GoogleAPI Emulator ChromeDriver",
+        shardTestFiles: true,
+        specs: mobileSpecs
+    },
+    {
+        // SauceLabs
+        appiumVersion: "1.6.3",
+        browserName: 'Chrome',
+        deviceName: "Android GoogleAPI Emulator",
+        deviceOrientation: "portrait",
+        platformName: 'Android',
+        platformVersion: '7.0',
+        username: SAUCE_USERNAME,
+        accessKey: SAUCE_ACCESS_KEY,
+        build: process.env.TRAVIS_JOB_NUMBER,
+        public: "public",
+        "tunnel-identifier": process.env.TRAVIS_JOB_NUMBER,
+        logName: "Android GoogleAPI Emulator ADB",
+        shardTestFiles: true,
+        specs: mobileSpecs,
+        nativeWebScreenshot: true
+    },
     // Desktop
     {
         // SauceLabs
