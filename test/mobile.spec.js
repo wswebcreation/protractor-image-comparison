@@ -12,7 +12,7 @@ const helpers = require('./helpers');
 describe('protractor-protractor-image-comparison', () => {
     const logName = camelCase(browser.logName);
     const devices = {
-        androidGoogleApiEmulatorADB: {
+        androidGoogleApiEmulatorAdb: {
             name: `${logName}-320x534-dpr-1.5`
         },
         androidGoogleApiEmulatorChromeDriver: {

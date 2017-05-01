@@ -120,7 +120,10 @@ class protractorImageComparison {
         fs.ensureDirSync(this.actualFolder);
         fs.ensureDirSync(this.baselineFolder);
         fs.ensureDirSync(this.diffFolder);
-        fs.ensureDirSync(this.tempFullScreenFolder);
+
+        if(this.debug) {
+            fs.ensureDirSync(this.tempFullScreenFolder);
+        }
     }
 
     /**
@@ -150,31 +153,27 @@ class protractorImageComparison {
     }
 
     /**
-     * Compose a full page screenshot and save it
+     * Save a full page screenshot
      * @param {string} tag The tag that is used
-     * @param {number} amountOfScreenshots The amount of amountOfScreenshots that need to be processed
-     * @param {number} currentScreenshotNumber The current currentScreenshotNumber of the screenshot that is being processed
-     * @param {string} image The current image output that needs to be saved
+     * @param {Array} screens An array full of buffered screenshots
      * @returns {Promise}
      * @private
      */
-    _composeAndSaveFullScreenshot(tag, amountOfScreenshots, currentScreenshotNumber, image) {
-        const imageHeight = this.fullPageHeight * this.devicePixelRatio;
-        const imageWidth = this.viewPortWidth * this.devicePixelRatio;
-        const stitchHeightCoordinate = (this.viewPortHeight - this.addressBarShadowPadding - this.toolBarShadowPadding) * (currentScreenshotNumber - 1) * this.devicePixelRatio;
+    _saveFullScreenshot(tag, screens) {
+        // Calculate total canvas size
+        const imageHeight = screens.reduce((previous, current) => (previous instanceof Buffer ? previous.readUInt32BE(20) : previous) + current.readUInt32BE(20));
+        const imageWidth = screens[0].readUInt32BE(16);
+        const imageOutput = PNGJSImage.createImage(imageWidth, imageHeight);
+        let offsetY = 0;
 
-        let imageOutput = image || null;
-
-        if (currentScreenshotNumber === 1) {
-            imageOutput = PNGJSImage.createImage(imageWidth, imageHeight);
-        } else if (currentScreenshotNumber > amountOfScreenshots) {
-            return Promise.resolve(imageOutput.writeImageSync(path.join(this.actualFolder, this._formatFileName(tag))));
+        // Compose PNG
+        for (let screen of screens) {
+            let height = screen.readUInt32BE(20);
+            PNGJSImage.loadImageSync(screen).getImage().bitblt(imageOutput.getImage(), 0, 0, imageWidth, height, 0, offsetY);
+            offsetY += height;
         }
 
-        const stitchImage = PNGJSImage.readImageSync(path.join(this.tempFullScreenFolder, this._formatFileName(`${tag}-${currentScreenshotNumber}`)));
-        stitchImage.getImage().bitblt(imageOutput.getImage(), 0, 0, stitchImage.getWidth(), stitchImage.getHeight(), 0, stitchHeightCoordinate);
-
-        return this._composeAndSaveFullScreenshot(tag, amountOfScreenshots, currentScreenshotNumber + 1, imageOutput)
+        return Promise.resolve(imageOutput.writeImageSync(path.join(this.actualFolder, this._formatFileName(tag))));
     }
 
     /**
@@ -302,7 +301,7 @@ class protractorImageComparison {
 
                     if (this.isLastScreenshot) {
                         mobileCropData.cropHeight = this.fullPageHeight - ((this.viewPortHeight - this.addressBarShadowPadding - this.toolBarShadowPadding) * (cropParameters.currentScreenshotNumber - 1));
-                        mobileCropData.cropTopPosition = statusPlusAddressBarHeight + (this.viewPortHeight- this.toolBarShadowPadding) - mobileCropData.cropHeight;
+                        mobileCropData.cropTopPosition = statusPlusAddressBarHeight + (this.viewPortHeight - this.toolBarShadowPadding) - mobileCropData.cropHeight;
                     } else {
                         mobileCropData.cropHeight = this.viewPortHeight - this.addressBarShadowPadding - this.toolBarShadowPadding;
                         mobileCropData.cropTopPosition = statusPlusAddressBarHeight + this.addressBarShadowPadding;
@@ -317,7 +316,7 @@ class protractorImageComparison {
 
                     if (this.isLastScreenshot) {
                         mobileCropData.cropHeight = this.fullPageHeight - ((this.viewPortHeight - this.addressBarShadowPadding - this.toolBarShadowPadding) * (cropParameters.currentScreenshotNumber - 1));
-                        mobileCropData.cropTopPosition = safariHeights.addressBarCurrentHeight + (this.viewPortHeight- this.toolBarShadowPadding) - mobileCropData.cropHeight;
+                        mobileCropData.cropTopPosition = safariHeights.addressBarCurrentHeight + (this.viewPortHeight - this.toolBarShadowPadding) - mobileCropData.cropHeight;
                     } else {
                         mobileCropData.cropHeight = this.viewPortHeight - this.addressBarShadowPadding - this.toolBarShadowPadding;
                         mobileCropData.cropTopPosition = safariHeights.addressBarCurrentHeight + this.addressBarShadowPadding;
@@ -741,6 +740,34 @@ class protractorImageComparison {
     }
 
     /**
+     * Create a new cropped buffered image
+     * @param {object} bufferedScreenshot a new Buffer screenshot
+     * @param {object} rectangles x, y, height and width data to determine the crop
+     * @returns {Buffer} The image buffer
+     * @private
+     */
+    _getCroppedBufferedScreenshot(bufferedScreenshot, rectangles) {
+        let imageHeight;
+        const image = PNGJSImage.loadImageSync(bufferedScreenshot);
+
+        // When coordinates have decimals they are `round`ed. This means that the total amount can be bigger
+        // than the image. That's why we need to resize it.
+        if ((rectangles.height + rectangles.y) > image.getHeight()) {
+            imageHeight = rectangles.height - ((rectangles.height + rectangles.y) - image.getHeight());
+        } else {
+            imageHeight = rectangles.height;
+        }
+
+        const imageWidth = rectangles.width;
+        // Create the canvas
+        const imageOutput = PNGJSImage.createImage(imageWidth, imageHeight);
+        // Create the image
+        image.getImage().bitblt(imageOutput.getImage(), rectangles.x, rectangles.y, imageWidth, imageHeight, 0, 0);
+
+        return imageOutput.toBlobSync();
+    }
+
+    /**
      * Scroll to static horizontal and a given vertical coordinate on the page and wait a given time.
      * @param {number} verticalCoordinate The y-coordinate that needs to be scrolled to
      * @param {number} timeOut The time to wait after the scroll
@@ -757,10 +784,11 @@ class protractorImageComparison {
      * @param {number} newVerticalCoordinate The vertical coordinate that needs to be scrolled to
      * @param {string} tag The tag that is used
      * @param {number} currentScreenshotNumber The currentScreenshotNumber of the screen that is being processed
+     * @param {Array} screens An array full of buffered screenshots
      * @returns {Promise}
      * @private
      */
-    _scrollAndSave(newVerticalCoordinate, tag, currentScreenshotNumber) {
+    _scrollAndSave(newVerticalCoordinate, tag, currentScreenshotNumber, screens) {
         const previousVerticalCoordinate = (currentScreenshotNumber - 1) * this.viewPortHeight;
 
         let bufferedScreenshot;
@@ -806,15 +834,17 @@ class protractorImageComparison {
                     console.log('cropTopPosition = ', cropData.cropTopPosition);
                     console.log('rectangles =', rectangles);
                     console.log('####################################################\n');
+                    // this._saveCroppedScreenshot(bufferedScreenshot, this.tempFullScreenFolder, rectangles, `${tag}-${currentScreenshotNumber}`);
                 }
-
-                return this._saveCroppedScreenshot(bufferedScreenshot, this.tempFullScreenFolder, rectangles, `${tag}-${currentScreenshotNumber}`);
+                return this._getCroppedBufferedScreenshot(bufferedScreenshot, rectangles);
             })
-            .then(() => {
+            .then((screen) => {
+                screens.push(screen);
+
                 if (this.isLastScreenshot) {
-                    return this._composeAndSaveFullScreenshot(tag, currentScreenshotNumber, 1);
+                    return this._saveFullScreenshot(tag, screens);
                 } else {
-                    return this._scrollAndSave((this.viewPortHeight - this.addressBarShadowPadding - this.toolBarShadowPadding) * currentScreenshotNumber, tag, currentScreenshotNumber + 1);
+                    return this._scrollAndSave((this.viewPortHeight - this.addressBarShadowPadding - this.toolBarShadowPadding) * currentScreenshotNumber, tag, currentScreenshotNumber + 1, screens);
                 }
             });
     }
@@ -1032,7 +1062,7 @@ class protractorImageComparison {
 
         // Start scrolling at y=0
         return this._getInstanceData()
-            .then(() => this._scrollAndSave(0, tag, 1));
+            .then(() => this._scrollAndSave(0, tag, 1, []));
     }
 
     /**
