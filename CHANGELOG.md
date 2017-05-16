@@ -1,3 +1,11 @@
+<a name="1.2.4"></a>
+## [1.2.4](https://github.com/wswebcreation/protractor-image-comparison/compare/v1.2.3...v1.2.4) (2017-05-16)
+
+
+### Bug Fixes
+* **checkFullPageScreen:** fix [#23](https://github.com/wswebcreation/protractor-image-comparison/issues/23) checkFullPageScreen does not work correctly on small pages wi… ([705ca37](https://github.com/wswebcreation/protractor-image-comparison/commit/705ca3744c3b2a5684baa7d2e63c6b188b5e05e7))
+
+
 <a name="1.2.3"></a>
 ## [1.2.3](https://github.com/wswebcreation/protractor-image-comparison/compare/v1.2.2...v1.2.3) (2017-03-23)
 
@@ -67,7 +75,7 @@
 
 ### BREAKING CHANGES
 
-* chrome-screenshots: the scrollbar in Chrome is hidden by default. This causes a bigger screenshot result and may break with the baseline images of chrome
+* **chrome-screenshots:** the scrollbar in Chrome is hidden by default. This causes a bigger screenshot result and may break with the baseline images of chrome
 
 
 
