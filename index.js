@@ -269,7 +269,7 @@ class protractorImageComparison {
 
         if (this.isLastScreenshot) {
             desktopCropData.cropHeight = this.fullPageHeight - cropParameters.previousVerticalCoordinate;
-            desktopCropData.cropTopPosition = this.viewPortHeight - desktopCropData.cropHeight;
+            desktopCropData.cropTopPosition = cropParameters.currentScreenshotNumber > 1 ? this.viewPortHeight - desktopCropData.cropHeight : 0;
         } else {
             desktopCropData.cropHeight = this.viewPortHeight;
             desktopCropData.cropTopPosition = 0;
