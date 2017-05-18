@@ -1,9 +1,16 @@
-<a name="1.2.4"></a>
-## [1.2.4](https://github.com/wswebcreation/protractor-image-comparison/compare/v1.2.3...v1.2.4) (2017-05-16)
+<a name="1.2.5"></a>
+## [1.2.5](https://github.com/wswebcreation/protractor-image-comparison/compare/v1.2.4...v1.2.5) (2017-05-18)
 
 
 ### Bug Fixes
-* **checkFullPageScreen:** fix [#23](https://github.com/wswebcreation/protractor-image-comparison/issues/23) checkFullPageScreen does not work correctly on small pages wi… ([705ca37](https://github.com/wswebcreation/protractor-image-comparison/commit/705ca3744c3b2a5684baa7d2e63c6b188b5e05e7))
+
+* **fullPageScreenshot:** fix for determining last screenshot. ([b0c4010](https://github.com/wswebcreation/protractor-image-comparison/commit/b0c4010))
+
+
+
+<a name="1.2.4"></a>
+## [1.2.4](https://github.com/wswebcreation/protractor-image-comparison/compare/v1.2.3...v1.2.4) (2017-05-16)
+
 
 
 <a name="1.2.3"></a>
