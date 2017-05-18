@@ -4,7 +4,7 @@ let config = require('./protractor.shared.conf.js').config;
 
 config.capabilities = {
     browserName: 'chrome',
-    deviceName: 'AVD_for_Nexus_5_by_Google',
+    deviceName: 'AVD_for_Nexus_5_Android_7',
     logName: 'Nexus 5 By Google ADB',
     platformName: 'android',
     nativeWebScreenshot: true

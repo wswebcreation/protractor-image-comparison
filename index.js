@@ -834,7 +834,7 @@ class protractorImageComparison {
                     console.log('cropTopPosition = ', cropData.cropTopPosition);
                     console.log('rectangles =', rectangles);
                     console.log('####################################################\n');
-                    // this._saveCroppedScreenshot(bufferedScreenshot, this.tempFullScreenFolder, rectangles, `${tag}-${currentScreenshotNumber}`);
+                    this._saveCroppedScreenshot(bufferedScreenshot, this.tempFullScreenFolder, rectangles, `${tag}-${currentScreenshotNumber}`);
                 }
                 return this._getCroppedBufferedScreenshot(bufferedScreenshot, rectangles);
             })
