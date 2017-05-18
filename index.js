@@ -266,7 +266,7 @@ class protractorImageComparison {
         // Value can be equal, or bigger due to for example lazyloading
         this.fullPageHeight = isLargeScreenshot ? this.screenshotHeight : this.fullPageHeight;
 
-        this.isLastScreenshot = this.viewPortHeight * cropParameters.currentScreenshotNumber > this.fullPageHeight;
+        this.isLastScreenshot = this.viewPortHeight * cropParameters.currentScreenshotNumber >= this.fullPageHeight;
 
         if (this.isLastScreenshot) {
             desktopCropData.cropHeight = this.fullPageHeight - cropParameters.previousVerticalCoordinate;
@@ -298,7 +298,7 @@ class protractorImageComparison {
         if (this._isAndroid()) {
             return this._getAndroidChromeStatusPlusAddressBarHeight()
                 .then(statusPlusAddressBarHeight => {
-                    this.isLastScreenshot = (this.viewPortHeight - this.addressBarShadowPadding - this.toolBarShadowPadding) * cropParameters.currentScreenshotNumber > this.fullPageHeight;
+                    this.isLastScreenshot = (this.viewPortHeight - this.addressBarShadowPadding - this.toolBarShadowPadding) * cropParameters.currentScreenshotNumber >= this.fullPageHeight;
 
                     if (this.isLastScreenshot) {
                         mobileCropData.cropHeight = this.fullPageHeight - ((this.viewPortHeight - this.addressBarShadowPadding - this.toolBarShadowPadding) * (cropParameters.currentScreenshotNumber - 1));
@@ -313,7 +313,7 @@ class protractorImageComparison {
         } else {
             return this._getIOSSafariHeights()
                 .then(safariHeights => {
-                    this.isLastScreenshot = (this.viewPortHeight - this.addressBarShadowPadding - this.toolBarShadowPadding) * cropParameters.currentScreenshotNumber > this.fullPageHeight;
+                    this.isLastScreenshot = (this.viewPortHeight - this.addressBarShadowPadding - this.toolBarShadowPadding) * cropParameters.currentScreenshotNumber >= this.fullPageHeight;
 
                     if (this.isLastScreenshot) {
                         mobileCropData.cropHeight = this.fullPageHeight - ((this.viewPortHeight - this.addressBarShadowPadding - this.toolBarShadowPadding) * (cropParameters.currentScreenshotNumber - 1));
