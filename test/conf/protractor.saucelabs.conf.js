@@ -1,16 +1,14 @@
 'use strict';
 
 let config = require('./protractor.shared.conf.js').config;
-let SauceLabs = require('saucelabs');
-
 const SAUCE_USERNAME = process.env.SAUCE_USERNAME ? process.env.SAUCE_USERNAME : process.env.IC_SAUCE_USERNAME;
 const SAUCE_ACCESS_KEY = process.env.SAUCE_ACCESS_KEY ? process.env.SAUCE_ACCESS_KEY : process.env.IC_SAUCE_ACCESS_KEY;
 const deskSpecs = ['../desktop.spec.js'];
 const mobileSpecs = ['../mobile.spec.js'];
 
-let JOB_ID;
 
-config.seleniumAddress = 'http://ondemand.saucelabs.com:80/wd/hub';
+config.sauceUser = SAUCE_USERNAME;
+config.sauceKey = SAUCE_ACCESS_KEY;
 
 config.multiCapabilities = [
 
@@ -23,8 +21,6 @@ config.multiCapabilities = [
         deviceOrientation: "portrait",
         platformName: 'iOS',
         platformVersion: '10.0',
-        username: SAUCE_USERNAME,
-        accessKey: SAUCE_ACCESS_KEY,
         build: process.env.TRAVIS_JOB_NUMBER,
         public: "public",
         "tunnel-identifier": process.env.TRAVIS_JOB_NUMBER,
@@ -40,8 +36,6 @@ config.multiCapabilities = [
         deviceOrientation: "portrait",
         platformName: 'iOS',
         platformVersion: '10.0',
-        username: SAUCE_USERNAME,
-        accessKey: SAUCE_ACCESS_KEY,
         build: process.env.TRAVIS_JOB_NUMBER,
         public: "public",
         "tunnel-identifier": process.env.TRAVIS_JOB_NUMBER,
@@ -56,8 +50,6 @@ config.multiCapabilities = [
         platform: "Windows 10",
         version: "latest",
         screenResolution: "1400x1050",
-        username: SAUCE_USERNAME,
-        accessKey: SAUCE_ACCESS_KEY,
         build: process.env.TRAVIS_JOB_NUMBER,
         // passed: true,
         public: "public",
@@ -72,8 +64,6 @@ config.multiCapabilities = [
         platform: "Windows 10",
         version: "latest",
         screenResolution: "1400x1050",
-        username: SAUCE_USERNAME,
-        accessKey: SAUCE_ACCESS_KEY,
         build: process.env.TRAVIS_JOB_NUMBER,
         public: "public",
         "tunnel-identifier": process.env.TRAVIS_JOB_NUMBER,
@@ -87,8 +77,6 @@ config.multiCapabilities = [
         platform: "Windows 10",
         version: "47",
         screenResolution: "1400x1050",
-        username: SAUCE_USERNAME,
-        accessKey: SAUCE_ACCESS_KEY,
         build: process.env.TRAVIS_JOB_NUMBER,
         public: "public",
         "tunnel-identifier": process.env.TRAVIS_JOB_NUMBER,
@@ -102,8 +90,6 @@ config.multiCapabilities = [
         platform: "Windows 8.1",
         version: "11.0",
         screenResolution: "1400x1050",
-        username: SAUCE_USERNAME,
-        accessKey: SAUCE_ACCESS_KEY,
         build: process.env.TRAVIS_JOB_NUMBER,
         public: "public",
         "tunnel-identifier": process.env.TRAVIS_JOB_NUMBER,
@@ -117,8 +103,6 @@ config.multiCapabilities = [
         platform: "Windows 10",
         version: "latest",
         screenResolution: "1400x1050",
-        username: SAUCE_USERNAME,
-        accessKey: SAUCE_ACCESS_KEY,
         build: process.env.TRAVIS_JOB_NUMBER,
         public: "public",
         "tunnel-identifier": process.env.TRAVIS_JOB_NUMBER,
@@ -133,8 +117,6 @@ config.multiCapabilities = [
         platform: "OS X 10.11",
         version: "9",
         screenResolution: "1600x1200",
-        username: SAUCE_USERNAME,
-        accessKey: SAUCE_ACCESS_KEY,
         build: process.env.TRAVIS_JOB_NUMBER,
         public: "public",
         "tunnel-identifier": process.env.TRAVIS_JOB_NUMBER,
@@ -148,8 +130,6 @@ config.multiCapabilities = [
         platform: "OS X 10.11",
         version: "10",
         screenResolution: "1600x1200",
-        username: SAUCE_USERNAME,
-        accessKey: SAUCE_ACCESS_KEY,
         build: process.env.TRAVIS_JOB_NUMBER,
         public: "public",
         "tunnel-identifier": process.env.TRAVIS_JOB_NUMBER,
@@ -158,27 +138,5 @@ config.multiCapabilities = [
         specs: deskSpecs
     }
 ];
-
-config.onComplete = function () {
-    return browser.getSession()
-        .then(session => {
-            JOB_ID = session.getId();
-        })
-};
-
-config.onCleanUp = function (exitCode) {
-    const saucelabs = new SauceLabs({
-        username: SAUCE_USERNAME,
-        password: SAUCE_ACCESS_KEY
-    });
-
-    return new Promise((resolve, reject) => {
-        saucelabs.updateJob(JOB_ID, {
-                passed: exitCode === 0,
-            },
-            () => resolve(),
-            error => reject('Error:', error));
-    });
-};
 
 exports.config = config;
