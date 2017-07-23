@@ -9,6 +9,7 @@ const mobileSpecs = ['../mobile.spec.js'];
 
 config.sauceUser = SAUCE_USERNAME;
 config.sauceKey = SAUCE_ACCESS_KEY;
+config.sauceSeleniumAddress = process.env.IC_SAUCE_USERNAME ? 'ondemand.saucelabs.com:443/wd/hub' : 'localhost:4445/wd/hub';
 
 config.multiCapabilities = [
 

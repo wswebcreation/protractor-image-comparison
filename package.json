@@ -10,7 +10,7 @@
     "test": "node ./test/cli image-comparison",
     "test.android.adb": "node ./test/cli image-comparison -r -e android.adb",
     "test.android.chromedriver": "node ./test/cli image-comparison -r -e android.chromedriver",
-    "test.ci": "node ./test/cli image-comparison -r -e saucelabs --sauceSeleniumAddress=http://localhost:4445/wd/hub",
+    "test.ci": "node ./test/cli image-comparison -r -e saucelabs",
     "test.ios.simulator": "node ./test/cli image-comparison -r -e ios.simulator",
     "test.local": "node ./test/cli image-comparison -r -e local",
     "test.init": "node ./test/cli image-comparison -r -e init",
