@@ -12,37 +12,37 @@ config.sauceKey = SAUCE_ACCESS_KEY;
 
 config.multiCapabilities = [
 
-    // // Mobile
-    // {
-    //     // SauceLabs
-    //     appiumVersion: "1.6.3",
-    //     browserName: 'Safari',
-    //     deviceName: "iPhone 6 Simulator",
-    //     deviceOrientation: "portrait",
-    //     platformName: 'iOS',
-    //     platformVersion: '10.0',
-    //     build: process.env.TRAVIS_JOB_NUMBER,
-    //     public: "public",
-    //     "tunnel-identifier": process.env.TRAVIS_JOB_NUMBER,
-    //     logName: "iPhone 6 Simulator Safari",
-    //     shardTestFiles: true,
-    //     specs: mobileSpecs
-    // },
-    // {
-    //     // SauceLabs
-    //     appiumVersion: "1.6.3",
-    //     browserName: 'Safari',
-    //     deviceName: "iPad Air 2 Simulator",
-    //     deviceOrientation: "portrait",
-    //     platformName: 'iOS',
-    //     platformVersion: '10.0',
-    //     build: process.env.TRAVIS_JOB_NUMBER,
-    //     public: "public",
-    //     "tunnel-identifier": process.env.TRAVIS_JOB_NUMBER,
-    //     logName: "iPad Air 2 Simulator Safari",
-    //     shardTestFiles: true,
-    //     specs: mobileSpecs
-    // },
+    // Mobile
+    {
+        // SauceLabs
+        appiumVersion: "1.6.3",
+        browserName: 'Safari',
+        deviceName: "iPhone 6 Simulator",
+        deviceOrientation: "portrait",
+        platformName: 'iOS',
+        platformVersion: '10.0',
+        build: process.env.TRAVIS_JOB_NUMBER,
+        public: "public",
+        "tunnel-identifier": process.env.TRAVIS_JOB_NUMBER,
+        logName: "iPhone 6 Simulator Safari",
+        shardTestFiles: true,
+        specs: mobileSpecs
+    },
+    {
+        // SauceLabs
+        appiumVersion: "1.6.3",
+        browserName: 'Safari',
+        deviceName: "iPad Air 2 Simulator",
+        deviceOrientation: "portrait",
+        platformName: 'iOS',
+        platformVersion: '10.0',
+        build: process.env.TRAVIS_JOB_NUMBER,
+        public: "public",
+        "tunnel-identifier": process.env.TRAVIS_JOB_NUMBER,
+        logName: "iPad Air 2 Simulator Safari",
+        shardTestFiles: true,
+        specs: mobileSpecs
+    },
     // Desktop
     {
         // SauceLabs
