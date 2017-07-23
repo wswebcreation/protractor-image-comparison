@@ -58,85 +58,85 @@ config.multiCapabilities = [
         shardTestFiles: true,
         specs: deskSpecs
     },
-    // {
-    //     // SauceLabs
-    //     browserName: 'firefox',
-    //     platform: "Windows 10",
-    //     version: "latest",
-    //     screenResolution: "1400x1050",
-    //     build: process.env.TRAVIS_JOB_NUMBER,
-    //     public: "public",
-    //     "tunnel-identifier": process.env.TRAVIS_JOB_NUMBER,
-    //     logName: "Firefox latest",
-    //     shardTestFiles: true,
-    //     specs: deskSpecs
-    // },
-    // {
-    //     // SauceLabs
-    //     browserName: 'firefox',
-    //     platform: "Windows 10",
-    //     version: "47",
-    //     screenResolution: "1400x1050",
-    //     build: process.env.TRAVIS_JOB_NUMBER,
-    //     public: "public",
-    //     "tunnel-identifier": process.env.TRAVIS_JOB_NUMBER,
-    //     logName: "Firefox 47",
-    //     shardTestFiles: true,
-    //     specs: deskSpecs
-    // },
-    // {
-    //     // SauceLabs
-    //     browserName: 'internet explorer',
-    //     platform: "Windows 8.1",
-    //     version: "11.0",
-    //     screenResolution: "1400x1050",
-    //     build: process.env.TRAVIS_JOB_NUMBER,
-    //     public: "public",
-    //     "tunnel-identifier": process.env.TRAVIS_JOB_NUMBER,
-    //     logName: "IE11",
-    //     shardTestFiles: true,
-    //     specs: deskSpecs
-    // },
-    // {
-    //     // SauceLabs
-    //     browserName: 'MicrosoftEdge',
-    //     platform: "Windows 10",
-    //     version: "latest",
-    //     screenResolution: "1400x1050",
-    //     build: process.env.TRAVIS_JOB_NUMBER,
-    //     public: "public",
-    //     "tunnel-identifier": process.env.TRAVIS_JOB_NUMBER,
-    //     logName: "Microsoft Edge latest",
-    //     shardTestFiles: true,
-    //     specs: deskSpecs
-    // },
-    // // Use 9 and 10 because of the different webdriver, 9 has an old and 10 a new
-    // {
-    //     // SauceLabs
-    //     browserName: 'safari',
-    //     platform: "OS X 10.11",
-    //     version: "9",
-    //     screenResolution: "1600x1200",
-    //     build: process.env.TRAVIS_JOB_NUMBER,
-    //     public: "public",
-    //     "tunnel-identifier": process.env.TRAVIS_JOB_NUMBER,
-    //     logName: "Safari 9",
-    //     shardTestFiles: true,
-    //     specs: deskSpecs
-    // },
-    // {
-    //     // SauceLabs
-    //     browserName: 'safari',
-    //     platform: "OS X 10.11",
-    //     version: "10",
-    //     screenResolution: "1600x1200",
-    //     build: process.env.TRAVIS_JOB_NUMBER,
-    //     public: "public",
-    //     "tunnel-identifier": process.env.TRAVIS_JOB_NUMBER,
-    //     logName: "Safari 10",
-    //     shardTestFiles: true,
-    //     specs: deskSpecs
-    // }
+    {
+        // SauceLabs
+        browserName: 'firefox',
+        platform: "Windows 10",
+        version: "latest",
+        screenResolution: "1400x1050",
+        build: process.env.TRAVIS_JOB_NUMBER,
+        public: "public",
+        "tunnel-identifier": process.env.TRAVIS_JOB_NUMBER,
+        logName: "Firefox latest",
+        shardTestFiles: true,
+        specs: deskSpecs
+    },
+    {
+        // SauceLabs
+        browserName: 'firefox',
+        platform: "Windows 10",
+        version: "47",
+        screenResolution: "1400x1050",
+        build: process.env.TRAVIS_JOB_NUMBER,
+        public: "public",
+        "tunnel-identifier": process.env.TRAVIS_JOB_NUMBER,
+        logName: "Firefox 47",
+        shardTestFiles: true,
+        specs: deskSpecs
+    },
+    {
+        // SauceLabs
+        browserName: 'internet explorer',
+        platform: "Windows 8.1",
+        version: "11.0",
+        screenResolution: "1400x1050",
+        build: process.env.TRAVIS_JOB_NUMBER,
+        public: "public",
+        "tunnel-identifier": process.env.TRAVIS_JOB_NUMBER,
+        logName: "IE11",
+        shardTestFiles: true,
+        specs: deskSpecs
+    },
+    {
+        // SauceLabs
+        browserName: 'MicrosoftEdge',
+        platform: "Windows 10",
+        version: "latest",
+        screenResolution: "1400x1050",
+        build: process.env.TRAVIS_JOB_NUMBER,
+        public: "public",
+        "tunnel-identifier": process.env.TRAVIS_JOB_NUMBER,
+        logName: "Microsoft Edge latest",
+        shardTestFiles: true,
+        specs: deskSpecs
+    },
+    // Use 9 and 10 because of the different webdriver, 9 has an old and 10 a new
+    {
+        // SauceLabs
+        browserName: 'safari',
+        platform: "OS X 10.11",
+        version: "9",
+        screenResolution: "1600x1200",
+        build: process.env.TRAVIS_JOB_NUMBER,
+        public: "public",
+        "tunnel-identifier": process.env.TRAVIS_JOB_NUMBER,
+        logName: "Safari 9",
+        shardTestFiles: true,
+        specs: deskSpecs
+    },
+    {
+        // SauceLabs
+        browserName: 'safari',
+        platform: "OS X 10.11",
+        version: "10",
+        screenResolution: "1600x1200",
+        build: process.env.TRAVIS_JOB_NUMBER,
+        public: "public",
+        "tunnel-identifier": process.env.TRAVIS_JOB_NUMBER,
+        logName: "Safari 10",
+        shardTestFiles: true,
+        specs: deskSpecs
+    }
 ];
 
 exports.config = config;
