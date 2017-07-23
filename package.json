@@ -10,7 +10,7 @@
     "test": "node ./test/cli image-comparison",
     "test.android.adb": "node ./test/cli image-comparison -r -e android.adb",
     "test.android.chromedriver": "node ./test/cli image-comparison -r -e android.chromedriver",
-    "test.ci": "node ./test/cli image-comparison -r -e saucelabs --seleniumAddress=http://localhost:4445/wd/hub",
+    "test.ci": "node ./test/cli image-comparison -r -e saucelabs --sauceSeleniumAddress=http://localhost:4445/wd/hub",
     "test.ios.simulator": "node ./test/cli image-comparison -r -e ios.simulator",
     "test.local": "node ./test/cli image-comparison -r -e local",
     "test.init": "node ./test/cli image-comparison -r -e init",
@@ -54,7 +54,6 @@
     "jasmine-spec-reporter": "3.2.0",
     "jsdoc-to-markdown": "2.0.1",
     "protractor": "^5.1.0",
-    "saucelabs": "^1.3.0",
     "validate-commit-msg": "^2.11.1"
   },
   "engines": {
