@@ -1,14 +1,13 @@
 'use strict';
 
 let config = require('./protractor.shared.conf.js').config;
-const SAUCE_USERNAME = process.env.SAUCE_USERNAME ? process.env.SAUCE_USERNAME : process.env.IC_SAUCE_USERNAME;
-const SAUCE_ACCESS_KEY = process.env.SAUCE_ACCESS_KEY ? process.env.SAUCE_ACCESS_KEY : process.env.IC_SAUCE_ACCESS_KEY;
 const deskSpecs = ['../desktop.spec.js'];
 const mobileSpecs = ['../mobile.spec.js'];
 
 
-config.sauceUser = SAUCE_USERNAME;
-config.sauceKey = SAUCE_ACCESS_KEY;
+config.sauceUser = process.env.SAUCE_USERNAME ? process.env.SAUCE_USERNAME : process.env.IC_SAUCE_USERNAME;
+config.sauceKey = process.env.SAUCE_ACCESS_KEY ? process.env.SAUCE_ACCESS_KEY : process.env.IC_SAUCE_ACCESS_KEY;
+config.sauceBuild = process.env.TRAVIS_JOB_NUMBER;
 
 config.multiCapabilities = [
 
@@ -21,7 +20,6 @@ config.multiCapabilities = [
         deviceOrientation: "portrait",
         platformName: 'iOS',
         platformVersion: '10.0',
-        build: process.env.TRAVIS_JOB_NUMBER,
         public: "public",
         "tunnel-identifier": process.env.TRAVIS_JOB_NUMBER,
         logName: "iPhone 6 Simulator Safari",
@@ -36,7 +34,6 @@ config.multiCapabilities = [
         deviceOrientation: "portrait",
         platformName: 'iOS',
         platformVersion: '10.0',
-        build: process.env.TRAVIS_JOB_NUMBER,
         public: "public",
         "tunnel-identifier": process.env.TRAVIS_JOB_NUMBER,
         logName: "iPad Air 2 Simulator Safari",
@@ -50,7 +47,6 @@ config.multiCapabilities = [
         platform: "Windows 10",
         version: "latest",
         screenResolution: "1400x1050",
-        build: process.env.TRAVIS_JOB_NUMBER,
         // passed: true,
         public: "public",
         "tunnel-identifier": process.env.TRAVIS_JOB_NUMBER,
@@ -64,7 +60,6 @@ config.multiCapabilities = [
         platform: "Windows 10",
         version: "latest",
         screenResolution: "1400x1050",
-        build: process.env.TRAVIS_JOB_NUMBER,
         public: "public",
         "tunnel-identifier": process.env.TRAVIS_JOB_NUMBER,
         logName: "Firefox latest",
@@ -77,7 +72,6 @@ config.multiCapabilities = [
         platform: "Windows 10",
         version: "47",
         screenResolution: "1400x1050",
-        build: process.env.TRAVIS_JOB_NUMBER,
         public: "public",
         "tunnel-identifier": process.env.TRAVIS_JOB_NUMBER,
         logName: "Firefox 47",
@@ -90,7 +84,6 @@ config.multiCapabilities = [
         platform: "Windows 8.1",
         version: "11.0",
         screenResolution: "1400x1050",
-        build: process.env.TRAVIS_JOB_NUMBER,
         public: "public",
         "tunnel-identifier": process.env.TRAVIS_JOB_NUMBER,
         logName: "IE11",
@@ -103,7 +96,6 @@ config.multiCapabilities = [
         platform: "Windows 10",
         version: "latest",
         screenResolution: "1400x1050",
-        build: process.env.TRAVIS_JOB_NUMBER,
         public: "public",
         "tunnel-identifier": process.env.TRAVIS_JOB_NUMBER,
         logName: "Microsoft Edge latest",
@@ -117,7 +109,6 @@ config.multiCapabilities = [
         platform: "OS X 10.11",
         version: "9",
         screenResolution: "1600x1200",
-        build: process.env.TRAVIS_JOB_NUMBER,
         public: "public",
         "tunnel-identifier": process.env.TRAVIS_JOB_NUMBER,
         logName: "Safari 9",
@@ -130,7 +121,6 @@ config.multiCapabilities = [
         platform: "OS X 10.11",
         version: "10",
         screenResolution: "1600x1200",
-        build: process.env.TRAVIS_JOB_NUMBER,
         public: "public",
         "tunnel-identifier": process.env.TRAVIS_JOB_NUMBER,
         logName: "Safari 10",
