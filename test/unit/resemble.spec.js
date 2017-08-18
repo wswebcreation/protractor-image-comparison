@@ -134,7 +134,7 @@ describe('node-resemble.js', () => {
 
 
             it('should succeed comparing 2 non identical images with ignoring transparent regions', done => {
-            	resemble(peopleAlphaImage, peopleTwoImage, { ignoreTransparentPixel: true })
+                resemble(peopleAlphaImage, peopleTwoImage, { ignoreTransparentPixel: true })
                     .onComplete(data => {
                         expect(data.misMatchPercentage).toEqual('0.00');
                         done();

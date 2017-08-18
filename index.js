@@ -56,7 +56,7 @@ const resembleJS = require('./lib/resemble');
  */
 class protractorImageComparison {
     constructor(options) {
-    	assert.ok(options.baselineFolder, 'Image baselineFolder not given.');
+        assert.ok(options.baselineFolder, 'Image baselineFolder not given.');
         assert.ok(options.screenshotPath, 'Image screenshotPath not given.');
 
         this.baselineFolder = path.normalize(options.baselineFolder);
