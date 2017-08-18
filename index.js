@@ -56,7 +56,6 @@ const resembleJS = require('./lib/resemble');
  */
 class protractorImageComparison {
     constructor(options) {
-
     	assert.ok(options.baselineFolder, 'Image baselineFolder not given.');
         assert.ok(options.screenshotPath, 'Image screenshotPath not given.');
 
@@ -353,8 +352,6 @@ class protractorImageComparison {
         compareOptions.ignoreColors = 'ignoreColors' in compareOptions ? compareOptions.ignoreColors : this.ignoreColors;
         compareOptions.ignoreRectangles = 'ignoreRectangles' in compareOptions ? compareOptions.ignoreRectangles.push(ignoreRectangles) : ignoreRectangles;
         compareOptions.ignoreTransparentPixel = 'ignoreTransparentPixel' in compareOptions ? compareOptions.ignoreTransparentPixel : this.ignoreTransparentPixel;
-
-        process.stdout.write("LOG: ios="+this._isIOS()+", blockOutStatusBar="+blockOutStatusBar);
 
         if (this._isMobile() && ((this.nativeWebScreenshot && compareOptions.isScreen) || (this._isIOS())) && blockOutStatusBar) {
             const statusBarHeight = this._isAndroid() ? this.androidOffsets.statusBar : this.iosOffsets.statusBar,
