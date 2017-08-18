@@ -8,6 +8,7 @@ describe('node-resemble.js', () => {
     const peopleImage = path.resolve(__dirname, './example/People.png');
     const peopleBlackWhiteImage = path.resolve(__dirname, './example/PeopleBW.png');
     const peopleTwoImage = path.resolve(__dirname, './example/People2.png');
+    const peopleAlphaImage = path.resolve(__dirname, './example/PeopleAlpha.png');
     const largeImage = path.resolve(__dirname, './example/LargeImage.png');
     const smallImage = path.resolve(__dirname, './example/SmallImage.png');
     const withAntiAliasing = path.resolve(__dirname, './example/withAntiAliasing.png');
@@ -96,7 +97,7 @@ describe('node-resemble.js', () => {
                     });
             });
 
-            it('should fail comparing 2 non identical images with each other with ignoreRectangles enabled', done => {
+            it('should succeed comparing 2 non identical images with each other with ignoreRectangles enabled', done => {
                 resemble(peopleImage, peopleTwoImage, {
                     ignoreAntialiasing: true,
                     ignoreColors: true,
@@ -104,13 +105,13 @@ describe('node-resemble.js', () => {
                         {
                             x: 15,
                             y: 15,
-                            height: 200,
+                            height: 110,
                             width: 460
                         }, {
-                            x: 0,
-                            y: 200,
-                            height: 300,
-                            width: 460
+                            x: 21,
+                            y: 170,
+                            height: 100,
+                            width: 100
                         }
                     ]
                 })
@@ -120,6 +121,36 @@ describe('node-resemble.js', () => {
                     });
             });
         });
+
+        describe('ignoreTransparentPixel', () => {
+
+            it('should fail comparing 2 non identical images with transparent regions', done => {
+                resemble(peopleAlphaImage, peopleTwoImage)
+                    .onComplete(data => {
+                        expect(data.misMatchPercentage).toEqual('7.88');
+                        done();
+                    });
+            });
+
+
+            it('should succeed comparing 2 non identical images with ignoring transparent regions', done => {
+            	resemble(peopleAlphaImage, peopleTwoImage, { ignoreTransparentPixel: true })
+                    .onComplete(data => {
+                        expect(data.misMatchPercentage).toEqual('0.00');
+                        done();
+                    });
+            });
+
+            it('should fail comparing 2 non identical images even ignoring transparent regions', done => {
+                resemble(peopleAlphaImage, peopleImage, { ignoreTransparentPixel: true })
+                    .onComplete(data => {
+                        expect(data.misMatchPercentage).toEqual('7.37');
+                        done();
+                    });
+            });
+
+        });
+
     });
 
     describe('outputSettings', () => {
