@@ -19,6 +19,7 @@ You can:
 - ignore anti-aliasing differences
 - compare images by ignoring their colors (do a grayscale comparison)
 - blockout custom regions during comparison (all)
+- **NEW** ignore regions by making them transparent in the base image (all)
 - increase the element dimenisions screenshots (all)
 - provide custom iOS and Android offsets for status-/address-/toolbar (mobile only)
 - automatically exclude a statusbar during screencomparison (mobile only)
@@ -52,7 +53,7 @@ If you run for the first time without having a baseline the `check`-methods will
 
     `Image not found, saving current image as new baseline.`
 
-This means that the current screenshot is saved and you **manually need to copy it to your baseline**. 
+This means that the current screenshot is saved and you **manually need to copy it to your baseline**.
 If you instantiate `protractor-image-comparsion` with `autoSaveBaseline: true`, see [docs](./docs/index.md), the image will automatically be saved into the baselinefolder.
 
 

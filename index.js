@@ -24,6 +24,7 @@ const resembleJS = require('./lib/resemble');
  * @param {boolean} options.blockOutStatusBar  If the statusbar on mobile / tablet needs to blocked out by default
  * @param {boolean} options.ignoreAntialiasing compare images an discard anti aliasing
  * @param {boolean} options.ignoreColors Even though the images are in colour, the comparison wil compare 2 black/white images
+ * @param {boolean} options.ignoreTransparentPixel Will ignore all pixels that have some transparency in one of the images
  * @param {object} options.androidOffsets Object that will hold custom values for the statusBar, addressBar, addressBarScrolled and toolBar
  * @param {object} options.iosOffsets Object that will hold the custom values for the statusBar, addressBar, addressBarScrolled and toolBar
  *
@@ -70,6 +71,7 @@ class protractorImageComparison {
 
         this.ignoreAntialiasing = options.ignoreAntialiasing || false;
         this.ignoreColors = options.ignoreColors || false;
+        this.ignoreTransparentPixel = options.ignoreTransparentPixel || false;
 
         // OS offsets
         let androidOffsets = options.androidOffsets && typeof options.androidOffsets === 'object' ? options.androidOffsets : {};
@@ -336,6 +338,7 @@ class protractorImageComparison {
      * @param {boolean} compareOptions.blockOutStatusBar blockout the statusbar yes or no, it will override the global
      * @param {boolean} compareOptions.ignoreAntialiasing compare images an discard anti aliasing
      * @param {boolean} compareOptions.ignoreColors Even though the images are in colour, the comparison wil compare 2 black/white images
+     * @param {boolean} compareOptions.ignoreTransparentPixel Will ignore all pixels that have some transparency in one of the images
      * @returns {Promise}
      * @private
      */
@@ -348,6 +351,7 @@ class protractorImageComparison {
         compareOptions.ignoreAntialiasing = 'ignoreAntialiasing' in compareOptions ? compareOptions.ignoreAntialiasing : this.ignoreAntialiasing;
         compareOptions.ignoreColors = 'ignoreColors' in compareOptions ? compareOptions.ignoreColors : this.ignoreColors;
         compareOptions.ignoreRectangles = 'ignoreRectangles' in compareOptions ? compareOptions.ignoreRectangles.push(ignoreRectangles) : ignoreRectangles;
+        compareOptions.ignoreTransparentPixel = 'ignoreTransparentPixel' in compareOptions ? compareOptions.ignoreTransparentPixel : this.ignoreTransparentPixel;
 
         if (this._isMobile() && ((this.nativeWebScreenshot && compareOptions.isScreen) || (this._isIOS())) && blockOutStatusBar) {
             const statusBarHeight = this._isAndroid() ? this.androidOffsets.statusBar : this.iosOffsets.statusBar,
@@ -866,6 +870,8 @@ class protractorImageComparison {
      * browser.protractorImageComparison.checkElement(element(By.id('elementId')), 'imageA', {ignoreAntialiasing: true});
      * // Ignore colors
      * browser.protractorImageComparison.checkElement(element(By.id('elementId')), 'imageA', {ignoreColors: true});
+     * // Ignore alpha pixel
+     * browser.protractorImageComparison.checkElement(element(By.id('elementId')), 'imageA', {ignoreTransparentPixel: true});
      *
      * @param {Promise} element The ElementFinder that is used to get the position
      * @param {string} tag The tag that is used
@@ -874,6 +880,7 @@ class protractorImageComparison {
      * @param {int} options.resizeDimensions the value to increase the size of the element that needs to be saved
      * @param {boolean} options.ignoreAntialiasing compare images an discard anti aliasing
      * @param {boolean} options.ignoreColors Even though the images are in colour, the comparison wil compare 2 black/white images
+     * @param {boolean} options.ignoreTransparentPixel Will ignore all pixels that have some transparency in one of the images
      * @return {Promise} When the promise is resolved it will return the percentage of the difference
      * @public
      */
@@ -906,6 +913,8 @@ class protractorImageComparison {
      * browser.protractorImageComparison.checkFullPageScreen('imageA', {ignoreAntialiasing: true});
      * // Ignore colors
      * browser.protractorImageComparison.checkFullPageScreen('imageA', {ignoreColors: true});
+     * // Ignore alpha pixel
+     * browser.protractorImageComparison.checkFullPageScreen('imageA', {ignoreTransparentPixel: true});
      *
      * @param {string} tag The tag that is used
      * @param {object} options (non-default) options
@@ -943,6 +952,9 @@ class protractorImageComparison {
      * browser.protractorImageComparison.checkScreen('imageA', {ignoreAntialiasing: true});
      * // Ignore colors
      * browser.protractorImageComparison.checkScreen('imageA', {ignoreColors: true});
+     * // Ignore alpha pixel
+     * browser.protractorImageComparison.checkScreen('imageA', {ignoreTransparentPixel: true});
+
      *
      * @param {string} tag The tag that is used
      * @param {object} options (non-default) options
@@ -951,6 +963,7 @@ class protractorImageComparison {
      * @param {boolean} options.disableCSSAnimation enable or disable CSS animation
      * @param {boolean} options.ignoreAntialiasing compare images an discard anti aliasing
      * @param {boolean} options.ignoreColors Even though the images are in colour, the comparison wil compare 2 black/white images
+     * @param {boolean} options.ignoreTransparentPixel Will ignore all pixels that have some transparency in one of the images
      * @return {Promise} When the promise is resolved it will return the percentage of the difference
      * @public
      */
