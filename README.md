@@ -60,7 +60,7 @@ If you instantiate `protractor-image-comparsion` with `autoSaveBaseline: true`, 
 *protractor-image-comparison* provides:
 
 - two comparison methods `checkScreen` and `checkElement`.
-- two helper methods `saveElement` and `saveElement` for saving images.
+- two helper methods `saveScreen` and `saveElement` for saving images.
 - **NEW** a helper `saveFullPageScreens` and a comparison method `checkFullPageScreen` for saving and comparing a fullpage screenshot.
 
 The comparison methods return a result in percentages like `0` or `3.94`.
