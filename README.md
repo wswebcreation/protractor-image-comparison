@@ -74,6 +74,13 @@ See [conventions.md](./docs/conventions.md).
 ## Contribution
 See [CONTRIBUTING.md](./docs/CONTRIBUTING.md).
 
+## FAQ
+### Width and height cannot be negative
+It could be that the error `Width and height cannot be negative` is thrown. 9 out of 10 times this is related to creating an image of an element that is not in the view. Please be sure you always make sure the element in is in the view before you try to make an image of the element.
+
+### Changing the color on an element is not detected by protractor-image-comparison
+When using Chrome and using the `chromeOptions.args:['--disable-gpu']` it could be possible that the images can't be compared in the correct way. If you remove this argument all will work again. See [here](https://github.com/wswebcreation/protractor-image-comparison/issues/33#issuecomment-333409063)
+
 ## Credits
 - Basic logic of `index.js` based on [PixDiff](https://github.com/koola/pix-diff)
 - Comparison core of `./lib/resemble.js` [node-resemble](https://github.com/lksv/node-resemble.js) + [ResembleJS](https://github.com/Huddle/Resemble.js)
