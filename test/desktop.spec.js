@@ -174,4 +174,18 @@ describe('protractor-image-comparison', () => {
                 .then(() => expect(browser.imageComparson.checkFullPageScreen(exampleFullPageFail)).toBeGreaterThan(0));
         });
     });
+
+    describe('compare screen with hideScrollBars option', () => {
+
+        it('should compare successful with a baseline (hideScrollBars=false)', () => {
+            browser.imageComparson.hideScrollBars = false;
+            expect(browser.imageComparson.checkScreen('page-with-scroll')).toEqual(0);
+        });
+
+        it('should compare successful with a baseline (hideScrollBars=true)', () => {
+            browser.imageComparson.hideScrollBars = true;
+            expect(browser.imageComparson.checkScreen(examplePage)).toEqual(0);
+        });
+    });
+
 });
