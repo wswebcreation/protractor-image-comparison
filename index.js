@@ -65,7 +65,7 @@ class protractorImageComparison {
         this.autoSaveBaseline = options.autoSaveBaseline || false;
         this.debug = options.debug || false;
         this.disableCSSAnimation = options.disableCSSAnimation || false;
-        this.hideScrollBars = options.hideScrollBars || true;
+        this.hideScrollBars = options.hideScrollBars !== false;
         this.formatString = options.formatImageName || '{tag}-{browserName}-{width}x{height}-dpr-{dpr}';
 
         this.nativeWebScreenshot = !!options.nativeWebScreenshot;
