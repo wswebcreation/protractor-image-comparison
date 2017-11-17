@@ -1,3 +1,12 @@
+<a name="1.4.0"></a>
+# [1.4.0](https://github.com/wswebcreation/protractor-image-comparison/compare/v1.3.0...v1.4.0) (2017-11-17)
+
+
+### Features
+
+* Add parameter for enabling scrollbars (default value = hide) ([38](https://github.com/wswebcreation/protractor-image-comparison/pull/38))
+
+
 <a name="1.3.0"></a>
 # [1.3.0](https://github.com/wswebcreation/protractor-image-comparison/compare/v1.2.5...v1.3.0) (2017-08-27)
 
