@@ -20,6 +20,7 @@ const resembleJS = require('./lib/resemble');
  * @param {boolean} options.debug Add some extra logging and always save the image difference (default:false)
  * @param {string} options.formatImageName Custom variables for Image Name (default:{tag}-{browserName}-{width}x{height}-dpr-{dpr})
  * @param {boolean} options.disableCSSAnimation Disable all css animations on a page (default:false)
+ * @param {boolean} options.hideScrollBars Hide all scrolls on a page (default:true)
  * @param {boolean} options.nativeWebScreenshot If a native screenshot of a device (complete screenshot) needs to be taken (default:false)
  * @param {boolean} options.blockOutStatusBar  If the statusbar on mobile / tablet needs to blocked out by default
  * @param {boolean} options.ignoreAntialiasing compare images an discard anti aliasing
@@ -64,6 +65,7 @@ class protractorImageComparison {
         this.autoSaveBaseline = options.autoSaveBaseline || false;
         this.debug = options.debug || false;
         this.disableCSSAnimation = options.disableCSSAnimation || false;
+        this.hideScrollBars = options.hideScrollBars !== false;
         this.formatString = options.formatImageName || '{tag}-{browserName}-{width}x{height}-dpr-{dpr}';
 
         this.nativeWebScreenshot = !!options.nativeWebScreenshot;
@@ -829,9 +831,9 @@ class protractorImageComparison {
      * @private
      */
     _setCustomTestCSS() {
-        return browser.driver.executeScript(setCSS, this.disableCSSAnimation, this.addressBarShadowPadding, this.toolBarShadowPadding);
+        return browser.driver.executeScript(setCSS, this.disableCSSAnimation, this.hideScrollBars, this.addressBarShadowPadding, this.toolBarShadowPadding);
 
-        function setCSS(disableCSSAnimation, addressBarShadowPadding, toolBarShadowPadding) {
+        function setCSS(disableCSSAnimation, hideScrollBars, addressBarShadowPadding, toolBarShadowPadding) {
             var animation = '* {' +
                     '-webkit-transition-duration: 0s !important;' +
                     'transition-duration: 0s !important;' +
@@ -841,7 +843,7 @@ class protractorImageComparison {
                 scrollBar = '*::-webkit-scrollbar { display:none; !important}',
                 bodyTopPadding = addressBarShadowPadding === 0 ? '' : 'body{padding-top:' + addressBarShadowPadding + 'px !important}',
                 bodyBottomPadding = toolBarShadowPadding === 0 ? '' : 'body{padding-bottom:' + toolBarShadowPadding + 'px !important}',
-                css = disableCSSAnimation ? scrollBar + animation + bodyTopPadding + bodyBottomPadding : scrollBar + bodyTopPadding + bodyBottomPadding,
+                css = (disableCSSAnimation ? animation : '') + (hideScrollBars ? scrollBar : '') + bodyTopPadding + bodyBottomPadding,
                 head = document.head || document.getElementsByTagName('head')[0],
                 style = document.createElement('style');
 

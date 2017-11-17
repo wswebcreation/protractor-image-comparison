@@ -77,6 +77,7 @@ protractorImageComparison
 | options.debug | <code>boolean</code> | Add some extra logging and always save the image difference (default:false) |
 | options.formatImageName | <code>string</code> | Custom variables for Image Name (default:{tag}-{browserName}-{width}x{height}-dpr-{dpr}) |
 | options.disableCSSAnimation | <code>boolean</code> | Disable all css animations on a page (default:false) |
+| options.hideScrollBars | <code>boolean</code> | Hide all scrolls on a page (default:true) |
 | options.nativeWebScreenshot | <code>boolean</code> | If a native screenshot of a device (complete screenshot) needs to be taken (default:false) |
 | options.blockOutStatusBar | <code>boolean</code> | If the statusbar on mobile / tablet needs to blocked out by default |
 | options.ignoreAntialiasing | <code>boolean</code> | compare images an discard anti aliasing |
