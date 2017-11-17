@@ -20,6 +20,7 @@ You can:
 - compare images by ignoring their colors (do a grayscale comparison)
 - blockout custom regions during comparison (all)
 - **NEW** ignore regions by making them transparent in the base image (all) thanks to [tharders](https://github.com/tharders)
+- **NEW** parameter to hide / show scrollbars [pnad](https://github.com/pnad)
 - increase the element dimenisions screenshots (all)
 - provide custom iOS and Android offsets for status-/address-/toolbar (mobile only)
 - automatically exclude a statusbar during screencomparison (mobile only)
