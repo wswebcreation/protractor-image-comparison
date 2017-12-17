@@ -1,6 +1,6 @@
-#Methods
+# Methods
 
-##saveScreen or checkScreen
+## saveScreen or checkScreen
 The methods `saveScreen` and `checkScreen` create a screenshot of the visible viewport. Be aware that there are different webdriver implementations in creating complete screenshots.
 For example:
 
@@ -15,20 +15,20 @@ For example:
 
 Code details and example usage can be found [here](./index.md).
 
-##saveElement or checkElement
+## saveElement or checkElement
 Images are cropped from the complete screenshot by using the `saveElement` or `checkElement` function.
 The method will calculate the correct dimensions based upon the webdriver element selector.
 
 Code details and example usage can be found [here](./index.md).
 
-##NEW saveFullPageScreens or checkFullPageScreen
+## NEW saveFullPageScreens or checkFullPageScreen
 The methods `saveFullPageScreens` and `checkFullPageScreen` create a screenshot of the **complete** page. Basically it will device the complete page into multiple viewports.
 Then it will scroll to each viewport, waits a given timeout (default 1000 milliseconds) and takes a screenshot. When all the viewports have been captured it will compose a new complete fullpage screenshot.
 These methods will also work on pages with lazyloading. By altering the `timeout` you can set it to wait for how long the lazyloading will take and then take a screenshot. It wil automatically recalculate the height of the full screen
 
 Code details and example usage can be found [here](./index.md).
 
-##protractor-image-comparison parameters:
+## protractor-image-comparison parameters:
 
 * `baselineFolder` Defines the path to the reference images that are to be compared.
 * `screenshotPath` Defines the path to where the "actual" captured images need to be saved.
@@ -68,7 +68,7 @@ browser.protractorImageComparison = new protractorImageComparison({
 });
 `````
 
-##Method options:
+## Method options:
 ### blockOut
 Sometimes, it is necessary to block-out some specific areas in an image that should be ignored for comparisons. For example, this can be IDs or even time-labels that change with the time. Adding block-outs to images may decrease false positives and therefore stabilizes these comparisons (see the [examples](./examples.md)).
 It can be used for `checkElement` and `checkScreen` and is an object or list of objects with coordinates that should be blocked before comparing. (default: none).

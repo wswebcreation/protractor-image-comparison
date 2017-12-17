@@ -1,17 +1,17 @@
 Contributing
 ============
 
-#Tests
+# Tests
 There are several test that need to be executed to be able to test the module. When adding a PR all tests must at least pass the local tests.
 Each PR is automatically tested against Sauce Labs, see [Travis-ci with Sauce Labs](#travis-ci-with-sauce-labs).
 Before approving a PR the core contributers will test the PR against emulators / simulators / real devices.
 
 ## Local
-**Make sure a local webdriver is installed, see [How to run a local webdriver](#how-to-run-a-local-webdriver) and start your webdriver.** 
+**Make sure a local webdriver is installed, see [How to run a local webdriver](#how-to-run-a-local-webdriver) and start your webdriver.**
 (*DirectConnect from protractor itself is not stable enough to run our tests, that's why we we use a local webdriver*).
 
 First a local baseline needs to be created. This can be done with `npm run test.init`. This command will create a folder called `localBaseline` that will hold all the baseline images.
-Then run `npm run test.local`. This will run all tests on a local machine on Chrome (job uses direct connect, first run `npm run wd-update` to update the webdriver. 
+Then run `npm run test.local`. This will run all tests on a local machine on Chrome (job uses direct connect, first run `npm run wd-update` to update the webdriver.
 This needs to be done once after install).
 
 ### How to run a local webdriver
@@ -40,10 +40,10 @@ If you never installed a local webdriver, follow steps 1 and 2, else start the w
 `````
 
 `npm run test.perfecto`: Run all tests on a real:
- 
+
  - Apple iOS device on Safari in the cloud
  - Samsung Android on Chrom in the cloud
- 
+
 **Credentials are needed to be able to test this**
 
 ## Travis-ci with Sauce Labs (not needed for a PR)

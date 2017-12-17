@@ -1,6 +1,6 @@
 Examples
 ========
-##Configuration file setup:
+## Configuration file setup:
 Load it from the configuration file of *protractor*
 
 ```js
@@ -19,7 +19,7 @@ exports.config = {
 }
 ```
 
-##Jasmine Example:
+## Jasmine Example:
 Load it in a *spec* file
 
 ```js
@@ -55,7 +55,7 @@ describe("Example page", function() {
 });
 ```
 
-##Cucumber Example:
+## Cucumber Example:
 Load it in a *step* file
 
 ```js
@@ -63,12 +63,12 @@ const expect = require('chai').expect,
       protractorImageComparison = require('protractor-image-comparison');
 
 function CucumberSteps() {
-    
+
     browser.protractorImageComparison = new protractorImageComparison({
         baselineFolder: './baseline/',
         screenshotPath: './.tmp/'
     });
-        
+
     this.Given(/^I load the url$/, function () {
         return browser.get('http://www.example.com/');
     });
