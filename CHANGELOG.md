@@ -1,3 +1,23 @@
+<a name="1.4.0"></a>
+# [1.4.0](https://github.com/wswebcreation/protractor-image-comparison/compare/v1.3.0...v1.4.0) (2017-11-17)
+
+
+### Features
+
+* Add parameter for enabling scrollbars (default value = hide) ([38](https://github.com/wswebcreation/protractor-image-comparison/pull/38))
+
+
+<a name="1.3.0"></a>
+# [1.3.0](https://github.com/wswebcreation/protractor-image-comparison/compare/v1.2.5...v1.3.0) (2017-08-27)
+
+
+### Features
+
+* Ignore regions by making them transparent in the base image ([a7ec187](https://github.com/wswebcreation/protractor-image-comparison/commit/a7ec1873a5429eb077c4fa4dc82edd07f179f4f6))
+
+
+
+
 <a name="1.2.5"></a>
 ## [1.2.5](https://github.com/wswebcreation/protractor-image-comparison/compare/v1.2.4...v1.2.5) (2017-05-18)
 

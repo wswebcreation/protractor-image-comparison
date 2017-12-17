@@ -19,6 +19,8 @@ You can:
 - ignore anti-aliasing differences
 - compare images by ignoring their colors (do a grayscale comparison)
 - blockout custom regions during comparison (all)
+- **NEW** ignore regions by making them transparent in the base image (all) thanks to [tharders](https://github.com/tharders)
+- **NEW** parameter to hide / show scrollbars [pnad](https://github.com/pnad)
 - increase the element dimenisions screenshots (all)
 - provide custom iOS and Android offsets for status-/address-/toolbar (mobile only)
 - automatically exclude a statusbar during screencomparison (mobile only)
@@ -52,14 +54,14 @@ If you run for the first time without having a baseline the `check`-methods will
 
     `Image not found, saving current image as new baseline.`
 
-This means that the current screenshot is saved and you **manually need to copy it to your baseline**. 
+This means that the current screenshot is saved and you **manually need to copy it to your baseline**.
 If you instantiate `protractor-image-comparsion` with `autoSaveBaseline: true`, see [docs](./docs/index.md), the image will automatically be saved into the baselinefolder.
 
 
 *protractor-image-comparison* provides:
 
 - two comparison methods `checkScreen` and `checkElement`.
-- two helper methods `saveElement` and `saveElement` for saving images.
+- two helper methods `saveScreen` and `saveElement` for saving images.
 - **NEW** a helper `saveFullPageScreens` and a comparison method `checkFullPageScreen` for saving and comparing a fullpage screenshot.
 
 The comparison methods return a result in percentages like `0` or `3.94`.
@@ -72,6 +74,13 @@ See [conventions.md](./docs/conventions.md).
 
 ## Contribution
 See [CONTRIBUTING.md](./docs/CONTRIBUTING.md).
+
+## FAQ
+### Width and height cannot be negative
+It could be that the error `Width and height cannot be negative` is thrown. 9 out of 10 times this is related to creating an image of an element that is not in the view. Please be sure you always make sure the element in is in the view before you try to make an image of the element.
+
+### Changing the color on an element is not detected by protractor-image-comparison
+When using Chrome and using the `chromeOptions.args:['--disable-gpu']` it could be possible that the images can't be compared in the correct way. If you remove this argument all will work again. See [here](https://github.com/wswebcreation/protractor-image-comparison/issues/33#issuecomment-333409063)
 
 ## Credits
 - Basic logic of `index.js` based on [PixDiff](https://github.com/koola/pix-diff)

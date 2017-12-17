@@ -77,10 +77,12 @@ protractorImageComparison
 | options.debug | <code>boolean</code> | Add some extra logging and always save the image difference (default:false) |
 | options.formatImageName | <code>string</code> | Custom variables for Image Name (default:{tag}-{browserName}-{width}x{height}-dpr-{dpr}) |
 | options.disableCSSAnimation | <code>boolean</code> | Disable all css animations on a page (default:false) |
+| options.hideScrollBars | <code>boolean</code> | Hide all scrolls on a page (default:true) |
 | options.nativeWebScreenshot | <code>boolean</code> | If a native screenshot of a device (complete screenshot) needs to be taken (default:false) |
 | options.blockOutStatusBar | <code>boolean</code> | If the statusbar on mobile / tablet needs to blocked out by default |
 | options.ignoreAntialiasing | <code>boolean</code> | compare images an discard anti aliasing |
 | options.ignoreColors | <code>boolean</code> | Even though the images are in colour, the comparison wil compare 2 black/white images |
+| options.ignoreTransparentPixel | <code>boolean</code> | Will ignore all pixels that have some transparency in one of the images |
 | options.androidOffsets | <code>object</code> | Object that will hold custom values for the statusBar, addressBar, addressBarScrolled and toolBar |
 | options.iosOffsets | <code>object</code> | Object that will hold the custom values for the statusBar, addressBar, addressBarScrolled and toolBar |
 
@@ -102,6 +104,7 @@ Runs the comparison against an element
 | options.resizeDimensions | <code>int</code> | the value to increase the size of the element that needs to be saved |
 | options.ignoreAntialiasing | <code>boolean</code> | compare images an discard anti aliasing |
 | options.ignoreColors | <code>boolean</code> | Even though the images are in colour, the comparison wil compare 2 black/white images |
+| options.ignoreTransparentPixel | <code>boolean</code> | Will ignore all pixels that have some transparency in one of the images |
 
 **Example**  
 ```js
@@ -118,6 +121,8 @@ browser.protractorImageComparison.saveElement(element(By.id('elementId')), 'imag
 browser.protractorImageComparison.checkElement(element(By.id('elementId')), 'imageA', {ignoreAntialiasing: true});
 // Ignore colors
 browser.protractorImageComparison.checkElement(element(By.id('elementId')), 'imageA', {ignoreColors: true});
+// Ignore alpha pixel
+browser.protractorImageComparison.checkElement(element(By.id('elementId')), 'imageA', {ignoreTransparentPixel: true});
 ```
 <a name="checkFullPageScreen"></a>
 
@@ -153,6 +158,8 @@ browser.protractorImageComparison.checkFullPageScreen('imageA',{fullPageScrollTi
 browser.protractorImageComparison.checkFullPageScreen('imageA', {ignoreAntialiasing: true});
 // Ignore colors
 browser.protractorImageComparison.checkFullPageScreen('imageA', {ignoreColors: true});
+// Ignore alpha pixel
+browser.protractorImageComparison.checkFullPageScreen('imageA', {ignoreTransparentPixel: true});
 ```
 <a name="checkScreen"></a>
 
@@ -172,6 +179,7 @@ Runs the comparison against the screen
 | options.disableCSSAnimation | <code>boolean</code> | enable or disable CSS animation |
 | options.ignoreAntialiasing | <code>boolean</code> | compare images an discard anti aliasing |
 | options.ignoreColors | <code>boolean</code> | Even though the images are in colour, the comparison wil compare 2 black/white images |
+| options.ignoreTransparentPixel | <code>boolean</code> | Will ignore all pixels that have some transparency in one of the images |
 
 **Example**  
 ```js
@@ -187,6 +195,8 @@ browser.protractorImageComparison.checkScreen('imageA', {disableCSSAnimation: tr
 browser.protractorImageComparison.checkScreen('imageA', {ignoreAntialiasing: true});
 // Ignore colors
 browser.protractorImageComparison.checkScreen('imageA', {ignoreColors: true});
+// Ignore alpha pixel
+browser.protractorImageComparison.checkScreen('imageA', {ignoreTransparentPixel: true});
 ```
 <a name="saveElement"></a>
 
