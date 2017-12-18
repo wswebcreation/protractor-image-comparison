@@ -137,7 +137,7 @@ describe('protractor-protractor-image-comparison', () => {
         });
     });
 
-    fdescribe('compare element', () => {
+    describe('compare element', () => {
         beforeEach(done => {
             browser.getProcessedConfig()
                 .then(_ => {
