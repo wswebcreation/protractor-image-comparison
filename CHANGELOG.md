@@ -1,3 +1,10 @@
+<a name="1.5.0"></a>
+# [1.5.0](https://github.com/wswebcreation/protractor-image-comparison/compare/v1.4.0...v1.5.0) (2017-12-17)
+
+### Features
+
+* Remove temporary saving (fullpage)screenshots by saving them to a buffer array. This should prevent an overkill of temp screenshots
+
 <a name="1.4.0"></a>
 # [1.4.0](https://github.com/wswebcreation/protractor-image-comparison/compare/v1.3.0...v1.4.0) (2017-11-17)
 
@@ -14,8 +21,6 @@
 ### Features
 
 * Ignore regions by making them transparent in the base image ([a7ec187](https://github.com/wswebcreation/protractor-image-comparison/commit/a7ec1873a5429eb077c4fa4dc82edd07f179f4f6))
-
-
 
 
 <a name="1.2.5"></a>

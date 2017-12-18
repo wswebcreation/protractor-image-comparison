@@ -4,13 +4,15 @@ let SpecReporter = require('jasmine-spec-reporter').SpecReporter;
 
 exports.config = {
     baseUrl: 'https://wswebcreation.github.io/protractor-image-comparison/',
+    disableChecks: true,
     framework: 'jasmine2',
     jasmineNodeOpts: {
         showColors: true,
         defaultTimeoutInterval: 120000,
         isVerbose: true,
         includeStackTrace: true,
-        print: function() {}
+        print: function () {
+        }
     },
     onPrepare: function () {
         browser.ignoreSynchronization = true;

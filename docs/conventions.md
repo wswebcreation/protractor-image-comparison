@@ -1,7 +1,7 @@
-#Conventions
+# Conventions
 There are directory and naming conventions that must be met.
 
-##Directory structure
+## Directory structure
 ```text
 path
 └── to

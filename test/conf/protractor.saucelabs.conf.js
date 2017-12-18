@@ -13,7 +13,6 @@ config.multiCapabilities = [
 
     // Mobile
     {
-        // SauceLabs
         appiumVersion: "1.6.3",
         browserName: 'Safari',
         deviceName: "iPhone 6 Simulator",
@@ -27,7 +26,6 @@ config.multiCapabilities = [
         specs: mobileSpecs
     },
     {
-        // SauceLabs
         appiumVersion: "1.6.3",
         browserName: 'Safari',
         deviceName: "iPad Air 2 Simulator",
@@ -42,7 +40,6 @@ config.multiCapabilities = [
     },
     // Desktop
     {
-        // SauceLabs
         browserName: 'chrome',
         platform: "Windows 10",
         version: "latest",
@@ -55,7 +52,6 @@ config.multiCapabilities = [
         specs: deskSpecs
     },
     {
-        // SauceLabs
         browserName: 'firefox',
         platform: "Windows 10",
         version: "latest",
@@ -67,7 +63,6 @@ config.multiCapabilities = [
         specs: deskSpecs
     },
     {
-        // SauceLabs
         browserName: 'firefox',
         platform: "Windows 10",
         version: "47",
@@ -79,7 +74,6 @@ config.multiCapabilities = [
         specs: deskSpecs
     },
     {
-        // SauceLabs
         browserName: 'internet explorer',
         platform: "Windows 8.1",
         version: "11.0",
@@ -91,7 +85,6 @@ config.multiCapabilities = [
         specs: deskSpecs
     },
     {
-        // SauceLabs
         browserName: 'MicrosoftEdge',
         platform: "Windows 10",
         version: "latest",
@@ -104,7 +97,6 @@ config.multiCapabilities = [
     },
     // Use 9 and 10 because of the different webdriver, 9 has an old and 10 a new
     {
-        // SauceLabs
         browserName: 'safari',
         platform: "OS X 10.11",
         version: "9",
@@ -116,7 +108,6 @@ config.multiCapabilities = [
         specs: deskSpecs
     },
     {
-        // SauceLabs
         browserName: 'safari',
         platform: "OS X 10.11",
         version: "10",
