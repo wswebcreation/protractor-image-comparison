@@ -351,7 +351,7 @@ class protractorImageComparison {
         // comparison options are not available anymore, due to new version and api
         compareOptions.ignoreAntialiasing = 'ignoreAntialiasing' in compareOptions ? compareOptions.ignoreAntialiasing : this.ignoreAntialiasing;
         compareOptions.ignoreColors = 'ignoreColors' in compareOptions ? compareOptions.ignoreColors : this.ignoreColors;
-        compareOptions.ignoreRectangles = 'ignoreRectangles' in compareOptions ? compareOptions.ignoreRectangles.push(ignoreRectangles) : ignoreRectangles;
+        compareOptions.ignoreRectangles = 'ignoreRectangles' in compareOptions ? compareOptions.ignoreRectangles.concat(ignoreRectangles) : ignoreRectangles;
         compareOptions.ignoreTransparentPixel = 'ignoreTransparentPixel' in compareOptions ? compareOptions.ignoreTransparentPixel : this.ignoreTransparentPixel;
 
         if (this._isMobile() && ((this.nativeWebScreenshot && compareOptions.isScreen) || (this._isIOS())) && blockOutStatusBar) {
