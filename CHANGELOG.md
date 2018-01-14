@@ -1,3 +1,10 @@
+<a name="1.5.1"></a>
+# [1.5.1](https://github.com/wswebcreation/protractor-image-comparison/compare/v1.5.0...v1.5.1) (2018-01-13)
+
+### Bugfix
+
+* Fix options parsing in `_executeImageComparison`, see [43](https://github.com/wswebcreation/protractor-image-comparison/pull/43), tnx to [Juravenator](https://github.com/Juravenator)
+
 <a name="1.5.0"></a>
 # [1.5.0](https://github.com/wswebcreation/protractor-image-comparison/compare/v1.4.0...v1.5.0) (2017-12-17)
 
