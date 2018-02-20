@@ -1030,28 +1030,33 @@ class protractorImageComparison {
      * @returns {Promise} The images has been saved when the promise is resolved
      * @public
      */
-    async saveElement(element, tag, options) {
+
+    saveElement(element, tag, options) {
         let saveOptions = options || [];
         let bufferedScreenshot;
-        let screenshot;
 
         this.saveType.element = true;
         this.resizeDimensions = saveOptions.resizeDimensions ? saveOptions.resizeDimensions : this.resizeDimensions;
         this.disableCSSAnimation = saveOptions.disableCSSAnimation || saveOptions.disableCSSAnimation === false ? saveOptions.disableCSSAnimation : this.disableCSSAnimation;
 
-        await this._getInstanceData();
-        if(saveOptions.canvasScreenshot) {
-            const dataUrl = await browser.executeScript((canvas) => canvas.toDataURL('image/png'), await element.getWebElement());
-            screenshot = dataUrl.split(',')[1];
-        }
-        else
-            screenshot = await browser.takeScreenshot();
+        return this._getInstanceData()
+            .then(() => {
+                    if(saveOptions.canvasScreenshot)
+                        return element.getWebElement()
+                            .then(elem => browser.executeScript((canvas) => canvas.toDataURL('image/png'), elem))
+                            .then(dataUrl => dataUrl.split(',')[1]);
+                    else
+                        return browser.takeScreenshot()
+                }
+            )
+            .then(screenshot => {
+                bufferedScreenshot = new Buffer(screenshot, 'base64');
+                this.screenshotHeight = (bufferedScreenshot.readUInt32BE(20) / this.devicePixelRatio); // width = 16
 
-        bufferedScreenshot = new Buffer(screenshot, 'base64');
-        this.screenshotHeight = (bufferedScreenshot.readUInt32BE(20) / this.devicePixelRatio); // width = 16
-
-        const rectangles = saveOptions.canvasScreenshot ? undefined: await this._determineRectangles(element);
-        return await this._saveCroppedScreenshot(bufferedScreenshot, this.actualFolder, rectangles, tag);
+                if(!saveOptions.canvasScreenshot)
+                    return this._determineRectangles(element);
+            })
+            .then(rectangles => this._saveCroppedScreenshot(bufferedScreenshot, this.actualFolder, rectangles, tag));
     }
 
     /**
