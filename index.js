@@ -1041,12 +1041,14 @@ class protractorImageComparison {
 
         return this._getInstanceData()
             .then(() => {
-                    if(saveOptions.canvasScreenshot)
+                    if(saveOptions.canvasScreenshot) {
                         return element.getWebElement()
                             .then(elem => browser.executeScript((canvas) => canvas.toDataURL('image/png'), elem))
                             .then(dataUrl => dataUrl.split(',')[1]);
-                    else
+                    }
+                    else {
                         return browser.takeScreenshot()
+                    }
                 }
             )
             .then(screenshot => {
