@@ -38,8 +38,10 @@ describe('protractor-image-comparison', () => {
 
     const logName = camelCase(browser.logName);
     const resolution = '1366x768';
-    const dangerAlert = element(by.css('.uk-alert-danger'));
-    const headerElement = element(by.css('h1.uk-heading-large'));
+    const dangerAlert = $('.uk-alert-danger');
+    const headerElement = $('h1.uk-heading-large');
+    const canvasElement = $('#canvasBlocks');
+    const canvasBlocks = 'canvasBlocks';
     const dangerAlertElement = 'dangerAlert-compare';
     const dangerAlertElementFail = `${dangerAlertElement}-fail`;
     const exampleFullPage = 'example-fullpage-compare';
@@ -88,7 +90,7 @@ describe('protractor-image-comparison', () => {
                     .then(() => expect(helpers.fileExistSync(`${autoSaveBaselineFolder}/${tagName}-${logName}-${resolution}.png`)).toBe(true, 'File is saved in the baseline'));
             });
 
-            if(environment === 'saucelabs') {
+            if (environment === 'saucelabs') {
                 describe('resemble api', () => {
                     it('should succeed comparing 2 non identical images with each other with ignoreAntialiasing enabled', () => {
                         browser.executeScript('arguments[0].scrollIntoView(); arguments[0].style.color = "#2d7091";', dangerAlert.getWebElement())
@@ -99,7 +101,6 @@ describe('protractor-image-comparison', () => {
             }
         });
     }
-
 
     describe('compare screen', () => {
 
@@ -131,6 +132,14 @@ describe('protractor-image-comparison', () => {
                 .then(() => browser.sleep(500))
                 .then(() => expect(browser.imageComparson.checkElement(dangerAlert, dangerAlertElement)).toEqual(0));
         });
+        if (browser.logName !== 'IE11' && browser.logName !== 'Safari 9') {
+            it('should compare a canvas screenshot successful with a baseline', () => {
+                browser.executeScript('arguments[0].scrollIntoView();', canvasElement.getWebElement())
+                    .then(() => browser.sleep(500))
+                    .then(() => expect(browser.imageComparson.checkElement(canvasElement, `${canvasBlocks}-compare`, {canvasScreenshot: true})).toEqual(0));
+
+            });
+        }
 
         it('should compare successful with a baseline with custom dimensions that is NOT scrolled', () => {
             expect(browser.imageComparson.checkElement(headerElement, 'resizeDimensions-header-element', {resizeDimensions: 15})).toEqual(0);
