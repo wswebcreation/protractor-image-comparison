@@ -1026,9 +1026,11 @@ class protractorImageComparison {
      * @param {object} options (non-default) options
      * @param {int} options.resizeDimensions the value to increase the size of the element that needs to be saved
      * @param {boolean} options.disableCSSAnimation enable or disable CSS animation
+     * @param {boolean} options.canvasScreenshot enable or disable taking screenshot directly from canvas (via dataUrl instead of browser.takeScreenshot())
      * @returns {Promise} The images has been saved when the promise is resolved
      * @public
      */
+
     saveElement(element, tag, options) {
         let saveOptions = options || [];
         let bufferedScreenshot;
@@ -1038,12 +1040,23 @@ class protractorImageComparison {
         this.disableCSSAnimation = saveOptions.disableCSSAnimation || saveOptions.disableCSSAnimation === false ? saveOptions.disableCSSAnimation : this.disableCSSAnimation;
 
         return this._getInstanceData()
-            .then(() => browser.takeScreenshot())
+            .then(() => {
+                    if(saveOptions.canvasScreenshot) {
+                        return element.getWebElement()
+                            .then(elem => browser.executeScript((canvas) => canvas.toDataURL('image/png'), elem))
+                            .then(dataUrl => dataUrl.split(',')[1]);
+                    }
+                    else {
+                        return browser.takeScreenshot()
+                    }
+                }
+            )
             .then(screenshot => {
                 bufferedScreenshot = new Buffer(screenshot, 'base64');
                 this.screenshotHeight = (bufferedScreenshot.readUInt32BE(20) / this.devicePixelRatio); // width = 16
 
-                return this._determineRectangles(element);
+                if(!saveOptions.canvasScreenshot)
+                    return this._determineRectangles(element);
             })
             .then(rectangles => this._saveCroppedScreenshot(bufferedScreenshot, this.actualFolder, rectangles, tag));
     }
