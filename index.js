@@ -1020,13 +1020,15 @@ class protractorImageComparison {
      * browser.protractorImageComparison.saveElement(element(By.id('elementId')), 'imageA', {resizeDimensions: 15});
      * // Disable css animation on all elements
      * browser.protractorImageComparison.saveElement(element(By.id('elementId')), 'imageA', {disableCSSAnimation: true});
+     * // Take screenshot directly of a canvas element
+     * browser.protractorImageComparison.saveElement(element(By.id('canvasID')), 'imageA', {canvasScreenshot: true});
      *
      * @param {Promise} element The ElementFinder that is used to get the position
      * @param {string} tag The tag that is used
      * @param {object} options (non-default) options
      * @param {int} options.resizeDimensions the value to increase the size of the element that needs to be saved
      * @param {boolean} options.disableCSSAnimation enable or disable CSS animation
-     * @param {boolean} options.canvasScreenshot enable or disable taking screenshot directly from canvas (via dataUrl instead of browser.takeScreenshot())
+     * @param {boolean} options.canvasScreenshot enable or disable taking screenshot directly from canvas (via dataUrl instead of browser.takeScreenshot()). !!This isn't supported in IE11 and Safari 9!!
      * @returns {Promise} The images has been saved when the promise is resolved
      * @public
      */

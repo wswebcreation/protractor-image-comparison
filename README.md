@@ -13,17 +13,18 @@ protractor-image-comparison
 You can:
 
 - save or compare screens / elements against a baseline
-- **NEW:** save or compare a fullpage screenshot against a baseline (**desktop AND mobile are now supported**)
-- **NEW** automatically create a baseline when no baseline is there
+- save or compare a fullpage screenshot against a baseline (**desktop AND mobile are now supported**)
+- automatically create a baseline when no baseline is there
 - disable css animations by default
 - ignore anti-aliasing differences
 - compare images by ignoring their colors (do a grayscale comparison)
 - blockout custom regions during comparison (all)
-- **NEW** ignore regions by making them transparent in the base image (all) thanks to [tharders](https://github.com/tharders)
-- **NEW** parameter to hide / show scrollbars [pnad](https://github.com/pnad)
+- ignore regions by making them transparent in the base image (all) thanks to [tharders](https://github.com/tharders)
+- parameter to hide / show scrollbars [pnad](https://github.com/pnad)
 - increase the element dimenisions screenshots (all)
 - provide custom iOS and Android offsets for status-/address-/toolbar (mobile only)
 - automatically exclude a statusbar during screencomparison (mobile only)
+- **NEW**, taking a screenshot directly from canvas, tnx to [tuomas2](https://github.com/tuomas2), see [here](https://github.com/wswebcreation/protractor-image-comparison/blob/master/docs/index.md#saveelementelement-tag-options--promise). **!!This isn't supported in IE11 and Safari 9!!**
 
 Comparison is based on [ResembleJS](https://github.com/Huddle/Resemble.js).
 

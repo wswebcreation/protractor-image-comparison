@@ -19,6 +19,8 @@ Code details and example usage can be found [here](./index.md).
 Images are cropped from the complete screenshot by using the `saveElement` or `checkElement` function.
 The method will calculate the correct dimensions based upon the webdriver element selector.
 
+> You can now also directly take a screenshot of a canvas element by providing `{canvasScreenshot: true}`
+
 Code details and example usage can be found [here](./index.md).
 
 ## NEW saveFullPageScreens or checkFullPageScreen

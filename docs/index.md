@@ -214,6 +214,7 @@ Saves an image of the screen element
 | options | <code>object</code> | (non-default) options |
 | options.resizeDimensions | <code>int</code> | the value to increase the size of the element that needs to be saved |
 | options.disableCSSAnimation | <code>boolean</code> | enable or disable CSS animation |
+| options.canvasScreenshot | <code>boolean</code> | enable or disable taking screenshot directly from canvas (via dataUrl instead of browser.takeScreenshot()). !!This isn't supported in IE11 and Safari 9!! |
 
 **Example**  
 ```js
@@ -223,6 +224,8 @@ browser.protractorImageComparison.saveElement(element(By.id('elementId')), 'imag
 browser.protractorImageComparison.saveElement(element(By.id('elementId')), 'imageA', {resizeDimensions: 15});
 // Disable css animation on all elements
 browser.protractorImageComparison.saveElement(element(By.id('elementId')), 'imageA', {disableCSSAnimation: true});
+// Take screenshot directly of a canvas element
+browser.protractorImageComparison.saveElement(element(By.id('canvasID')), 'imageA', {canvasScreenshot: true});
 ```
 <a name="saveFullPageScreen"></a>
 

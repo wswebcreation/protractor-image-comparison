@@ -1,3 +1,13 @@
+# CHANGELOG
+
+<a name="1.6.0"></a>
+# [1.6.0](https://github.com/wswebcreation/protractor-image-comparison/compare/v1.5.1...v1.6.0) (2018-03-04)
+
+### Feature
+
+* Enable taking screenshot directly from canvas, see [47](https://github.com/wswebcreation/protractor-image-comparison/pull/47), tnx to [tuomas2](https://github.com/tuomas2)
+
+
 <a name="1.5.1"></a>
 # [1.5.1](https://github.com/wswebcreation/protractor-image-comparison/compare/v1.5.0...v1.5.1) (2018-01-13)
 
