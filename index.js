@@ -165,7 +165,9 @@ class protractorImageComparison {
      */
     _saveFullScreenshot(tag, screens) {
         // Calculate total canvas size
-        const imageHeight = screens.reduce((previous, current) => (previous instanceof Buffer ? previous.readUInt32BE(20) : previous) + current.readUInt32BE(20));
+        const imageHeight = screens.reduce(
+            (previous, current) => (previous instanceof Buffer ? previous.readUInt32BE(20) : previous) + current.readUInt32BE(20),
+            screens[0].readUInt32BE(20));
         const imageWidth = screens[0].readUInt32BE(16);
         const imageOutput = PNGJSImage.createImage(imageWidth, imageHeight);
         let offsetY = 0;
