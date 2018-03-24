@@ -7,7 +7,7 @@ protractor-image-comparison
 
 [![Sauce Test Status](https://saucelabs.com/browser-matrix/wswebcreation-nl.svg)](https://saucelabs.com/u/wswebcreation-nl)
 
-> **DUE TO CHROME REMOVING THE FALSE `disable-infobars` IN CHROME 65 MANY AUTOMATED VISUAL TESTS ON CHROME FAIL. I'M WORKING ON A SOLUTION FOR PROTRACTOR-IMAGE-COMPARISON. SORRY FOR THE INCONVENIENCE**
+> **DUE TO CHROME REMOVING THE `disable-infobars` IN CHROME 65 MANY AUTOMATED VISUAL TESTS ON CHROME FAIL. I'M WORKING ON A SOLUTION FOR PROTRACTOR-IMAGE-COMPARISON. SORRY FOR THE INCONVENIENCE**
 
 ## What can it do?
 *protractor-image-comparison* is a lightweight *protractor* plugin for browsers / mobile browsers / hybrid apps to do image comparison on screens or elements.
