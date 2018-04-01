@@ -1,5 +1,12 @@
 # CHANGELOG
 
+<a name="1.6.1"></a>
+# [1.6.1](https://github.com/wswebcreation/protractor-image-comparison/compare/v1.6.0...v1.6.1) (2018-04-01)
+
+### Bugfix
+
+* Fix `imageHeight` to set it correctly, if `screens.length === 1`, see [54](https://github.com/wswebcreation/protractor-image-comparison/pull/54), tnx to [JochenDiekenbrock](https://github.com/JochenDiekenbrock )
+
 <a name="1.6.0"></a>
 # [1.6.0](https://github.com/wswebcreation/protractor-image-comparison/compare/v1.5.1...v1.6.0) (2018-03-04)
 
