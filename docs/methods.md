@@ -46,6 +46,7 @@ Code details and example usage can be found [here](./index.md).
 * `ignoreColors` Even though the images are in colour, the comparison will compare 2 black/white images (default: false). *Remark: `ignoreColors: true` will automatically defaulted to `false` if `ignoreAntialiasing: true`*. Can also be set per testcase, see [here](./index.md)
 * `ignoreTransparentPixel` Will ignore all pixels that have some transparency in one of the images. With this flag `true` you can blockout regions by making them transparent in the base image.
 * `iosOffsets` An object that will hold the pixels of the `statusBar` and or the `addressBar`. The values are used to calculate the position of an element on a screen (for `saveElement` or `checkElement`). They are defaulted, but can be overridden. These values can be different per iOS version. Look up the docs for developing for iOS to see the values. If not provided the defaults will be used.
+* `tolerance` Value that defines allowable percentage of mismatches between images. In case when mismatches value less than tolerance, image with comparison results will no be saved into "diff" folder. If not provided default value will be used.
 
 **For example:**
 
@@ -66,7 +67,8 @@ browser.protractorImageComparison = new protractorImageComparison({
 		statusBar: 40,
 		addressBar: 100
 	},
-	ignoreAntialiasing: true
+	ignoreAntialiasing: true,
+  tolerance: 0.5
 });
 `````
 
