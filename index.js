@@ -28,7 +28,7 @@ const resembleJS = require('./lib/resemble');
  * @param {boolean} options.ignoreTransparentPixel Will ignore all pixels that have some transparency in one of the images
  * @param {object} options.androidOffsets Object that will hold custom values for the statusBar, addressBar, addressBarScrolled and toolBar
  * @param {object} options.iosOffsets Object that will hold the custom values for the statusBar, addressBar, addressBarScrolled and toolBar
- * @param {number} options.tolerance Allowable value of misMatchPercentage that prevents saving image with differences
+ * @param {number} options.saveAboveTolerance Allowable value of misMatchPercentage that prevents saving image with differences
  *
  * @property {string} actualFolder Path where the actual screenshots are saved
  * @property {number} addressBarShadowPadding Mobile Chrome and mobile Safari have a shadow below the addressbar, this property will make sure that it wont be seen in the image
@@ -76,7 +76,7 @@ class protractorImageComparison {
         this.ignoreColors = options.ignoreColors || false;
         this.ignoreTransparentPixel = options.ignoreTransparentPixel || false;
 
-        this.tolerance = options.tolerance || 0;
+        this.saveAboveTolerance = options.saveAboveTolerance || 0;
 
         // OS offsets
         let androidOffsets = options.androidOffsets && typeof options.androidOffsets === 'object' ? options.androidOffsets : {};
@@ -351,7 +351,7 @@ class protractorImageComparison {
      * @param {boolean} compareOptions.ignoreAntialiasing compare images an discard anti aliasing
      * @param {boolean} compareOptions.ignoreColors Even though the images are in colour, the comparison wil compare 2 black/white images
      * @param {boolean} compareOptions.ignoreTransparentPixel Will ignore all pixels that have some transparency in one of the images
-     * @param {number} compareOptions.tolerance Allowable value of misMatchPercentage that prevents saving image with differences
+     * @param {number} compareOptions.saveAboveTolerance Allowable value of misMatchPercentage that prevents saving image with differences
      * @returns {Promise}
      * @private
      */
@@ -359,7 +359,7 @@ class protractorImageComparison {
         const imageComparisonPaths = this._determineImageComparisonPaths(tag);
         const ignoreRectangles = 'blockOut' in compareOptions ? compareOptions.blockOut : [];
         const blockOutStatusBar = compareOptions.blockOutStatusBar || compareOptions.blockOutStatusBar === false ? compareOptions.blockOutStatusBar : this.blockOutStatusBar;
-        const tolerance = compareOptions.tolerance || this.tolerance;
+        const saveAboveTolerance = compareOptions.saveAboveTolerance || this.saveAboveTolerance;
 
         // comparison options are not available anymore, due to new version and api
         compareOptions.ignoreAntialiasing = 'ignoreAntialiasing' in compareOptions ? compareOptions.ignoreAntialiasing : this.ignoreAntialiasing;
@@ -388,7 +388,7 @@ class protractorImageComparison {
         return new Promise(resolve => {
             resembleJS(imageComparisonPaths.baselineImage, imageComparisonPaths.actualImage, compareOptions)
                 .onComplete(data => {
-                    if (Number(data.misMatchPercentage) > tolerance || this.debug) {
+                    if (Number(data.misMatchPercentage) > saveAboveTolerance || this.debug) {
                         data.getDiffImage().pack().pipe(fs.createWriteStream(imageComparisonPaths.imageDiffPath));
                     }
                     resolve(Number(data.misMatchPercentage));
@@ -961,7 +961,7 @@ class protractorImageComparison {
      * // Ignore alpha pixel
      * browser.protractorImageComparison.checkFullPageScreen('imageA', {ignoreTransparentPixel: true});
      * // Set allowable percentage of mismatches
-     * browser.protractorImageComparison.checkFullPageScreen('imageA', {tolerance: 0.5});
+     * browser.protractorImageComparison.checkFullPageScreen('imageA', {saveAboveTolerance: 0.5});
      *
      * @param {string} tag The tag that is used
      * @param {object} options (non-default) options
@@ -969,7 +969,7 @@ class protractorImageComparison {
      * @param {object} options.blockOut blockout with x, y, width and height values
      * @param {boolean} options.disableCSSAnimation enable or disable CSS animation
      * @param {int} options.fullPageScrollTimeout The time that needs to be waited when scrolling to a point and save the screenshot
-     * @param {double} options.tolerance Allowable percentage of mismatches
+     * @param {double} options.saveAboveTolerance Allowable percentage of mismatches
      * @return {Promise} When the promise is resolved it will return the percentage of the difference
      * @public
      */
