@@ -108,6 +108,12 @@ describe('protractor-image-comparison', () => {
             expect(browser.imageComparson.checkScreen(examplePage)).toEqual(0);
         });
 
+        it('should not save a difference when mismatches percentage less than saveAboveTolerance value', () => {
+            browser.executeScript('arguments[0].innerHTML = "Test Demo Page";', headerElement.getWebElement());
+            browser.imageComparson.checkScreen(examplePageFail, {saveAboveTolerance: 3})
+                .then(() => expect(helpers.fileExistSync(`${differencePath}/${examplePageFail}-${logName}-${resolution}.png`)).toBe(false));
+        });
+
         it('should save a difference after failure', () => {
             browser.executeScript('arguments[0].innerHTML = "Test Demo Page";', headerElement.getWebElement());
             browser.imageComparson.checkScreen(examplePageFail)
@@ -150,6 +156,12 @@ describe('protractor-image-comparison', () => {
                 .then(() => browser.sleep(500))
                 .then(() => expect(browser.imageComparson.checkElement(dangerAlert, `resizeDimensions-${dangerAlertElement}`, {resizeDimensions: 15})).toEqual(0));
 
+        });
+
+        it('should not save a difference when mismatches percentage less than saveAboveTolerance value', () => {
+          browser.executeScript('arguments[0].scrollIntoView(); arguments[0].style.color = "#2d7091";', dangerAlert.getWebElement());
+          browser.imageComparson.checkElement(dangerAlert, dangerAlertElementFail, {saveAboveTolerance: 3})
+              .then(() => expect(helpers.fileExistSync(`${differencePath}/${dangerAlertElementFail}-${logName}-${resolution}.png`)).toBe(false));
         });
 
         it('should save a difference after failure', () => {
