@@ -1,11 +1,17 @@
 # CHANGELOG
+<a name="1.7.1"></a>
+# [1.7.1](https://github.com/wswebcreation/protractor-image-comparison/compare/v1.7.0...v1.7.1) (2018-05-09)
+
+### Bugfix
+
+* Fixed issue with minor differences recognition, see [61](https://github.com/wswebcreation/protractor-image-comparison/pull/61), tnx to [IgorSasovets](https://github.com/IgorSasovets)
 
 <a name="1.7.0"></a>
 # [1.7.0](https://github.com/wswebcreation/protractor-image-comparison/compare/v1.6.1...v1.67.0) (2018-04-19)
 
 ### Feature
 
-* Added tolerance property that prevents saving result image to diff folder [55](https://github.com/wswebcreation/protractor-image-comparison/pull/55), tnx to [IgorSasovets](https://github.com/IgorSasovets )
+* Added tolerance property that prevents saving result image to diff folder [55](https://github.com/wswebcreation/protractor-image-comparison/pull/55), tnx to [IgorSasovets](https://github.com/IgorSasovets)
 
 <a name="1.6.1"></a>
 # [1.6.1](https://github.com/wswebcreation/protractor-image-comparison/compare/v1.6.0...v1.6.1) (2018-04-01)
