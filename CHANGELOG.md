@@ -1,5 +1,12 @@
 # CHANGELOG
 <a name="1.7.1"></a>
+# [1.7.2](https://github.com/wswebcreation/protractor-image-comparison/compare/v1.7.1...v1.7.2) (2018-05-10)
+
+### Bugfix
+
+* Revert fixed issue with minor differences recognition that was fixed in [61](https://github.com/wswebcreation/protractor-image-comparison/pull/61). This was a breaking change and should be investigated. 
+
+<a name="1.7.1"></a>
 # [1.7.1](https://github.com/wswebcreation/protractor-image-comparison/compare/v1.7.0...v1.7.1) (2018-05-09)
 
 ### Bugfix
