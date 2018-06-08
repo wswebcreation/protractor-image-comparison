@@ -203,7 +203,7 @@ describe('node-resemble.js', () => {
 
   });
 
-  fdescribe('outputSettings', () => {
+  describe('outputSettings', () => {
     it('should save a difference when 2 non identical images fail comparing', done => {
       resemble(peopleImage, peopleTwoImage)
         .then(data => {
