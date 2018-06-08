@@ -80,12 +80,15 @@ protractorImageComparison
 | options.hideScrollBars | <code>boolean</code> | Hide all scrolls on a page (default:true) |
 | options.nativeWebScreenshot | <code>boolean</code> | If a native screenshot of a device (complete screenshot) needs to be taken (default:false) |
 | options.blockOutStatusBar | <code>boolean</code> | If the statusbar on mobile / tablet needs to blocked out by default |
-| options.ignoreAntialiasing | <code>boolean</code> | compare images an discard anti aliasing |
+| options.ignoreAlpha | <code>boolean</code> | compare images and discard alpha |
+| options.ignoreAntialiasing | <code>boolean</code> | compare images and discard anti aliasing |
 | options.ignoreColors | <code>boolean</code> | Even though the images are in colour, the comparison wil compare 2 black/white images |
+| options.ignoreLess | <code>boolean</code> | compare images and compare with less (red = 16, green = 16, blue = 16, alpha = 16, minBrightness=16, maxBrightness=240) |
+| options.ignoreNothing | <code>boolean</code> | compare images and compare with less (red = 0, green = 0, blue = 0, alpha = 0, minBrightness=0, maxBrightness=255) |
 | options.ignoreTransparentPixel | <code>boolean</code> | Will ignore all pixels that have some transparency in one of the images |
 | options.androidOffsets | <code>object</code> | Object that will hold custom values for the statusBar, addressBar, addressBarScrolled and toolBar |
 | options.iosOffsets | <code>object</code> | Object that will hold the custom values for the statusBar, addressBar, addressBarScrolled and toolBar |
-| options.saveAboveTolerance | <code>double</code> | Allowable percentage of mismatches |
+| options.saveAboveTolerance | <code>number</code> | Allowable value of misMatchPercentage that prevents saving image with differences |
 
 <a name="checkElement"></a>
 
@@ -103,10 +106,12 @@ Runs the comparison against an element
 | options | <code>object</code> | non-default options |
 | options.blockOut | <code>object</code> | blockout with x, y, width and height values |
 | options.resizeDimensions | <code>int</code> | the value to increase the size of the element that needs to be saved |
-| options.ignoreAntialiasing | <code>boolean</code> | compare images an discard anti aliasing |
+| options.ignoreAlpha | <code>boolean</code> | compare images and discard alpha |
+| options.ignoreAntialiasing | <code>boolean</code> | compare images and discard anti aliasing |
 | options.ignoreColors | <code>boolean</code> | Even though the images are in colour, the comparison wil compare 2 black/white images |
+| options.ignoreLess | <code>boolean</code> | compare images and compare with less (red = 16, green = 16, blue = 16, alpha = 16, minBrightness=16, maxBrightness=240) |
+| options.ignoreNothing | <code>boolean</code> | compare images and compare with less (red = 0, green = 0, blue = 0, alpha = 0, minBrightness=0, maxBrightness=255) |
 | options.ignoreTransparentPixel | <code>boolean</code> | Will ignore all pixels that have some transparency in one of the images |
-| options.saveAboveTolerance | <code>double</code> | Allowable percentage of mismatches |
 
 **Example**  
 ```js
@@ -125,8 +130,6 @@ browser.protractorImageComparison.checkElement(element(By.id('elementId')), 'ima
 browser.protractorImageComparison.checkElement(element(By.id('elementId')), 'imageA', {ignoreColors: true});
 // Ignore alpha pixel
 browser.protractorImageComparison.checkElement(element(By.id('elementId')), 'imageA', {ignoreTransparentPixel: true});
-// Set saveAboveTolerance example
-browser.protractorImageComparison.checkElement(element(By.id('elementId')), 'imageA', {saveAboveTolerance: 0.3});
 ```
 <a name="checkFullPageScreen"></a>
 
@@ -146,6 +149,12 @@ Runs the comparison against the fullpage screenshot
 | options.disableCSSAnimation | <code>boolean</code> | enable or disable CSS animation |
 | options.fullPageScrollTimeout | <code>int</code> | The time that needs to be waited when scrolling to a point and save the screenshot |
 | options.saveAboveTolerance | <code>double</code> | Allowable percentage of mismatches |
+| options.ignoreAlpha | <code>boolean</code> | compare images and discard alpha |
+| options.ignoreAntialiasing | <code>boolean</code> | compare images and discard anti aliasing |
+| options.ignoreColors | <code>boolean</code> | Even though the images are in colour, the comparison wil compare 2 black/white images |
+| options.ignoreLess | <code>boolean</code> | compare images and compare with less (red = 16, green = 16, blue = 16, alpha = 16, minBrightness=16, maxBrightness=240) |
+| options.ignoreNothing | <code>boolean</code> | compare images and compare with less (red = 0, green = 0, blue = 0, alpha = 0, minBrightness=0, maxBrightness=255) |
+| options.ignoreTransparentPixel | <code>boolean</code> | Will ignore all pixels that have some transparency in one of the images |
 
 **Example**  
 ```js
@@ -165,7 +174,7 @@ browser.protractorImageComparison.checkFullPageScreen('imageA', {ignoreAntialias
 browser.protractorImageComparison.checkFullPageScreen('imageA', {ignoreColors: true});
 // Ignore alpha pixel
 browser.protractorImageComparison.checkFullPageScreen('imageA', {ignoreTransparentPixel: true});
-// Allowable percentage of mismatches
+// Set allowable percentage of mismatches
 browser.protractorImageComparison.checkFullPageScreen('imageA', {saveAboveTolerance: 0.5});
 ```
 <a name="checkScreen"></a>
@@ -184,10 +193,12 @@ Runs the comparison against the screen
 | options.blockOutStatusBar | <code>boolean</code> | blockout the statusbar yes or no, it will override the global |
 | options.blockOut | <code>object</code> | blockout with x, y, width and height values |
 | options.disableCSSAnimation | <code>boolean</code> | enable or disable CSS animation |
-| options.ignoreAntialiasing | <code>boolean</code> | compare images an discard anti aliasing |
+| options.ignoreAlpha | <code>boolean</code> | compare images and discard alpha |
+| options.ignoreAntialiasing | <code>boolean</code> | compare images and discard anti aliasing |
 | options.ignoreColors | <code>boolean</code> | Even though the images are in colour, the comparison wil compare 2 black/white images |
+| options.ignoreLess | <code>boolean</code> | compare images and compare with less (red = 16, green = 16, blue = 16, alpha = 16, minBrightness=16, maxBrightness=240) |
+| options.ignoreNothing | <code>boolean</code> | compare images and compare with less (red = 0, green = 0, blue = 0, alpha = 0, minBrightness=0, maxBrightness=255) |
 | options.ignoreTransparentPixel | <code>boolean</code> | Will ignore all pixels that have some transparency in one of the images |
-| options.saveAboveTolerance | <code>double</code> | Allowable percentage of mismatches |
 
 **Example**  
 ```js
@@ -205,8 +216,6 @@ browser.protractorImageComparison.checkScreen('imageA', {ignoreAntialiasing: tru
 browser.protractorImageComparison.checkScreen('imageA', {ignoreColors: true});
 // Ignore alpha pixel
 browser.protractorImageComparison.checkScreen('imageA', {ignoreTransparentPixel: true});
-// Allowable percentage of mismatches
-browser.protractorImageComparison.checkScreen('imageA', {saveAboveTolerance: 0.5});
 ```
 <a name="saveElement"></a>
 
