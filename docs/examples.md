@@ -9,7 +9,7 @@ exports.config = {
 
     onPrepare: function() {
         const protractorImageComparison = require('protractor-image-comparison');
-        browser. protractorImageComparison = new protractorImageComparison(
+        browser.protractorImageComparison = new protractorImageComparison(
             {
                 baselineFolder: 'path/to/baseline/',
                 screenshotPath: 'path/to/save/actual/screenshots/'
