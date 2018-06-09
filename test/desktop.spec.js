@@ -111,6 +111,19 @@ describe('protractor-image-comparison', () => {
         browser.imageComparson.checkElement(dangerAlert, dangerAlertElementFail, { saveAboveTolerance: 3 })
           .then(() => expect(helpers.fileExistSync(`${differencePath}/${dangerAlertElementFail}-${logName}-${resolution}.png`)).toBe(false));
       });
+
+      it('should give a bigger accurate percentage when rawMisMatchPercentage is true', () => {
+        browser.imageComparson = new imageComparison({
+          baselineFolder: baselineFolder,
+          debug: false,
+          formatImageName: `{tag}-${logName}-{width}x{height}`,
+          rawMisMatchPercentage: true,
+          screenshotPath: localConfig.screenshotFolder
+        });
+        browser.executeScript('arguments[0].innerHTML = "Test Demo Page";', headerElement.getWebElement())
+          .then(() => browser.imageComparson.checkScreen(examplePageFail))
+          .then((rawMisMatchPercentage) => expect(rawMisMatchPercentage.toString().length).toBeGreaterThan(4));
+      });
     });
   }
 

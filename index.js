@@ -85,6 +85,7 @@ class protractorImageComparison {
     this.ignoreTransparentPixel = options.ignoreTransparentPixel || false;
 
     this.saveAboveTolerance = options.saveAboveTolerance || 0;
+    this.rawMisMatchPercentage = options.rawMisMatchPercentage || false;
 
     // OS offsets
     let androidOffsets = options.androidOffsets && typeof options.androidOffsets === 'object' ? options.androidOffsets : {};
@@ -121,7 +122,6 @@ class protractorImageComparison {
     this.platformName = '';
     this.resizeDimensions = 0;
     this.screenshotHeight = 0;
-    this.rawMisMatchPercentage = false;
     this.tempFullScreenFolder = path.join(this.baseFolder, 'tempFullScreen');
     this.fullPageScrollTimeout = 1500;
     this.saveType = {
