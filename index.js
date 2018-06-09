@@ -13,12 +13,12 @@ const resembleJS = require('./lib/compareImages');
  *
  * @constructor
  * @class protractorImageComparison
- * @param {object} options
- * @param {string} options.baselineFolder Path to the baseline folder
- * @param {string} options.screenshotPath Path to the folder where the screenshots are saved
+ * @param {object}  options
+ * @param {string}  options.baselineFolder Path to the baseline folder
+ * @param {string}  options.screenshotPath Path to the folder where the screenshots are saved
  * @param {boolean} options.autoSaveBaseline If no baseline image is found the image is automatically copied to the baselinefolder
  * @param {boolean} options.debug Add some extra logging and always save the image difference (default:false)
- * @param {string} options.formatImageName Custom variables for Image Name (default:{tag}-{browserName}-{width}x{height}-dpr-{dpr})
+ * @param {string}  options.formatImageName Custom variables for Image Name (default:{tag}-{browserName}-{width}x{height}-dpr-{dpr})
  * @param {boolean} options.disableCSSAnimation Disable all css animations on a page (default:false)
  * @param {boolean} options.hideScrollBars Hide all scrolls on a page (default:true)
  * @param {boolean} options.nativeWebScreenshot If a native screenshot of a device (complete screenshot) needs to be taken (default:false)
@@ -26,37 +26,39 @@ const resembleJS = require('./lib/compareImages');
  * @param {boolean} options.ignoreAlpha compare images and discard alpha
  * @param {boolean} options.ignoreAntialiasing compare images and discard anti aliasing
  * @param {boolean} options.ignoreColors Even though the images are in colour, the comparison wil compare 2 black/white images
- * @param {boolean} options.ignoreLess compare images and compare with less (red = 16, green = 16, blue = 16, alpha = 16, minBrightness=16, maxBrightness=240)
- * @param {boolean} options.ignoreNothing compare images and compare with less (red = 0, green = 0, blue = 0, alpha = 0, minBrightness=0, maxBrightness=255)
+ * @param {boolean} options.ignoreLess compare images and compare with red = 16, green = 16, blue = 16, alpha = 16, minBrightness=16, maxBrightness=240
+ * @param {boolean} options.ignoreNothing compare images and compare with red = 0, green = 0, blue = 0, alpha = 0, minBrightness=0, maxBrightness=255
  * @param {boolean} options.ignoreTransparentPixel Will ignore all pixels that have some transparency in one of the images
- * @param {object} options.androidOffsets Object that will hold custom values for the statusBar, addressBar, addressBarScrolled and toolBar
- * @param {object} options.iosOffsets Object that will hold the custom values for the statusBar, addressBar, addressBarScrolled and toolBar
- * @param {number} options.saveAboveTolerance Allowable value of misMatchPercentage that prevents saving image with differences
+ * @param {boolean} options.rawMisMatchPercentage default false. If true the return percentage will be like 0.12345678, default is 0.12
+ * @param {object}  options.androidOffsets Object that will hold custom values for the statusBar, addressBar, addressBarScrolled and toolBar
+ * @param {object}  options.iosOffsets Object that will hold the custom values for the statusBar, addressBar, addressBarScrolled and toolBar
+ * @param {number}  options.saveAboveTolerance Allowable value of misMatchPercentage that prevents saving image with differences
  *
- * @property {string} actualFolder Path where the actual screenshots are saved
- * @property {number} addressBarShadowPadding Mobile Chrome and mobile Safari have a shadow below the addressbar, this property will make sure that it wont be seen in the image
- * @property {object} androidOffsets Object that will hold de defaults for the statusBar, addressBar and toolBar
- * @property {number} browserHeight height of the browser
- * @property {string} browserName name of the browser that is used to execute the test on
- * @property {number} browserWidth width of the browser
- * @property {string} deviceName the kind of mobile device or emulator to use
- * @property {string} diffFolder Path where the differences are saved
- * @property {number} devicePixelRatio Ratio of the (vertical) size of one physical pixel on the current display device to the size of one device independent pixels(dips)
- * @property {number} fullPageHeight fullPageHeight of the browser including scrollbars
- * @property {number} fullPageWidth fullPageWidth of the browser including scrollbars *
- * @property {object} iosOffsets Object that will hold de defaults for the statusBar and addressBar
- * @property {boolean} isLastScreenshot boolean tells if it is the last fullpage screenshot
- * @property {string} logName logName from the capabilities
- * @property {string} name Name from the capabilities
- * @property {string} platformName mobile OS platform to use
- * @property {number} resizeDimensions dimensions that will be used to make the the element coordinates bigger. This needs to be in pixels
- * @property {number} screenshotHeight height of the screenshot of the page
- * @property {string} tempFullScreenFolder Path where the temporary fullscreens are saved
- * @property {number} fullPageScrollTimeout Default timeout to wait after a scroll
- * @property {object} saveType Object that will the type of save that is being executed
- * @property {boolean} testInBrowser boolean that determines if the test is executed in a browser or not
- * @property {number} toolBarShadowPadding Mobile mobile Safari has a shadow above the toolbar, this property will make sure that it wont be seen in the image
- * @property {number} viewPortHeight is the height of the browser window's viewport (was innerHeight
+ * @property {string}   actualFolder Path where the actual screenshots are saved
+ * @property {number}   addressBarShadowPadding Mobile Chrome and mobile Safari have a shadow below the addressbar, this property will make sure that it wont be seen in the image
+ * @property {object}   androidOffsets Object that will hold de defaults for the statusBar, addressBar and toolBar
+ * @property {number}   browserHeight height of the browser
+ * @property {string}   browserName name of the browser that is used to execute the test on
+ * @property {number}   browserWidth width of the browser
+ * @property {string}   deviceName the kind of mobile device or emulator to use
+ * @property {string}   diffFolder Path where the differences are saved
+ * @property {number}   devicePixelRatio Ratio of the (vertical) size of one physical pixel on the current display device to the size of one device independent pixels(dips)
+ * @property {number}   fullPageHeight fullPageHeight of the browser including scrollbars
+ * @property {number}   fullPageWidth fullPageWidth of the browser including scrollbars *
+ * @property {object}   iosOffsets Object that will hold de defaults for the statusBar and addressBar
+ * @property {boolean}  isLastScreenshot boolean tells if it is the last fullpage screenshot
+ * @property {string}   logName logName from the capabilities
+ * @property {string}   name Name from the capabilities
+ * @property {string}   platformName mobile OS platform to use
+ * @property {number}   resizeDimensions dimensions that will be used to make the the element coordinates bigger. This needs to be in pixels
+ * @property {number}   screenshotHeight height of the screenshot of the page
+ * @property {string}   tempFullScreenFolder Path where the temporary fullscreens are saved
+ * @property {number}   fullPageScrollTimeout Default timeout to wait after a scroll
+ * @property {object}   saveType Object that will the type of save that is being executed
+ * @property {boolean}  rawMisMatchPercentage default false. If true the return percentage will be like 0.12345678, default is 0.12
+ * @property {boolean}  testInBrowser boolean that determines if the test is executed in a browser or not
+ * @property {number}   toolBarShadowPadding Mobile mobile Safari has a shadow above the toolbar, this property will make sure that it wont be seen in the image
+ * @property {number}   viewPortHeight is the height of the browser window's viewport (was innerHeight
  *
  */
 class protractorImageComparison {
@@ -119,6 +121,7 @@ class protractorImageComparison {
     this.platformName = '';
     this.resizeDimensions = 0;
     this.screenshotHeight = 0;
+    this.rawMisMatchPercentage = false;
     this.tempFullScreenFolder = path.join(this.baseFolder, 'tempFullScreen');
     this.fullPageScrollTimeout = 1500;
     this.saveType = {
@@ -141,7 +144,8 @@ class protractorImageComparison {
 
   /**
    * Checks if image exists as a baseline image, if not, create a baseline image if needed
-   * @param {string} tag
+   * @param   {string}  tag
+   *
    * @returns {Promise}
    * @private
    */
@@ -168,8 +172,9 @@ class protractorImageComparison {
 
   /**
    * Save a full page screenshot
-   * @param {string} tag The tag that is used
-   * @param {Array} screens An array full of buffered screenshots
+   * @param   {string}  tag The tag that is used
+   * @param   {Array}   screens An array full of buffered screenshots
+   *
    * @returns {Promise}
    * @private
    */
@@ -200,7 +205,8 @@ class protractorImageComparison {
 
   /**
    * Determine the rectangles conform the correct browser / devicePixelRatio
-   * @param {Promise} element The ElementFinder to get the rectangles of
+   * @param   {Promise} element The ElementFinder to get the rectangles of
+   *
    * @returns {Promise.<object>} returns the correct rectangles rectangles
    * @private
    */
@@ -255,6 +261,7 @@ class protractorImageComparison {
   /**
    * Determines the image comparison paths with the tags for the paths + filenames
    * @param {string} tag the tag that is used
+   *
    * @returns {Object}
    * @private
    */
@@ -271,8 +278,9 @@ class protractorImageComparison {
 
   /**
    * Determine the fullpage cropdata for a desktop browser
-   * @param {object} cropParameters An object with all the cropparameters
-   * @return {object} desktopCropData object that will hold cropHeight, cropTopPosition
+   * @param   {object} cropParameters An object with all the cropparameters
+   *
+   * @returnz {object} desktopCropData object that will hold cropHeight, cropTopPosition
    * @private
    */
   _determineFullPageDesktopCropData(cropParameters) {
@@ -306,8 +314,9 @@ class protractorImageComparison {
 
   /**
    * Determine the fullpage cropdata for a mobile browser
-   * @param {object} cropParameters An object with all the cropparameters
-   * @return {Promise.<object>} mobileCropData object that will hold cropHeight, cropTopPosition
+   * @param   {object} cropParameters An object with all the cropparameters
+   *
+   * @returns {Promise.<object>} mobileCropData object that will hold cropHeight, cropTopPosition
    * @private
    */
   _determineFullPageMobileCropData(cropParameters) {
@@ -351,14 +360,15 @@ class protractorImageComparison {
 
   /**
    * Compare images against each other
-   * @param {string} tag The tag that is used
-   * @param {object} compareOptions comparison options
-   * @param {object} compareOptions.blockOut blockout with x, y, width and height values
-   * @param {boolean} compareOptions.blockOutStatusBar blockout the statusbar yes or no, it will override the global
-   * @param {boolean} compareOptions.ignoreAntialiasing compare images an discard anti aliasing
-   * @param {boolean} compareOptions.ignoreColors Even though the images are in colour, the comparison wil compare 2 black/white images
-   * @param {boolean} compareOptions.ignoreTransparentPixel Will ignore all pixels that have some transparency in one of the images
-   * @param {number} compareOptions.saveAboveTolerance Allowable value of misMatchPercentage that prevents saving image with differences
+   * @param   {string}  tag The tag that is used
+   * @param   {object}  compareOptions comparison options
+   * @param   {object}  compareOptions.blockOut blockout with x, y, width and height values
+   * @param   {boolean} compareOptions.blockOutStatusBar blockout the statusbar yes or no, it will override the global
+   * @param   {boolean} compareOptions.ignoreAntialiasing compare images an discard anti aliasing
+   * @param   {boolean} compareOptions.ignoreColors Even though the images are in colour, the comparison wil compare 2 black/white images
+   * @param   {boolean} compareOptions.ignoreTransparentPixel Will ignore all pixels that have some transparency in one of the images
+   * @param   {number}  compareOptions.saveAboveTolerance Allowable value of misMatchPercentage that prevents saving image with differences
+   *
    * @returns {Promise}
    * @private
    */
@@ -419,7 +429,9 @@ class protractorImageComparison {
       fs.readFileSync(imageComparisonPaths.actualImage),
       options)
       .then(data => {
-        const misMatchPercentage = Number(data.rawMisMatchPercentage.toFixed(2));
+        const misMatchPercentage = this.rawMisMatchPercentage
+          ? data.rawMisMatchPercentage
+          : Number(data.rawMisMatchPercentage.toFixed(2));
         if (misMatchPercentage > saveAboveTolerance || this.debug) {
           fs.writeFileSync(imageComparisonPaths.imageDiffPath, data.getBuffer());
         }
@@ -431,7 +443,8 @@ class protractorImageComparison {
 
   /**
    * _formatFileName
-   * @param {string} tag The tag that is used
+   * @param   {string} tag The tag that is used
+   *
    * @returns {string} Returns a formatted string
    * @private
    */
@@ -461,9 +474,10 @@ class protractorImageComparison {
   /**
    * This methods determines the position of the element to the top of the screenshot based on a given statusbar,
    * addressbar and addressBarShadowPadding height
-   * @param {Promise} element The ElementFinder that is used to get the position
-   * @param {number} statusPlusAddressBarHeight The statusbar plus addressbar height
-   * @param {number} addressBarShadowPadding The height of the addressbar shadow
+   * @param   {Promise} element The ElementFinder that is used to get the position
+   * @param   {number}  statusPlusAddressBarHeight The statusbar plus addressbar height
+   * @param   {number}  addressBarShadowPadding The height of the addressbar shadow
+   *
    * @returns {Promise} The x/y position of the element
    * @private
    *
@@ -504,7 +518,8 @@ class protractorImageComparison {
    * - addressbar (can variate in height in Chrome. In chrome is can be max 56px but after scroll it will be smaller)
    * - the viewport
    * - sometimes a toolbar
-   * @return {Promise.<number>}
+   *
+   * @returns {Promise.<number>}
    * @private
    */
   _getAndroidChromeStatusPlusAddressBarHeight() {
@@ -526,7 +541,8 @@ class protractorImageComparison {
 
   /**
    * Get browserdata containing sizes, heights and so on to update the the constructor properties
-   * @return {Promise}
+   *
+   * @returns {Promise}
    * @private
    */
   _getBrowserData() {
@@ -564,7 +580,8 @@ class protractorImageComparison {
    * also be created with ChromeDriver. Then a screenshot will be made of the viewport and the calculation is the same
    * as for a Chrome desktop browser.
    * The rest of the browsers make a screenshot of the visible part.
-   * @param {Promise} element The ElementFinder that is used to get the position
+   * @param   {Promise} element The ElementFinder that is used to get the position
+   *
    * @returns {Promise.<object>} The x/y position of the element
    * @private
    */
@@ -584,7 +601,8 @@ class protractorImageComparison {
 
   /**
    * Get the position of a given element according to the TOP of the PAGE
-   * @param {Promise} element The ElementFinder that is used to get the position
+   * @param   {Promise} element The ElementFinder that is used to get the position
+   *
    * @returns {Promise} The x/y position of the element
    * @private
    */
@@ -597,7 +615,8 @@ class protractorImageComparison {
 
   /**
    * Get the position of a given element according to the TOP of the WINDOW
-   * @param {Promise} element The ElementFinder that is used to get the position
+   * @param   {Promise} element The ElementFinder that is used to get the position
+   *
    * @returns {Promise} The x/y position of the element
    * @private
    */
@@ -610,6 +629,7 @@ class protractorImageComparison {
 
   /**
    * Set the data of the instance that is running
+   *
    * @returns {Promise.<object>}
    * @private
    */
@@ -639,8 +659,9 @@ class protractorImageComparison {
   /**
    * This method returns the position of an element on the screen based on the fact that a screenshot on iOS is a
    * device screenshot.
-   * @param {Promise} element The ElementFinder that is used to get the position
-   * @param {object} heights Object that contains the needed heights
+   * @param   {Promise} element The ElementFinder that is used to get the position
+   * @param   {object}  heights Object that contains the needed heights
+   *
    * @returns {Promise.<object>} The x/y position of the element
    * @private
    */
@@ -674,7 +695,8 @@ class protractorImageComparison {
    * - addressbar (can variate in height in Safari. Can be smaller after scroll, an app doesn't have a navbar)
    * - the viewport (innerheight)
    * - toolbar
-   * @return {Promise.<object>} height object containing addressBarCurrentHeight, innerHeight, rotatedScreenHeight, screenHeight and screenWidth
+   *
+   * @returns {Promise.<object>} height object containing addressBarCurrentHeight, innerHeight, rotatedScreenHeight, screenHeight and screenWidth
    * @private
    */
   _getIOSSafariHeights() {
@@ -705,6 +727,7 @@ class protractorImageComparison {
 
   /**
    * Checks if the os is Android
+   *
    * @returns {boolean}
    * @private
    */
@@ -714,6 +737,7 @@ class protractorImageComparison {
 
   /**
    * Checks if the browser is firefox
+   *
    * @returns {boolean}
    * @private
    */
@@ -723,6 +747,7 @@ class protractorImageComparison {
 
   /**
    * Checks if the os is ios
+   *
    * @returns {boolean}
    * @private
    */
@@ -732,6 +757,7 @@ class protractorImageComparison {
 
   /**
    * For Appium and Perfecto the platformName needs to be provided, this will tell if the test is executed on mobile
+   *
    * @returns {boolean}
    * @private
    */
@@ -743,9 +769,10 @@ class protractorImageComparison {
    * Merges non-default options from optionsB into optionsA
    *
    * @method mergeDefaultOptions
-   * @param {object} optionsA
-   * @param {object} optionsB
-   * @return {object}
+   * @param   {object} optionsA
+   * @param   {object} optionsB
+   *
+   * @returns {object}
    * @private
    */
   static _mergeDefaultOptions(optionsA, optionsB) {
@@ -762,7 +789,8 @@ class protractorImageComparison {
 
   /**
    * Return the values of an object multiplied against the devicePixelRatio
-   * @param {object} values
+   * @param   {object} values
+   *
    * @returns {Object}
    * @private
    */
@@ -776,10 +804,11 @@ class protractorImageComparison {
 
   /**
    * Save a cropped screenshot
-   * @param {string} bufferedScreenshot a new Buffer screenshot
-   * @param {string} folder path of the folder where the image needs to be saved
-   * @param {object} rectangles x, y, height and width data to determine the crop
-   * @param {string} tag The tag that is used
+   * @param   {string}  bufferedScreenshot a new Buffer screenshot
+   * @param   {string}  folder path of the folder where the image needs to be saved
+   * @param   {object}  rectangles x, y, height and width data to determine the crop
+   * @param   {string}  tag The tag that is used
+   *
    * @returns {Promise} The image has been saved when the promise is resoled
    * @private
    */
@@ -793,8 +822,9 @@ class protractorImageComparison {
 
   /**
    * Create a new cropped buffered image
-   * @param {object} bufferedScreenshot a new Buffer screenshot
-   * @param {object} rectangles x, y, height and width data to determine the crop
+   * @param   {object} bufferedScreenshot a new Buffer screenshot
+   * @param   {object} rectangles x, y, height and width data to determine the crop
+   *
    * @returns {Buffer} The image buffer
    * @private
    */
@@ -821,8 +851,9 @@ class protractorImageComparison {
 
   /**
    * Scroll to static horizontal and a given vertical coordinate on the page and wait a given time.
-   * @param {number} verticalCoordinate The y-coordinate that needs to be scrolled to
-   * @param {number} timeOut The time to wait after the scroll
+   * @param   {number} verticalCoordinate The y-coordinate that needs to be scrolled to
+   * @param   {number} timeOut The time to wait after the scroll
+   *
    * @returns {Promise}
    * @private
    */
@@ -833,10 +864,11 @@ class protractorImageComparison {
 
   /**
    * Scroll to a given vertical coordinate and save the screenshot
-   * @param {number} newVerticalCoordinate The vertical coordinate that needs to be scrolled to
-   * @param {string} tag The tag that is used
-   * @param {number} currentScreenshotNumber The currentScreenshotNumber of the screen that is being processed
-   * @param {Array} screens An array full of buffered screenshots
+   * @param   {number}  newVerticalCoordinate The vertical coordinate that needs to be scrolled to
+   * @param   {string}  tag The tag that is used
+   * @param   {number}  currentScreenshotNumber The currentScreenshotNumber of the screen that is being processed
+   * @param   {Array}   screens An array full of buffered screenshots
+   *
    * @returns {Promise}
    * @private
    */
@@ -903,7 +935,8 @@ class protractorImageComparison {
 
   /**
    * Set inline CSS on the page under test that is needed to execute the image comparison.
-   * @return {Promise}
+   *
+   * @returns {Promise}
    * @private
    */
   _setCustomTestCSS() {
@@ -935,34 +968,48 @@ class protractorImageComparison {
    * @method checkElement
    *
    * @example
-   * // default usage
+   * // default
    * browser.protractorImageComparison.checkElement(element(By.id('elementId')), 'imageA');
-   * // blockout example
-   * browser.protractorImageComparison.checkElement(element(By.id('elementId')), 'imageA', {blockOut: [{x: 10, y: 132, width: 100, height: 50}]});
-   * // Add 15 px to top, right, bottom and left when the cut is calculated (it will automatically use the DPR)
-   * browser.protractorImageComparison.saveElement(element(By.id('elementId')), 'imageA', {resizeDimensions: 15});
-   * browser.protractorImageComparison.checkElement(element(By.id('elementId')), 'imageA', {resizeDimensions: 15});
-   * // Disable css animation on all elements
-   * browser.protractorImageComparison.saveElement(element(By.id('elementId')), 'imageA', {disableCSSAnimation: true});
-   * // Ignore antialiasing
-   * browser.protractorImageComparison.checkElement(element(By.id('elementId')), 'imageA', {ignoreAntialiasing: true});
-   * // Ignore colors
-   * browser.protractorImageComparison.checkElement(element(By.id('elementId')), 'imageA', {ignoreColors: true});
-   * // Ignore alpha pixel
-   * browser.protractorImageComparison.checkElement(element(By.id('elementId')), 'imageA', {ignoreTransparentPixel: true});
+   * // With options
+   * browser.protractorImageComparison.checkElement(element(By.id('elementId')), 'imageA', {
+   *      // Blockout the statusbar, mobile only
+   *      blockOutStatusBar: true
+   *      // Blockout a given region || multiple regions
+   *      blockOut: [
+   *        {x: 10, y: 132, width: 100, height: 50},
+   *        {x: 450, y: 300, width: 25, height: 75},
+   *      ],
+   *      // Disable css animation on all elements
+   *      disableCSSAnimation: true,
+   *      // Add 15 px to top, right, bottom and left when the cut is calculated (it will automatically use the DPR)
+   *      resizeDimensions: 15,
+   *      // Set allowable percentage of mismatches before a diff is saved
+   *      saveAboveTolerance: 0.5,
+   *      // Ignore alpha and or antialiasing and or colors and or less and or nothing and or a transparant pixel
+   *      ignoreAlpha: true,
+   *      ignoreAntialiasing: true,
+   *      ignoreColors: true,
+   *      ignoreLess: true,
+   *      ignoreNothing: true,
+   *      ignoreTransparentPixel: true,
+   *    }
+   * );
    *
-   * @param {Promise} element The ElementFinder that is used to get the position
-   * @param {string} tag The tag that is used
-   * @param {object} options non-default options
-   * @param {object} options.blockOut blockout with x, y, width and height values
-   * @param {int} options.resizeDimensions the value to increase the size of the element that needs to be saved
-   * @param {boolean} options.ignoreAlpha compare images and discard alpha
-   * @param {boolean} options.ignoreAntialiasing compare images and discard anti aliasing
-   * @param {boolean} options.ignoreColors Even though the images are in colour, the comparison wil compare 2 black/white images
-   * @param {boolean} options.ignoreLess compare images and compare with less (red = 16, green = 16, blue = 16, alpha = 16, minBrightness=16, maxBrightness=240)
-   * @param {boolean} options.ignoreNothing compare images and compare with less (red = 0, green = 0, blue = 0, alpha = 0, minBrightness=0, maxBrightness=255)
-   * @param {boolean} options.ignoreTransparentPixel Will ignore all pixels that have some transparency in one of the images
-   * @return {Promise} When the promise is resolved it will return the percentage of the difference
+   * @param {Promise}   element The ElementFinder that is used to get the position
+   * @param {string}    tag     The tag that is used
+   * @param {object}    options non-default options
+   * @param {object}    options.blockOut blockout with x, y, width and height values
+   * @param {boolean}   options.disableCSSAnimation enable or disable CSS animation
+   * @param {int}       options.resizeDimensions the value to increase the size of the element that needs to be saved
+   * @param {double}    options.saveAboveTolerance Allowable percentage of mismatches before a diff is saved
+   * @param {boolean}   options.ignoreAlpha compare images and discard alpha
+   * @param {boolean}   options.ignoreAntialiasing compare images and discard anti aliasing
+   * @param {boolean}   options.ignoreColors Even though the images are in colour, the comparison wil compare 2 black/white images
+   * @param {boolean}   options.ignoreLess compare images and compare with red = 16, green = 16, blue = 16, alpha = 16, minBrightness=16, maxBrightness=240
+   * @param {boolean}   options.ignoreNothing compare images and compare with red = 0, green = 0, blue = 0, alpha = 0, minBrightness=0, maxBrightness=255
+   * @param {boolean}   options.ignoreTransparentPixel Will ignore all pixels that have some transparency in one of the images
+   *
+   * @returns {Promise} When the promise is resolved it will return the percentage of the difference
    * @public
    */
   checkElement(element, tag, options) {
@@ -982,37 +1029,46 @@ class protractorImageComparison {
    * @example
    * // default
    * browser.protractorImageComparison.checkFullPageScreen('imageA');
-   * // Blockout the statusbar
-   * browser.protractorImageComparison.checkFullPageScreen('imageA', {blockOutStatusBar: true});
-   * // Blockout a given region
-   * browser.protractorImageComparison.checkFullPageScreen('imageA', {blockOut: [{x: 10, y: 132, width: 100, height: 50}]});
-   * // Disable css animation on all elements
-   * browser.protractorImageComparison.checkFullPageScreen('imageA', {disableCSSAnimation: true});
-   * // Add timeout between scrolling and taking a screenshot
-   * browser.protractorImageComparison.checkFullPageScreen('imageA',{fullPageScrollTimeout: 5000});
-   * // Ignore antialiasing
-   * browser.protractorImageComparison.checkFullPageScreen('imageA', {ignoreAntialiasing: true});
-   * // Ignore colors
-   * browser.protractorImageComparison.checkFullPageScreen('imageA', {ignoreColors: true});
-   * // Ignore alpha pixel
-   * browser.protractorImageComparison.checkFullPageScreen('imageA', {ignoreTransparentPixel: true});
-   * // Set allowable percentage of mismatches
-   * browser.protractorImageComparison.checkFullPageScreen('imageA', {saveAboveTolerance: 0.5});
+   * // With options
+   * browser.protractorImageComparison.checkFullPageScreen('imageA', {
+   *      // Blockout the statusbar, mobile only
+   *      blockOutStatusBar: true
+   *      // Blockout a given region || multiple regions
+   *      blockOut: [
+   *        {x: 10, y: 132, width: 100, height: 50},
+   *        {x: 450, y: 300, width: 25, height: 75},
+   *      ],
+   *      // Disable css animation on all elements
+   *      disableCSSAnimation: true,
+   *      // The time that needs to be waited when scrolling to a point and save the screenshot
+   *      fullPageScrollTimeout: 5000,
+   *      // Set allowable percentage of mismatches before a diff is saved
+   *      saveAboveTolerance: 0.5,
+   *      // Ignore alpha and or antialiasing and or colors and or less and or nothing and or a transparant pixel
+   *      ignoreAlpha: true,
+   *      ignoreAntialiasing: true,
+   *      ignoreColors: true,
+   *      ignoreLess: true,
+   *      ignoreNothing: true,
+   *      ignoreTransparentPixel: true,
+   *    }
+   * );
    *
-   * @param {string} tag The tag that is used
-   * @param {object} options (non-default) options
-   * @param {boolean} options.blockOutStatusBar blockout the statusbar yes or no, it will override the global
-   * @param {object} options.blockOut blockout with x, y, width and height values
-   * @param {boolean} options.disableCSSAnimation enable or disable CSS animation
-   * @param {int} options.fullPageScrollTimeout The time that needs to be waited when scrolling to a point and save the screenshot
-   * @param {double} options.saveAboveTolerance Allowable percentage of mismatches
-   * @param {boolean} options.ignoreAlpha compare images and discard alpha
-   * @param {boolean} options.ignoreAntialiasing compare images and discard anti aliasing
-   * @param {boolean} options.ignoreColors Even though the images are in colour, the comparison wil compare 2 black/white images
-   * @param {boolean} options.ignoreLess compare images and compare with less (red = 16, green = 16, blue = 16, alpha = 16, minBrightness=16, maxBrightness=240)
-   * @param {boolean} options.ignoreNothing compare images and compare with less (red = 0, green = 0, blue = 0, alpha = 0, minBrightness=0, maxBrightness=255)
-   * @param {boolean} options.ignoreTransparentPixel Will ignore all pixels that have some transparency in one of the images
-   * @return {Promise} When the promise is resolved it will return the percentage of the difference
+   * @param {string}    tag     The tag that is used
+   * @param {object}    options (non-default) options
+   * @param {boolean}   options.blockOutStatusBar blockout the statusbar yes or no, it will override the global
+   * @param {object}    options.blockOut blockout with x, y, width and height values
+   * @param {boolean}   options.disableCSSAnimation enable or disable CSS animation
+   * @param {int}       options.fullPageScrollTimeout The time that needs to be waited when scrolling to a point and save the screenshot
+   * @param {double}    options.saveAboveTolerance Allowable percentage of mismatches before a diff is saved
+   * @param {boolean}   options.ignoreAlpha compare images and discard alpha
+   * @param {boolean}   options.ignoreAntialiasing compare images and discard anti aliasing
+   * @param {boolean}   options.ignoreColors Even though the images are in colour, the comparison wil compare 2 black/white images
+   * @param {boolean}   options.ignoreLess compare images and compare with red = 16, green = 16, blue = 16, alpha = 16, minBrightness=16, maxBrightness=240
+   * @param {boolean}   options.ignoreNothing compare images and compare with red = 0, green = 0, blue = 0, alpha = 0, minBrightness=0, maxBrightness=255
+   * @param {boolean}   options.ignoreTransparentPixel Will ignore all pixels that have some transparency in one of the images
+   *
+   * @returns {Promise} When the promise is resolved it will return the percentage of the difference
    * @public
    */
   checkFullPageScreen(tag, options) {
@@ -1032,32 +1088,43 @@ class protractorImageComparison {
    * @example
    * // default
    * browser.protractorImageComparison.checkScreen('imageA');
-   * // Blockout the statusbar
-   * browser.protractorImageComparison.checkScreen('imageA', {blockOutStatusBar: true});
-   * // Blockout a given region
-   * browser.protractorImageComparison.checkScreen('imageA', {blockOut: [{x: 10, y: 132, width: 100, height: 50}]});
-   * // Disable css animation on all elements
-   * browser.protractorImageComparison.checkScreen('imageA', {disableCSSAnimation: true});
-   * // Ignore antialiasing
-   * browser.protractorImageComparison.checkScreen('imageA', {ignoreAntialiasing: true});
-   * // Ignore colors
-   * browser.protractorImageComparison.checkScreen('imageA', {ignoreColors: true});
-   * // Ignore alpha pixel
-   * browser.protractorImageComparison.checkScreen('imageA', {ignoreTransparentPixel: true});
-
+   * // With options
+   * browser.protractorImageComparison.checkScreen('imageA', {
+   *      // Blockout the statusbar, mobile only
+   *      blockOutStatusBar: true
+   *      // Blockout a given region || multiple regions
+   *      blockOut: [
+   *        {x: 10, y: 132, width: 100, height: 50},
+   *        {x: 450, y: 300, width: 25, height: 75},
+   *      ],
+   *      // Disable css animation on all elements
+   *      disableCSSAnimation: true,
+   *      // Set allowable percentage of mismatches before a diff is saved
+   *      saveAboveTolerance: 0.5,
+   *      // Ignore alpha and or antialiasing and or colors and or less and or nothing and or a transparant pixel
+   *      ignoreAlpha: true,
+   *      ignoreAntialiasing: true,
+   *      ignoreColors: true,
+   *      ignoreLess: true,
+   *      ignoreNothing: true,
+   *      ignoreTransparentPixel: true,
+   *    }
+   * );
    *
-   * @param {string} tag The tag that is used
-   * @param {object} options (non-default) options
-   * @param {boolean} options.blockOutStatusBar blockout the statusbar yes or no, it will override the global
-   * @param {object} options.blockOut blockout with x, y, width and height values
-   * @param {boolean} options.disableCSSAnimation enable or disable CSS animation
-   * @param {boolean} options.ignoreAlpha compare images and discard alpha
-   * @param {boolean} options.ignoreAntialiasing compare images and discard anti aliasing
-   * @param {boolean} options.ignoreColors Even though the images are in colour, the comparison wil compare 2 black/white images
-   * @param {boolean} options.ignoreLess compare images and compare with less (red = 16, green = 16, blue = 16, alpha = 16, minBrightness=16, maxBrightness=240)
-   * @param {boolean} options.ignoreNothing compare images and compare with less (red = 0, green = 0, blue = 0, alpha = 0, minBrightness=0, maxBrightness=255)
-   * @param {boolean} options.ignoreTransparentPixel Will ignore all pixels that have some transparency in one of the images
-   * @return {Promise} When the promise is resolved it will return the percentage of the difference
+   * @param {string}    tag     The tag that is used
+   * @param {object}    options (non-default) options
+   * @param {boolean}   options.blockOutStatusBar blockout the statusbar yes or no, it will override the global
+   * @param {object}    options.blockOut blockout with x, y, width and height values
+   * @param {boolean}   options.disableCSSAnimation enable or disable CSS animation
+   * @param {double}    options.saveAboveTolerance Allowable percentage of mismatches before a diff is saved
+   * @param {boolean}   options.ignoreAlpha compare images and discard alpha
+   * @param {boolean}   options.ignoreAntialiasing compare images and discard anti aliasing
+   * @param {boolean}   options.ignoreColors Even though the images are in colour, the comparison wil compare 2 black/white images
+   * @param {boolean}   options.ignoreLess compare images and compare with red = 16, green = 16, blue = 16, alpha = 16, minBrightness=16, maxBrightness=240
+   * @param {boolean}   options.ignoreNothing compare images and compare with red = 0, green = 0, blue = 0, alpha = 0, minBrightness=0, maxBrightness=255
+   * @param {boolean}   options.ignoreTransparentPixel Will ignore all pixels that have some transparency in one of the images
+   *
+   * @returns {Promise} When the promise is resolved it will return the percentage of the difference
    * @public
    */
   checkScreen(tag, options) {
@@ -1075,21 +1142,26 @@ class protractorImageComparison {
    * @method saveElement
    *
    * @example
-   * // Default
+   * // default
    * browser.protractorImageComparison.saveElement(element(By.id('elementId')), 'imageA');
-   * // Add 15 px to top, right, bottom and left when the cut is calculated (it will automatically use the DPR)
-   * browser.protractorImageComparison.saveElement(element(By.id('elementId')), 'imageA', {resizeDimensions: 15});
-   * // Disable css animation on all elements
-   * browser.protractorImageComparison.saveElement(element(By.id('elementId')), 'imageA', {disableCSSAnimation: true});
-   * // Take screenshot directly of a canvas element
-   * browser.protractorImageComparison.saveElement(element(By.id('canvasID')), 'imageA', {canvasScreenshot: true});
+   * // With options
+   * browser.protractorImageComparison.saveElement(element(By.id('elementId')), 'imageA', {
+   *      // Disable css animation on all elements
+   *      disableCSSAnimation: true,
+   *      // Add 15 px to top, right, bottom and left when the cut is calculated (it will automatically use the DPR)
+   *      resizeDimensions: 15,
+   *      // Take screenshot directly of a canvas element
+   *      canvasScreenshot: true
+   *    }
+   * );
    *
-   * @param {Promise} element The ElementFinder that is used to get the position
-   * @param {string} tag The tag that is used
-   * @param {object} options (non-default) options
-   * @param {int} options.resizeDimensions the value to increase the size of the element that needs to be saved
-   * @param {boolean} options.disableCSSAnimation enable or disable CSS animation
-   * @param {boolean} options.canvasScreenshot enable or disable taking screenshot directly from canvas (via dataUrl instead of browser.takeScreenshot()). !!This isn't supported in IE11 and Safari 9!!
+   * @param {Promise}   element The ElementFinder that is used to get the position
+   * @param {string}    tag     The tag that is used
+   * @param {object}    options (non-default) options
+   * @param {int}       options.resizeDimensions the value to increase the size of the element that needs to be saved
+   * @param {boolean}   options.disableCSSAnimation enable or disable CSS animation
+   * @param {boolean}   options.canvasScreenshot enable or disable taking screenshot directly from canvas (via dataUrl instead of browser.takeScreenshot()). !!This isn't supported in IE11 and Safari 9!!
+   *
    * @returns {Promise} The images has been saved when the promise is resolved
    * @public
    */
@@ -1126,20 +1198,25 @@ class protractorImageComparison {
   /**
    * Saves a full page image of the screen
    *
-   * @method saveFullPageScreen
+   * @method saveFullPageScreens
    *
    * @example
-   * // Default
-   * browser.protractorImageComparison.saveFullPageScreen('imageA');
-   * // Disable css animation on all elements
-   * browser.protractorImageComparison.saveFullPageScreen('imageA',{disableCSSAnimation: true});
-   * // Add timeout between scrolling and taking a screenshot
-   * browser.protractorImageComparison.saveFullPageScreen('imageA',{fullPageScrollTimeout: 5000});
+   * // default
+   * browser.protractorImageComparison.saveFullPageScreens('imageA');
+   * // With options
+   * browser.protractorImageComparison.saveFullPageScreens('imageA', {
+   *      // Disable css animation on all elements
+   *      disableCSSAnimation: true,
+   *      // The time that needs to be waited when scrolling to a point and save the screenshot
+   *      fullPageScrollTimeout: 5000,
+   *    }
+   * );
    *
-   * @param {string} tag The tag that is used
-   * @param {object} options (non-default) options
-   * @param {int} options.fullPageScrollTimeout The time that needs to be waited when scrolling to a point and save the screenshot
-   * @param {boolean} options.disableCSSAnimation enable or disable CSS animation
+   * @param {string}    tag     The tag that is used
+   * @param {object}    options (non-default) options
+   * @param {int}       options.fullPageScrollTimeout The time that needs to be waited when scrolling to a point and save the screenshot
+   * @param {boolean}   options.disableCSSAnimation enable or disable CSS animation
+   *
    * @returns {Promise} The image has been saved when the promise is resolved
    * @public
    */
@@ -1161,14 +1238,19 @@ class protractorImageComparison {
    * @method saveScreen
    *
    * @example
-   * // Default
+   * // default
    * browser.protractorImageComparison.saveScreen('imageA');
-   * // Disable css animation on all elements
-   * browser.protractorImageComparison.saveScreen('imageA',{disableCSSAnimation: true});
+   * // With options
+   * browser.protractorImageComparison.saveScreen('imageA', {
+   *      // Disable css animation on all elements
+   *      disableCSSAnimation: true,
+   *    }
+   * );
    *
-   * @param {string} tag The tag that is used
-   * @param {object} options (non-default) options
-   * @param {boolean} options.disableCSSAnimation enable or disable CSS animation
+   * @param {string}    tag     The tag that is used
+   * @param {object}    options (non-default) options
+   * @param {boolean}   options.disableCSSAnimation enable or disable CSS animation
+   *
    * @returns {Promise} The image has been saved when the promise is resolved
    * @public
    */
