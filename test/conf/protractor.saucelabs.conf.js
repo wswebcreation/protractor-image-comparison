@@ -13,7 +13,7 @@ config.multiCapabilities = [
 
     // Mobile
     {
-        appiumVersion: "1.6.3",
+        appiumVersion: "1.8.0",
         browserName: 'Safari',
         deviceName: "iPhone 6 Simulator",
         deviceOrientation: "portrait",
@@ -26,7 +26,7 @@ config.multiCapabilities = [
         specs: mobileSpecs
     },
     {
-        appiumVersion: "1.6.3",
+        appiumVersion: "1.8.0",
         browserName: 'Safari',
         deviceName: "iPad Air 2 Simulator",
         deviceOrientation: "portrait",

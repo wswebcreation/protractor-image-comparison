@@ -146,13 +146,14 @@ class protractorImageComparison {
    * @private
    */
   _checkImageExists(tag) {
+    const fileName = this._formatFileName(tag);
     return new Promise((resolve, reject) => {
-      fs.access(path.join(this.baselineFolder, this._formatFileName(tag)), error => {
+      fs.access(path.join(this.baselineFolder, fileName), error => {
         if (error) {
           if (this.autoSaveBaseline) {
             try {
-              fs.copySync(path.join(this.actualFolder, this._formatFileName(tag)), path.join(this.baselineFolder, this._formatFileName(tag)));
-              console.log(`\nINFO: Autosaved the image to ${path.join(this.baselineFolder, this._formatFileName(tag))}\n`);
+              fs.copySync(path.join(this.actualFolder, fileName), path.join(this.baselineFolder, fileName));
+              console.log(`\nINFO: Autosaved the image to ${path.join(this.baselineFolder, fileName)}\n`);
             } catch (error) {
               reject(`Image could not be copied. The following error was thrown: ${error}`);
             }
@@ -380,14 +381,13 @@ class protractorImageComparison {
 
     if (this._isMobile() && ((this.nativeWebScreenshot && compareOptions.isScreen) || (this._isIOS())) && blockOutStatusBar) {
       const statusBarHeight = this._isAndroid() ? this.androidOffsets.statusBar : this.iosOffsets.statusBar,
-        statusBarBlockOut = [this._multiplyObjectValuesAgainstDPR({
+        statusBarBlockOut = this._multiplyObjectValuesAgainstDPR({
           x: 0,
           y: 0,
           height: statusBarHeight,
           width: this.browserWidth
-        })];
-
-      compareOptions.ignoreRectangles.concat(statusBarBlockOut)
+        });
+      compareOptions.ignoreRectangles.push(statusBarBlockOut)
     }
 
     if (this.debug) {
