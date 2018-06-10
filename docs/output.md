@@ -3,13 +3,13 @@
 ### Desktop
 ![saveElement Desktop] (./images/dangerAlert-compare-chromeLatest-1366x768.png)
 ### Mobile
-![saveElement Mobile] (./images/dangerAlert-compare-iPhone_6SimulatorSafari-375x667-dpr-2)
+![saveElement Mobile] (./images/dangerAlert-compare-iPhone_6SimulatorSafari-375x667-dpr-2.png)
 
 ## saveScreen
 ### Desktop
-![saveScreen Desktop] (./images/example-page-compare-chromeLatest-1366x768)
+![saveScreen Desktop] (./images/example-page-compare-chromeLatest-1366x768.png)
 ### Mobile
-![saveScreen Mobile] (./images/example-page-compare-iPhone_6SimulatorSafari-375x667-dpr-2)
+![saveScreen Mobile] (./images/example-page-compare-iPhone_6SimulatorSafari-375x667-dpr-2.png)
 
 ## saveFullPageScreens
 ### Desktop
