@@ -25,9 +25,11 @@ You can:
 - provide custom iOS and Android offsets for status-/address-/toolbar (mobile only)
 - automatically exclude a statusbar during screencomparison (mobile only)
 - taking a screenshot directly from canvas, tnx to [tuomas2](https://github.com/tuomas2), see [here](https://github.com/wswebcreation/protractor-image-comparison/blob/master/docs/index.md#saveelementelement-tag-options--promise). **!!This isn't supported in IE11 and Safari 9!!**
-- **NEW**, use a tolerance property called `saveAboveTolerance` that prevents saving result image to diff folder, tnx to [IgorSasovets](https://github.com/IgorSasovets )**
+- use a tolerance property called `saveAboveTolerance` that prevents saving result image to diff folder, tnx to [IgorSasovets](https://github.com/IgorSasovets )**
+- **NEW**, more accurate comparison with 2 new methods called `ignoreLess` and `ignoreNothing`. These 2 methods compare with different `red, green, blue, alpha, minBrightness and maxBrightness`
+- **NEW**, more accurate percentage. In previous releases the mismatch was with max with 2 digits. With `rawMisMatchPercentage:true`, you can have a result like `0.69803221`
 
-Comparison is based on [ResembleJS](https://github.com/Huddle/Resemble.js).
+Comparison is based on [ResembleJS](https://github.com/Huddle/Resemble.js). If you want to compare images online you can check the [online tool](https://huddleeng.github.io/Resemble.js/)
 
 ## Installation
 Install this module locally with the following command:
@@ -52,12 +54,37 @@ npm install --save-dev protractor-image-comparison
 
 For more information about mobile testing see the [Appium](./docs/appium.md) documentation.
 
+### Load from the configuration file of *protractor*
+
+You can load `protractor-image-comparison` form the config like below
+
+```js
+exports.config = {
+   // your config here ...
+
+    onPrepare: function() {
+        const protractorImageComparison = require('protractor-image-comparison');
+        browser.protractorImageComparison = new protractorImageComparison(
+            {
+                baselineFolder: 'path/to/baseline/',
+                screenshotPath: 'path/to/save/actual/screenshots/'
+            }
+        );
+    },
+}
+```
+
+The full list of options can be found [here](./docs/index.md#new-protractorimagecomparisonoptions)
+
+> **NOTE: You don't need to run AND `saveElement|saveScreen|saveFullPageScreens` if you want to run `checkElement|checkScreen|checkFullPageScreen`**
+
 If you run for the first time without having a baseline the `check`-methods will reject the promise with the following warning:
 
     `Image not found, saving current image as new baseline.`
 
-This means that the current screenshot is saved and you **manually need to copy it to your baseline**.
-If you instantiate `protractor-image-comparsion` with `autoSaveBaseline: true`, see [docs](./docs/index.md), the image will automatically be saved into the baselinefolder.
+This means that the current screenshot is saved in the actual folder and you **manually need to copy it to your baseline**.
+If you instantiate `protractor-image-comparsion` with `autoSaveBaseline: true`, see [docs](./docs/index.md#new-protractorimagecomparisonoptions),
+the image will automatically be saved into the baselinefolder.
 
 
 *protractor-image-comparison* provides:
@@ -66,10 +93,14 @@ If you instantiate `protractor-image-comparsion` with `autoSaveBaseline: true`, 
 - two helper methods `saveScreen` and `saveElement` for saving images.
 - **NEW** a helper `saveFullPageScreens` and a comparison method `checkFullPageScreen` for saving and comparing a fullpage screenshot.
 
-The comparison methods return a result in percentages like `0` or `3.94`.
-*protractor-image-comparison* can work with Jasmine and Cucumber.js. See [Examples](./docs/examples.md) for or a *protractor*-config setup, or a Jasmine or a CucumberJS implementation.
+The comparison methods return a result in percentages like `0` or `3.94`, or when `rawMisMatchPercentage:true` it can return a percentage like `0.00244322` .
+
+*protractor-image-comparison* can work with Jasmine, Mocha and Cucumber.js. See [Examples](./docs/examples.md) for or a Jasmine implementation.
 
 More information about the **methods** can be found [here](./docs/methods.md).
+
+## Ouput
+To see example of the output please check [here](./docs/output.md)
 
 ## Conventions
 See [conventions.md](./docs/conventions.md).

@@ -26,7 +26,7 @@ Load it in a *spec* file
 const protractorImageComparison = require('protractor-image-comparison');
 
 describe("Example page", function() {
-
+    // Or instantiate `protractor-image-comparison` in a beforeEach or in your protractor conf, see above
     beforeEach(function() {
         browser.protractorImageComparison = new protractorImageComparison({
             baselineFolder: './baseline/',
@@ -53,47 +53,6 @@ describe("Example page", function() {
             blockOut: [{x: 10, y: 132, width: 100, height: 50}]})).toEqual(0);
     });
 });
-```
-
-## Cucumber Example:
-Load it in a *step* file
-
-```js
-const expect = require('chai').expect,
-      protractorImageComparison = require('protractor-image-comparison');
-
-function CucumberSteps() {
-
-    browser.protractorImageComparison = new protractorImageComparison({
-        baselineFolder: './baseline/',
-        screenshotPath: './.tmp/'
-    });
-
-    this.Given(/^I load the url$/, function () {
-        return browser.get('http://www.example.com/');
-    });
-
-    this.Then(/^image\-comparison should match the page$/, function () {
-        return expect(browser.protractorImageComparison.checkScreen('examplePage')).to.eventually.equal(0);
-    });
-
-    this.Then(/^image\-comparison should not match the page$/, function () {
-        element(By.buttonText('yes')).click();
-        return expect(browser.protractorImageComparison.checkScreen('examplePage')).to.eventually.not.equal(0);
-    });
-
-    this.Then(/^image\-comparison should match the title$/, function () {
-        return expect(browser.protractorImageComparison.checkElement(element(By.id('title')), 'examplePageTitle')).to.eventually.equal(0);
-    });
-
-    this.Then(/^image\-comparison should match the title with blockout$/, function () {
-        return expect(browser.protractorImageComparison.checkElement(element(By.id('title')), 'examplePageTitle', {
-                blockOut: [{x: 10, y: 132, width: 100, height: 50}]}))
-            .to.eventually.equal(0);
-    });
-}
-
-module.exports = CucumberSteps;
 ```
 
 For more examples / usage see the [desktop](../test/desktop.spec.js) or [mobile](../test/desktop.spec.js) testcases.
