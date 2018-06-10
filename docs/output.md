@@ -28,7 +28,7 @@
 ### Desktop
 ![checkScreen Desktop](./images/example-page-compare-fail-chromeLatest-1366x768.png)
 ### Mobile
-![checkScreen Mobile](./images/example-page-compare-fail-iPhone_6SimulatorSafari-375x667-dpr-2.png.png)
+![checkScreen Mobile](./images/example-page-compare-fail-iPhone_6SimulatorSafari-375x667-dpr-2.png)
 
 ## checkFullPageScreens
 ### Desktop
