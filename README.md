@@ -116,8 +116,7 @@ It could be that the error `Width and height cannot be negative` is thrown. 9 ou
 When using Chrome and using the `chromeOptions.args:['--disable-gpu']` it could be possible that the images can't be compared in the correct way. If you remove this argument all will work again. See [here](https://github.com/wswebcreation/protractor-image-comparison/issues/33#issuecomment-333409063)
 
 ## Credits
-- Basic logic of `index.js` based on [PixDiff](https://github.com/koola/pix-diff)
-- Comparison core of `./lib/resemble.js` [node-resemble](https://github.com/lksv/node-resemble.js) + [ResembleJS](https://github.com/Huddle/Resemble.js)
+- Comparison core of `./lib/resemble.js` [ResembleJS](https://github.com/Huddle/Resemble.js)
 
 ## TODO
 * Update documentation for Mobile
