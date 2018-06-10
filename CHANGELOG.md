@@ -1,10 +1,34 @@
 # CHANGELOG
-<a name="1.7.1"></a>
+<a name="2.0.0"></a>
+# [2.0.0](https://github.com/wswebcreation/protractor-image-comparison/compare/v1.7.2...v2.0.0) (2018-06-10)
+
+This release is a breaking change. The reason why this is a breaking change has to do with updating ResembleJS to be equal to the latest version.
+The comparison is now more accurate than before and lead to failures in the comparisons dus to a higher diff percentage
+
+### Features
+
+* Added `ignoreAlpha`, compare images and discard alpha
+* Added `ignoreLess`, compare images and compare with red = 16, green = 16, blue = 16, alpha = 16, minBrightness=16, maxBrightness=240
+* Added `ignoreNothing`, compare images and compare with red = 0, green = 0, blue = 0, alpha = 0, minBrightness=0, maxBrightness=255
+* Added `rawMisMatchPercentage`, default false. If `true` the return percentage will be like `0.12345678`, default is `0.12`
+
+### Bugfix
+
+* Minor differences in image are not recognized [58](https://github.com/wswebcreation/protractor-image-comparison/pull/58).
+* Diff images are broken [63](https://github.com/wswebcreation/protractor-image-comparison/pull/63).
+* Minor color differences in images are not recognized [65](https://github.com/wswebcreation/protractor-image-comparison/pull/65).
+
+### Chore
+
+* Update docs
+
+
+<a name="1.7.2"></a>
 # [1.7.2](https://github.com/wswebcreation/protractor-image-comparison/compare/v1.7.1...v1.7.2) (2018-05-10)
 
 ### Bugfix
 
-* Revert fixed issue with minor differences recognition that was fixed in [61](https://github.com/wswebcreation/protractor-image-comparison/pull/61). This was a breaking change and should be investigated. 
+* Revert fixed issue with minor differences recognition that was fixed in [61](https://github.com/wswebcreation/protractor-image-comparison/pull/61). This was a breaking change and should be investigated.
 
 <a name="1.7.1"></a>
 # [1.7.1](https://github.com/wswebcreation/protractor-image-comparison/compare/v1.7.0...v1.7.1) (2018-05-09)

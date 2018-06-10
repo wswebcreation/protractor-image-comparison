@@ -8,7 +8,7 @@ exports.config = {
     framework: 'jasmine2',
     jasmineNodeOpts: {
         showColors: true,
-        defaultTimeoutInterval: 120000,
+        defaultTimeoutInterval: 180000,
         isVerbose: true,
         includeStackTrace: true,
         print: function () {
