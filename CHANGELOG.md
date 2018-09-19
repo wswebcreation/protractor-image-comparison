@@ -1,4 +1,13 @@
 # CHANGELOG
+<a name="2.0.1"></a>
+# [2.0.1](https://github.com/wswebcreation/protractor-image-comparison/compare/v2.0.0...v2.0.1) (2018-09-19)
+
+### Bugfix
+
+* Blackout regions are offset on Retina display [74](https://github.com/wswebcreation/protractor-image-comparison/issues/74).
+* ignoreTransparentPixel setting not picked up [75](https://github.com/wswebcreation/protractor-image-comparison/issues/75), tnx to the investigation of [Thomas Mørch](https://github.com/tbowmo).
+
+
 <a name="2.0.0"></a>
 # [2.0.0](https://github.com/wswebcreation/protractor-image-comparison/compare/v1.7.2...v2.0.0) (2018-06-10)
 
