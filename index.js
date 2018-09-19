@@ -390,15 +390,15 @@ class protractorImageComparison {
     compareOptions.ignoreTransparentPixel = 'ignoreTransparentPixel' in compareOptions ? compareOptions.ignoreTransparentPixel : this.ignoreTransparentPixel;
 
     if (this._isMobile() && ((this.nativeWebScreenshot && compareOptions.isScreen) || (this._isIOS())) && blockOutStatusBar) {
-      const statusBarHeight = this._isAndroid() ? this.androidOffsets.statusBar : this.iosOffsets.statusBar,
-        statusBarBlockOut = this._multiplyObjectValuesAgainstDPR({
-          x: 0,
-          y: 0,
-          height: statusBarHeight,
-          width: this.browserWidth
-        });
-      compareOptions.ignoreRectangles.push(statusBarBlockOut)
+      const statusBarHeight = this._isAndroid() ? this.androidOffsets.statusBar : this.iosOffsets.statusBar;
+      compareOptions.ignoreRectangles.push({
+        x: 0,
+        y: 0,
+        height: statusBarHeight,
+        width: this.browserWidth
+      })
     }
+    compareOptions.ignoreRectangles = compareOptions.ignoreRectangles.map(rectangles => this._multiplyObjectValuesAgainstDPR(rectangles));
 
     if (this.debug) {
       console.log('\n####################################################');
@@ -423,6 +423,7 @@ class protractorImageComparison {
     }
 
     options.ignoreRectangles = compareOptions.ignoreRectangles;
+    options.ignoreTransparentPixel = compareOptions.ignoreTransparentPixel;
 
     return resembleJS(
       fs.readFileSync(imageComparisonPaths.baselineImage),
