@@ -99,7 +99,7 @@ The comparison methods return a result in percentages like `0` or `3.94`, or whe
 
 More information about the **methods** can be found [here](./docs/methods.md).
 
-## Ouput
+## Output
 To see example of the output please check [here](./docs/output.md)
 
 ## Conventions
