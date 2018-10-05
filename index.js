@@ -6,7 +6,7 @@ const fs = require('fs-extra');
 const path = require('path');
 const PNGImage = require('png-image');
 const PNGJSImage = require('pngjs-image');
-const resembleJS = require('./lib/compareImages');
+const resembleJS = require('./lib/resemble/compareImages');
 
 /**
  * image-diff protractor plugin class
@@ -66,26 +66,26 @@ class protractorImageComparison {
     assert.ok(options.baselineFolder, 'Image baselineFolder not given.');
     assert.ok(options.screenshotPath, 'Image screenshotPath not given.');
 
-    this.baselineFolder = path.normalize(options.baselineFolder);
-    this.baseFolder = path.normalize(options.screenshotPath);
-    this.autoSaveBaseline = options.autoSaveBaseline || false;
-    this.debug = options.debug || false;
-    this.disableCSSAnimation = options.disableCSSAnimation || false;
-    this.hideScrollBars = options.hideScrollBars !== false;
-    this.formatString = options.formatImageName || '{tag}-{browserName}-{width}x{height}-dpr-{dpr}';
+    this.baselineFolder = path.normalize(options.baselineFolder); //
+    this.baseFolder = path.normalize(options.screenshotPath); //
+    this.autoSaveBaseline = options.autoSaveBaseline || false; //
+    this.debug = options.debug || false; //
+    this.disableCSSAnimation = options.disableCSSAnimation || false;//
+    this.hideScrollBars = options.hideScrollBars !== false; //
+    this.formatString = options.formatImageName || '{tag}-{browserName}-{width}x{height}-dpr-{dpr}'; //
 
-    this.nativeWebScreenshot = !!options.nativeWebScreenshot;
-    this.blockOutStatusBar = !!options.blockOutStatusBar;
+    this.nativeWebScreenshot = !!options.nativeWebScreenshot; //
+    this.blockOutStatusBar = !!options.blockOutStatusBar; //
 
-    this.ignoreAlpha = options.ignoreAlpha || false;
-    this.ignoreAntialiasing = options.ignoreAntialiasing || false;
-    this.ignoreColors = options.ignoreColors || false;
-    this.ignoreLess = options.ignoreLess || false;
-    this.ignoreNothing = options.ignoreNothing || false;
-    this.ignoreTransparentPixel = options.ignoreTransparentPixel || false;
+    this.ignoreAlpha = options.ignoreAlpha || false; //
+    this.ignoreAntialiasing = options.ignoreAntialiasing || false; //
+    this.ignoreColors = options.ignoreColors || false; //
+    this.ignoreLess = options.ignoreLess || false; //
+    this.ignoreNothing = options.ignoreNothing || false; //
+    this.ignoreTransparentPixel = options.ignoreTransparentPixel || false; //
 
-    this.saveAboveTolerance = options.saveAboveTolerance || 0;
-    this.rawMisMatchPercentage = options.rawMisMatchPercentage || false;
+    this.saveAboveTolerance = options.saveAboveTolerance || 0; //
+    this.rawMisMatchPercentage = options.rawMisMatchPercentage || false; //
 
     // OS offsets
     let androidOffsets = options.androidOffsets && typeof options.androidOffsets === 'object' ? options.androidOffsets : {};
@@ -104,14 +104,14 @@ class protractorImageComparison {
       toolBar: 44
     };
 
-    this.actualFolder = path.join(this.baseFolder, 'actual');
+    this.actualFolder = path.join(this.baseFolder, 'actual'); //
     this.addressBarShadowPadding = 6;
     this.androidOffsets = protractorImageComparison._mergeDefaultOptions(androidDefaultOffsets, androidOffsets);
     this.browserHeight = 0;
     this.browserName = '';
     this.browserWidth = 0;
     this.deviceName = '';
-    this.diffFolder = path.join(this.baseFolder, 'diff');
+    this.diffFolder = path.join(this.baseFolder, 'diff'); //
     this.devicePixelRatio = 1;
     this.fullPageHeight = 0;
     this.fullPageWidth = 0;
@@ -122,7 +122,7 @@ class protractorImageComparison {
     this.platformName = '';
     this.resizeDimensions = 0;
     this.screenshotHeight = 0;
-    this.tempFullScreenFolder = path.join(this.baseFolder, 'tempFullScreen');
+    this.tempFullScreenFolder = path.join(this.baseFolder, 'tempFullScreen'); //
     this.fullPageScrollTimeout = 1500;
     this.saveType = {
       element: false,
@@ -133,13 +133,13 @@ class protractorImageComparison {
     this.toolBarShadowPadding = 6;
     this.viewPortHeight = 0;
 
-    fs.ensureDirSync(this.actualFolder);
-    fs.ensureDirSync(this.baselineFolder);
-    fs.ensureDirSync(this.diffFolder);
+    fs.ensureDirSync(this.actualFolder); //
+    fs.ensureDirSync(this.baselineFolder); //
+    fs.ensureDirSync(this.diffFolder); //
 
-    if (this.debug) {
-      fs.ensureDirSync(this.tempFullScreenFolder);
-    }
+    if (this.debug) { //
+      fs.ensureDirSync(this.tempFullScreenFolder); //
+    } //
   }
 
   /**

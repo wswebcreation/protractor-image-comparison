@@ -11,7 +11,7 @@ const localBaseline = path.resolve(__dirname, `../${localConfig.localBaseline}/`
 const baselineFolder = `./${localConfig.localBaseline}/desktop/`;
 
 // Remove and create a new local development baseline
-fs.removeSync(localBaseline);
+// fs.removeSync(localBaseline);
 fs.ensureDirSync(localConfig.localBaseline);
 
 describe('protractor-image-comparison local development initialization', () => {
@@ -41,7 +41,7 @@ describe('protractor-image-comparison local development initialization', () => {
     const exampleFullPage = 'example-fullpage-compare';
     const exampleFullPageFail = `${exampleFullPage}-fail`;
 
-    it('should save the compare screenshot screenshots', () => {
+    fit('should save the compare screenshot screenshots', () => {
         browser.imageComparson.saveScreen(examplePage)
             .then(() => {
                 fs.copySync(

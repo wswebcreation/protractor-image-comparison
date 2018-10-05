@@ -5,3 +5,5 @@ node_modules/
 perfecto.config.json
 coverage/
 localBaseline/
+
+build/
