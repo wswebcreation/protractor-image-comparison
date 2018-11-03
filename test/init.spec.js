@@ -34,6 +34,8 @@ describe('protractor-image-comparison local development initialization', () => {
     const resolution = '1366x768';
     const dangerAlert = element(by.css('.uk-alert-danger'));
     const headerElement = element(by.css('h1.uk-heading-large'));
+    const canvasElement = $('#canvasBlocks');
+    const canvasBlocks = 'canvasBlocks-compare';
     const examplePage = 'example-page-compare';
     const examplePageFail = `${examplePage}-fail`;
     const dangerAlertElement = 'dangerAlert-compare';
@@ -91,6 +93,19 @@ describe('protractor-image-comparison local development initialization', () => {
                 fs.copySync(
                     `${screenshotPath}/resizeDimensions-${dangerAlertElement}-${logName}-${resolution}.png`,
                     `${baselineFolder}/resizeDimensions-${dangerAlertElement}-${logName}-${resolution}.png`
+                );
+            });
+
+    });
+
+    it('should save the canvas screenshot', () => {
+        browser.executeScript('arguments[0].scrollIntoView();', canvasElement.getWebElement())
+            .then(() => browser.sleep(500))
+            .then(() => browser.imageComparson.saveElement(canvasElement, canvasBlocks, {canvasScreenshot: true}))
+            .then(() => {
+                fs.copySync(
+                    `${screenshotPath}/${canvasBlocks}-${logName}-${resolution}.png`,
+                    `${baselineFolder}/${canvasBlocks}-${logName}-${resolution}.png`
                 );
             });
 
