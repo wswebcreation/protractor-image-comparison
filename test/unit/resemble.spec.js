@@ -5,16 +5,16 @@ const path = require('path');
 const resemble = require('../../lib/resemble/compareImages.js');
 
 describe('node-resemble.js', () => {
-  const peopleImage = path.resolve(__dirname, './example/People.png');
-  const peopleBlackWhiteImage = path.resolve(__dirname, './example/PeopleBW.png');
-  const peopleTwoImage = path.resolve(__dirname, './example/People2.png');
-  const peopleAlphaImage = path.resolve(__dirname, './example/PeopleAlpha.png');
-  const largeImage = path.resolve(__dirname, './example/LargeImage.png');
-  const smallImage = path.resolve(__dirname, './example/SmallImage.png');
-  const withAntiAliasing = path.resolve(__dirname, './example/withAntiAliasing.png');
-  const withoutAntiAliasing = path.resolve(__dirname, './example/withoutAntiAliasing.png');
-  const ignoreNothingActual = path.resolve(__dirname, './example/ignoreNothingActual.png');
-  const ignoreNothingBase = path.resolve(__dirname, './example/ignoreNothingBase.png');
+  const peopleImage = fs.readFileSync(path.resolve(__dirname, './example/People.png'));
+  const peopleBlackWhiteImage = fs.readFileSync(path.resolve(__dirname, './example/PeopleBW.png'));
+  const peopleTwoImage = fs.readFileSync(path.resolve(__dirname, './example/People2.png'));
+  const peopleAlphaImage = fs.readFileSync(path.resolve(__dirname, './example/PeopleAlpha.png'));
+  const largeImage = fs.readFileSync(path.resolve(__dirname, './example/LargeImage.png'));
+  const smallImage = fs.readFileSync(path.resolve(__dirname, './example/SmallImage.png'));
+  const withAntiAliasing = fs.readFileSync(path.resolve(__dirname, './example/withAntiAliasing.png'));
+  const withoutAntiAliasing = fs.readFileSync(path.resolve(__dirname, './example/withoutAntiAliasing.png'));
+  const ignoreNothingActual = fs.readFileSync(path.resolve(__dirname, './example/ignoreNothingActual.png'));
+  const ignoreNothingBase = fs.readFileSync(path.resolve(__dirname, './example/ignoreNothingBase.png'));
 
   describe('compareTo', () => {
     describe('defaults', () => {
