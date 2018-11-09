@@ -14,11 +14,15 @@ describe('new image compare', () => {
     await browser.imageCompare.saveElement(headerElement, 'examplePageElement', {empty: null});
   });
 
-  fit('should do a save element with custom dimensions the deprecated way', async () => {
+  it('should do a save element with custom dimensions the deprecated way', async () => {
     await browser.imageCompare.saveElement(headerElement, 'resizeDimensions-examplePageElement-deprecated', {resizeDimensions: 15});
   });
 
-  fit('should do a save element with custom dimensions the new way', async () => {
+  it('should do a save element with custom dimensions the new way', async () => {
     await browser.imageCompare.saveElement(headerElement, 'resizeDimensions-examplePageElement-new', {resizeDimensions: {left: 15, top: 250}});
+  });
+
+  it('should save a fullpage screenshot', async () => {
+    await browser.imageCompare.saveFullPageScreen('fullPage', {fullPageScrollTimeout: '1500'});
   });
 });

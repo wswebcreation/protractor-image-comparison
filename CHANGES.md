@@ -1,5 +1,10 @@
 # Things that changed in V3
 
+## Breaking changes
+- create a `canvasScreenshot` of an element has been removed
+- `saveFullPageScreens` has been renamed to `saveFullPageScreen`
+
+
 ## NEW
 - `resizeDimensions` for `saveElement` and `checkElement` will now accept an object in pixels, see below
 
@@ -28,6 +33,3 @@
   }
 }
 ```
-
-## Removed
-- create a `canvasScreenshot` has been removed
