@@ -1,6 +1,6 @@
 let config = require('./protractor.shared.conf.js').config;
 
-config.specs = ['../new.spec.js'];
+config.specs = ['../new.desktop.spec.js'];
 
 config.seleniumAddress = 'http://localhost:4444/wd/hub/';
 

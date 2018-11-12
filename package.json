@@ -19,8 +19,10 @@
     "unit.test": "JASMINE_CONFIG_PATH=test/unit/jasmine.json jasmine",
     "unit.test.coverage": "JASMINE_CONFIG_PATH=test/unit/jasmine.json istanbul cover jasmine",
     "wd-update": "node_modules/.bin/webdriver-manager update",
-    "new.local": "./node_modules/.bin/protractor ./test/conf/protractor.new.local.conf.js",
-    "compile": "babel lib/ -d build/",
+		"new.local.android": "./node_modules/.bin/protractor ./test/conf/protractor.new.local.android.conf.js",
+		"new.local.desktop": "./node_modules/.bin/protractor ./test/conf/protractor.new.local.desktop.conf.js",
+		"new.local.ios": "./node_modules/.bin/protractor ./test/conf/protractor.new.local.ios.conf.js",
+		"compile": "babel lib/ -d build/",
     "watch": "npm run compile -- --watch"
   },
   "repository": {
