@@ -1,4 +1,5 @@
 {
-  "localBaseline": "localBaseline",
-  "screenshotFolder": ".tmp"
+	"localBaseline": "localBaseline",
+	"screenshotFolder": ".tmp",
+	"actual": "actual"
 }

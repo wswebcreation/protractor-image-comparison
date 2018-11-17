@@ -1,6 +1,6 @@
-let config = require('./protractor.shared.conf.js').config;
+let config = require('../protractor.shared.conf.js').config;
 
-config.specs = [ '../new.mobile.spec.js' ];
+config.specs = [ '../../new.mobile.spec.js' ];
 
 config.seleniumAddress = 'http://localhost:4726/wd/hub';
 
@@ -50,7 +50,6 @@ config.multiCapabilities = [
 ];
 
 config.plugins = [ {
-	// package: 'protractor-image-comparison',
 	path: '../../build/index.js',
 } ];
 

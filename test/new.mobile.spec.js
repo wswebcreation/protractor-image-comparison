@@ -1,16 +1,5 @@
 describe('new image compare', () => {
 	const logName = browser.logName;
-	const devices = {
-		iPhone8: {
-			name: `${logName}-375x667-dpr-2`
-		},
-		iPadAir_2SimulatorSafari: {
-			name: `${logName}-768x1024-dpr-2`
-		},
-		nexus_5ByGoogleAdb: {
-			name: `${logName}-360x640-dpr-3`
-		},
-	};
   const headerElement = $('h1.uk-heading-large');
 
   beforeEach(async () => {
@@ -18,11 +7,11 @@ describe('new image compare', () => {
     await browser.sleep(500);
   });
 
-  it('should do a mobile save screen', async () => {
+  fit('should do a mobile save screen', async () => {
     await browser.imageCompare.saveScreen('examplePage', {empty: null});
   });
 
-  fit('should do a save element', async () => {
+  it('should do a save element', async () => {
     await browser.imageCompare.saveElement(headerElement, 'examplePageElement', {empty: null});
   });
 

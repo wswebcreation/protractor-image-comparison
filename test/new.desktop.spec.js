@@ -1,4 +1,4 @@
-describe('new image compare', () => {
+describe('image compare basics', () => {
   const headerElement = $('h1.uk-heading-large');
 
   beforeEach(async () => {
@@ -6,13 +6,8 @@ describe('new image compare', () => {
     await browser.sleep(500);
   });
 
-  it('should do a save screen', async () => {
-    await browser.imageCompare.saveScreen('examplePage', {empty: null});
-  });
-
-  it('should do a save element', async () => {
-    await browser.imageCompare.saveElement(headerElement, 'examplePageElement', {empty: null});
-  });
+	// Chrome remembers the last postion when the url is loaded again, this will reset it.
+	afterEach(() => browser.executeScript('window.scrollTo(0, 0);'));
 
   it('should do a save element with custom dimensions the deprecated way', async () => {
     await browser.imageCompare.saveElement(headerElement, 'resizeDimensions-examplePageElement-deprecated', {resizeDimensions: 15});
@@ -20,9 +15,5 @@ describe('new image compare', () => {
 
   it('should do a save element with custom dimensions the new way', async () => {
     await browser.imageCompare.saveElement(headerElement, 'resizeDimensions-examplePageElement-new', {resizeDimensions: {left: 15, top: 250}});
-  });
-
-  it('should save a fullpage screenshot', async () => {
-    await browser.imageCompare.saveFullPageScreen('fullPage', {fullPageScrollTimeout: '1500'});
   });
 });
