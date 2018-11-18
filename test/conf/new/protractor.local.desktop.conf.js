@@ -22,7 +22,8 @@ config.plugins = [{
 		baselineFolder: './localBaseline',
 		debug: false,
 		formatImageName: `{tag}-{logName}-{width}x{height}`,
-		screenshotPath: '.tmp/'
+		screenshotPath: '.tmp/',
+		savePerInstance: true,
 	}
 }];
 

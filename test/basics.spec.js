@@ -4,9 +4,10 @@ import { resolve } from 'path';
 describe('image compare basics', () => {
 	const headerElement = $('h1.uk-heading-large');
 	const localConfig = require('../local.config.json');
+	const browserName = browser.browserName.toLowerCase();
 	const logName = browser.logName;
 	const resolution = '1366x768';
-	const screenshotPath = resolve(__dirname, `../${localConfig.screenshotFolder}/${localConfig.actual}/`);
+	const screenshotPath = resolve(__dirname, `../${localConfig.screenshotFolder}/${localConfig.actual}/${browserName}/`);
 
 	beforeEach(async () => {
 		await browser.get(browser.baseUrl);
