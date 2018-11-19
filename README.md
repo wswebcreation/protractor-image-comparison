@@ -7,6 +7,8 @@ protractor-image-comparison
 
 [![Sauce Test Status](https://saucelabs.com/browser-matrix/wswebcreation-nl.svg)](https://saucelabs.com/u/wswebcreation-nl)
 
+> **I'M CURRENTLY REFACTORING THE MODULE, FOR MORE INFO SEE ISSUE [83](https://github.com/wswebcreation/protractor-image-comparison/issues/83)**
+
 ## What can it do?
 *protractor-image-comparison* is a lightweight *protractor* plugin for browsers / mobile browsers / hybrid apps to do image comparison on screens or elements.
 
