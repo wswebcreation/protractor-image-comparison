@@ -4,6 +4,8 @@
 - create a `canvasScreenshot` of an element has been removed
 - `saveFullPageScreens` has been renamed to `saveFullPageScreen`
 - `nativeWebScreenshot` has been removed from the options. This can only be added/determined from the capabilities
+- dropped support for Firefox 47
+- dropped support for Safari 9
 
 ## NEW
 - `resizeDimensions` for `saveElement` and `checkElement` will now accept an object in pixels, see below

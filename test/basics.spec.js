@@ -2,7 +2,7 @@ import fileExists from './helpers/fileExists';
 import { resolve } from 'path';
 
 describe('image compare basics', () => {
-	const headerElement = $('h1.uk-heading-large');
+	const firstButton = $('.uk-button:nth-child(1)');
 	const localConfig = require('../local.config.json');
 	const browserName = browser.browserName.toLowerCase();
 	const logName = browser.logName;
@@ -23,8 +23,8 @@ describe('image compare basics', () => {
 	});
 
 	it('should do a save element', async () => {
-		await browser.imageCompare.saveElement(headerElement, 'examplePageElement', { empty: null });
-		expect(fileExists(`${screenshotPath}/examplePageElement-${logName}-${resolution}.png`)).toBe(true);
+		await browser.imageCompare.saveElement(firstButton, 'firstButtonElement', { empty: null });
+		expect(fileExists(`${screenshotPath}/firstButtonElement-${logName}-${resolution}.png`)).toBe(true);
 	});
 
 	it('should save a fullpage screenshot', async () => {

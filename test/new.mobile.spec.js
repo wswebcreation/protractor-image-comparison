@@ -15,11 +15,11 @@ describe('new image compare', () => {
     await browser.imageCompare.saveElement(firstButton, 'examplePageElement', {empty: null});
   });
 
-  it('should do a save element with custom dimensions the deprecated way', async () => {
+  xit('should do a save element with custom dimensions the deprecated way', async () => {
     await browser.imageCompare.saveElement(firstButton, 'resizeDimensions-examplePageElement-deprecated', {resizeDimensions: 15});
   });
 
-  it('should do a save element with custom dimensions the new way', async () => {
+  xit('should do a save element with custom dimensions the new way', async () => {
     await browser.imageCompare.saveElement(firstButton, 'resizeDimensions-examplePageElement-new', {resizeDimensions: {left: 15, top: 250}});
   });
 
