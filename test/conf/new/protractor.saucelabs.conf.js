@@ -163,7 +163,6 @@ config.multiCapabilities = [
 		screenResolution,
 		...defaultCapabilities,
 	},
-	// @todo: Check why the cutout of IE11 is not properly made, looks like a few pixels of on the left
 	{
 		browserName: 'internet explorer',
 		platform: 'Windows 8.1',
@@ -173,7 +172,6 @@ config.multiCapabilities = [
 		screenResolution,
 		...defaultCapabilities,
 	},
-	// @todo: Currently having an issue selecting an element
 	{
 		browserName: 'MicrosoftEdge',
 		platform: 'Windows 10',

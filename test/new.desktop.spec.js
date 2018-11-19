@@ -12,6 +12,10 @@ describe('image compare basics', () => {
 	// Chrome remembers the last postion when the url is loaded again, this will reset it.
 	afterEach(() => browser.executeScript('window.scrollTo(0, 0);'));
 
+	it('should do a save screen', async () => {
+		await browser.imageCompare.saveScreen('examplePage', { empty: null });
+	});
+
 	it('should do a save element', async () => {
 		await browser.imageCompare.saveElement(firstButton, 'firstButtonElement', { empty: null });
 	});
