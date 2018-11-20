@@ -1,3 +1,5 @@
+import fileExists from './helpers/fileExists';
+
 /**
  * These tests need to be changed to `check` tests in the future, for know the saveElement is sufficient
  */
@@ -27,4 +29,8 @@ describe('image compare basics', () => {
   xit('should do a save element with custom dimensions the new way', async () => {
     await browser.imageCompare.saveElement(firstButton, 'resizeDimensions-firstButtonElement-new', {resizeDimensions: {left: 15, top: 250}});
   });
+
+	fit('should save a fullpage screenshot', async () => {
+		await browser.imageCompare.saveFullPageScreen('fullPage', { fullPageScrollTimeout: '1500' });
+	});
 });
