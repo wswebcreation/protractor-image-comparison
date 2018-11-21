@@ -5,8 +5,6 @@ const basicSpecs = '../../basics.spec.js';
 const deskSpecs = '../../new.desktop.spec.js';
 const mobileSpecs = '../../new.mobile.spec.js';
 const screenResolution = '1600x1200';
-const shardTestFiles = true;
-const tunnelIdentifier = process.env.TRAVIS_JOB_NUMBER;
 const defaultCapabilities = {
 	shardTestFiles: true,
 	tunnelIdentifier: process.env.TRAVIS_JOB_NUMBER,
@@ -53,7 +51,7 @@ config.multiCapabilities = [
 		deviceName: 'iPhone 8 Simulator',
 		logName: 'iPhone8Simulator',
 		platformName: 'ios',
-		platformVersion: '12.0',
+		platformVersion: '11.3',
 		specs: [ mobileSpecs ],
 		...defaultCapabilities,
 	},

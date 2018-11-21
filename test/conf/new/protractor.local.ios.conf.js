@@ -50,7 +50,14 @@ config.multiCapabilities = [
 ];
 
 config.plugins = [ {
-	path: '../../build/index.js',
+	path: '../../../build/index.js',
+	options: {
+		baselineFolder: './localBaseline',
+		debug: false,
+		formatImageName: `{tag}-{logName}-{width}x{height}`,
+		screenshotPath: '.tmp/',
+		savePerInstance: true,
+	}
 } ];
 
 exports.config = config;

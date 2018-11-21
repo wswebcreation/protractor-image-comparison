@@ -30,7 +30,7 @@ describe('image compare basics', () => {
     await browser.imageCompare.saveElement(firstButton, 'resizeDimensions-firstButtonElement-new', {resizeDimensions: {left: 15, top: 250}});
   });
 
-	fit('should save a fullpage screenshot', async () => {
+	it('should save a fullpage screenshot', async () => {
 		await browser.imageCompare.saveFullPageScreen('fullPage', { fullPageScrollTimeout: '1500' });
 	});
 });
