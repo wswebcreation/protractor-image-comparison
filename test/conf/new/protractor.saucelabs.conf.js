@@ -18,22 +18,12 @@ config.multiCapabilities = [
 	/**
 	 * iOS
 	 */
-	// @todo: Tablets can have multiple tabs open, when this happens the address bar is higher and making selecting an element fail
 	{
 		deviceName: 'iPad Pro (12.9 inch) (2nd generation) Simulator',
 		browserName: 'safari',
 		logName: 'iPadPro12.9.2nd',
 		platformName: 'ios',
 		platformVersion: '12.0',
-		specs: [ mobileSpecs ],
-		...defaultCapabilities,
-	},
-	{
-		deviceName: 'iPad Pro (9.7 inch) Simulator',
-		browserName: 'safari',
-		logName: 'iPadPro9.7Simulator',
-		platformName: 'ios',
-		platformVersion: '11.3',
 		specs: [ mobileSpecs ],
 		...defaultCapabilities,
 	},
@@ -55,7 +45,6 @@ config.multiCapabilities = [
 		specs: [ mobileSpecs ],
 		...defaultCapabilities,
 	},
-	// @TODO: check iPhone X series toolbar and black thingy
 	{
 		browserName: 'safari',
 		deviceName: 'iPhone X Simulator',

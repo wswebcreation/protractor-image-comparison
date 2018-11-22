@@ -12,18 +12,18 @@ describe('new image compare', () => {
   });
 
   it('should do a save element', async () => {
-    await browser.imageCompare.saveElement(firstButton, 'examplePageElement', {empty: null});
+    await browser.imageCompare.saveElement(firstButton, 'firstButtonElement', {empty: null});
   });
 
   xit('should do a save element with custom dimensions the deprecated way', async () => {
-    await browser.imageCompare.saveElement(firstButton, 'resizeDimensions-examplePageElement-deprecated', {resizeDimensions: 15});
+    await browser.imageCompare.saveElement(firstButton, 'resizeDimensions-firstButtonElement-deprecated', {resizeDimensions: 15});
   });
 
   xit('should do a save element with custom dimensions the new way', async () => {
-    await browser.imageCompare.saveElement(firstButton, 'resizeDimensions-examplePageElement-new', {resizeDimensions: {left: 15, top: 250}});
+    await browser.imageCompare.saveElement(firstButton, 'resizeDimensions-firstButtonElement-new', {resizeDimensions: {left: 15, top: 250}});
   });
 
-  xit('should save a fullpage screenshot', async () => {
+  it('should save a fullpage screenshot', async () => {
     await browser.imageCompare.saveFullPageScreen('fullPage', {fullPageScrollTimeout: '1500'});
   });
 });
