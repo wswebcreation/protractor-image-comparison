@@ -1,3 +1,4 @@
+const { join } = require('path');
 let config = require('../protractor.shared.conf.js').config;
 
 config.specs = [
@@ -8,23 +9,24 @@ config.specs = [
 config.seleniumAddress = 'http://localhost:4444/wd/hub/';
 
 config.capabilities = {
-  browserName: 'chrome',
-  logName: "chrome-latest",
-  shardTestFiles: true,
-  chromeOptions: {
-    args: ['disable-infobars']
-  },
+	browserName: 'chrome',
+	logName: 'chrome-latest',
+	shardTestFiles: true,
+	chromeOptions: {
+		args: [ 'disable-infobars' ]
+	},
 };
 
-config.plugins = [{
-  path: '../../../build/index.js',
-	options:{
-		baselineFolder: './localBaseline',
+config.plugins = [ {
+	path: join(process.cwd(), './build/index.js'),
+	options: {
+		baselineFolder: join(process.cwd(), './test/sauceBaseline/'),
 		debug: false,
 		formatImageName: `{tag}-{logName}-{width}x{height}`,
-		screenshotPath: '.tmp/',
+		screenshotPath: join(process.cwd(), '.tmp/'),
 		savePerInstance: true,
+		autoSaveBaseline: true,
 	}
-}];
+} ];
 
 exports.config = config;

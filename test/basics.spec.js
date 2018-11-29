@@ -1,7 +1,7 @@
-import fileExists from './helpers/fileExists';
 import { resolve } from 'path';
+import fileExists from './helpers/fileExists';
 
-describe('image compare basics', () => {
+xdescribe('image compare basics', () => {
 	const firstButton = $('.uk-button:nth-child(1)');
 	const localConfig = require('../local.config.json');
 	const browserName = browser.browserName.toLowerCase();
