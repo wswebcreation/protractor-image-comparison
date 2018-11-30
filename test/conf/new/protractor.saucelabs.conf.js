@@ -1,5 +1,4 @@
-'use strict';
-
+const { join } = require('path');
 let config = require('../protractor.shared.conf.js').config;
 const basicSpecs = '../../basics.spec.js';
 const deskSpecs = '../../new.desktop.spec.js';
@@ -189,13 +188,14 @@ config.multiCapabilities = [
 ];
 
 config.plugins = [ {
-	path: '../../../build/index.js',
+	path: join(process.cwd(), './build/index.js'),
 	options: {
-		baselineFolder: './localBaseline',
+		baselineFolder: join(process.cwd(), './test/sauceBaseline/'),
 		debug: false,
 		formatImageName: `{tag}-{logName}-{width}x{height}`,
-		screenshotPath: '.tmp/',
+		screenshotPath: join(process.cwd(), '.tmp/'),
 		savePerInstance: true,
+		autoSaveBaseline: true,
 	}
 } ];
 
