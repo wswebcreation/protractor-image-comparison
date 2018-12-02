@@ -2,7 +2,7 @@
 
 const fs = require('fs-extra');
 const path = require('path');
-const resemble = require('../../lib/resemble/compareImages.js');
+const resemble = require('../../build/resemble/compareImages.js');
 
 describe('node-resemble.js', () => {
   const peopleImage = fs.readFileSync(path.resolve(__dirname, './example/People.png'));
