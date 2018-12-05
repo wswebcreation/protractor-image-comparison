@@ -19,7 +19,7 @@ exports.config = {
 		// Compile on the fly
 		require('babel-register');
 
-		browser.ignoreSynchronization = true;
+		browser.waitForAngularEnabled(false);
 
 		jasmine.getEnv().addReporter(new SpecReporter({
 			spec: {
