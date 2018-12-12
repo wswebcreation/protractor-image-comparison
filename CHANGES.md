@@ -61,6 +61,7 @@ const options = {
 ```
 
 - `savePerInstance` for the main options. This will save each screenshot in a subfolder which is named after the desktop `browserName` or if mobile the `deviceName` from the capabilities
+- `blockOutToolBar`: By default the comparison will also compare a toolbar on a screenshot. It could be that you also want to block this one out during comparions due to gradients based on the background of the page (take for example the Samsung S8 with the onscreen toolbar). By providing the option `blockOutToolBar: true` this module will automatically blockout the toolbar on all mobile devices during comparison
 - `returnAllCompareData`: By default the comparison will return a mismatch percentage, if `returnAllCompareData: true` is used a complete data object will be returned like:
 
 ```js

@@ -1,3 +1,4 @@
+const { join } = require('path');
 let config = require('../protractor.shared.conf.js').config;
 
 config.specs = [ '../../new.mobile.spec.js' ];
@@ -50,13 +51,16 @@ config.multiCapabilities = [
 ];
 
 config.plugins = [ {
-	path: '../../../build/index.js',
+	path: join(process.cwd(), './build/index.js'),
 	options: {
-		baselineFolder: './localBaseline',
-		debug: false,
+		baselineFolder: join(process.cwd(), './localBaseline'),
+		debug: true,
 		formatImageName: `{tag}-{logName}-{width}x{height}`,
-		screenshotPath: '.tmp/',
+		screenshotPath: join(process.cwd(), '.tmp/'),
 		savePerInstance: true,
+		autoSaveBaseline: true,
+		blockOutStatusBar: true,
+		blockOutToolBar: true,
 	}
 } ];
 

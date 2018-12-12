@@ -191,11 +191,13 @@ config.plugins = [ {
 	path: join(process.cwd(), './build/index.js'),
 	options: {
 		baselineFolder: join(process.cwd(), './test/sauceBaseline/'),
-		debug: false,
+		debug: true,
 		formatImageName: `{tag}-{logName}-{width}x{height}`,
 		screenshotPath: join(process.cwd(), '.tmp/'),
 		savePerInstance: true,
 		autoSaveBaseline: true,
+		blockOutStatusBar: true,
+		blockOutToolBar: true,
 	}
 } ];
 
