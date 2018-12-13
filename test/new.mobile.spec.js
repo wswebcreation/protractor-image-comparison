@@ -43,4 +43,10 @@ describe('new image compare', () => {
 			expect(await browser.imageCompare.checkScreen(examplePage)).toEqual(0);
 		});
 	});
+
+	describe('compare element', () => {
+		it('should compare successful with a baseline', async() => {
+			expect(await browser.imageCompare.checkElement(firstButton, 'firstButtonElement')).toEqual(0);
+		});
+	});
 });

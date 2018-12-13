@@ -1,5 +1,5 @@
 import fileExists from './helpers/fileExists';
-describe('protractor-image-comparison desktop', () => {
+xdescribe('protractor-image-comparison desktop', () => {
 	const examplePage = 'examplePage';
 	const firstButton = $('.uk-button:nth-child(1)');
 
@@ -14,6 +14,12 @@ describe('protractor-image-comparison desktop', () => {
 	describe('compare screen', () => {
 		it('should compare successful with a baseline', async() => {
 			expect(await browser.imageCompare.checkScreen(examplePage)).toEqual(0);
+		});
+	});
+
+	describe('compare element', () => {
+		it('should compare successful with a baseline', async() => {
+			expect(await browser.imageCompare.checkElement(firstButton, 'firstButtonElement')).toEqual(0);
 		});
 	});
 
