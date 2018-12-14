@@ -4,6 +4,7 @@ let SpecReporter = require('jasmine-spec-reporter').SpecReporter;
 
 exports.config = {
 	baseUrl: 'https://wswebcreation.github.io/protractor-image-comparison/',
+	// baseUrl: 'http://127.0.0.1:8080',
 	disableChecks: true,
 	framework: 'jasmine2',
 	maxInstances: 5,

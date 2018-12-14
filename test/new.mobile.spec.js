@@ -1,6 +1,7 @@
 describe('new image compare', () => {
 	const logName = browser.logName;
 	const examplePage = 'examplePage';
+	const fullPage = 'fullPage';
 	const firstButton = $('.uk-button:nth-child(1)');
 
 	beforeEach(async () => {
@@ -47,6 +48,12 @@ describe('new image compare', () => {
 	describe('compare element', () => {
 		it('should compare successful with a baseline', async() => {
 			expect(await browser.imageCompare.checkElement(firstButton, 'firstButtonElement')).toEqual(0);
+		});
+	});
+
+	describe('compare fullpage', () => {
+		it('should compare successful with a baseline', async() => {
+			expect(await browser.imageCompare.checkFullPageScreen(fullPage, 'firstButtonElement')).toEqual(0);
 		});
 	});
 });

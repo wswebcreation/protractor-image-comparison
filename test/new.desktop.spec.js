@@ -1,6 +1,7 @@
 import fileExists from './helpers/fileExists';
 describe('protractor-image-comparison desktop', () => {
 	const examplePage = 'examplePage';
+	const fullPage = 'fullPage';
 	const firstButton = $('.uk-button:nth-child(1)');
 
   beforeEach(async () => {
@@ -20,6 +21,12 @@ describe('protractor-image-comparison desktop', () => {
 	describe('compare element', () => {
 		it('should compare successful with a baseline', async() => {
 			expect(await browser.imageCompare.checkElement(firstButton, 'firstButtonElement')).toEqual(0);
+		});
+	});
+
+	describe('compare fullpage', () => {
+		it('should compare successful with a baseline', async() => {
+			expect(await browser.imageCompare.checkFullPageScreen(fullPage, 'firstButtonElement')).toEqual(0);
 		});
 	});
 
