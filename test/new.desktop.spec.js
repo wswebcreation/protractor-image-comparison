@@ -1,5 +1,5 @@
 import fileExists from './helpers/fileExists';
-xdescribe('protractor-image-comparison desktop', () => {
+describe('protractor-image-comparison desktop', () => {
 	const examplePage = 'examplePage';
 	const firstButton = $('.uk-button:nth-child(1)');
 
