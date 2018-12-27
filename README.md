@@ -7,40 +7,34 @@ protractor-image-comparison
 
 [![Sauce Test Status](https://saucelabs.com/browser-matrix/wswebcreation-nl.svg)](https://saucelabs.com/u/wswebcreation-nl)
 
-> **I'M CURRENTLY REFACTORING THE MODULE, FOR MORE INFO SEE ISSUE [83](https://github.com/wswebcreation/protractor-image-comparison/issues/83)**
 
 ## What can it do?
-*protractor-image-comparison* is a lightweight *protractor* plugin for browsers / mobile browsers / hybrid apps to do image comparison on screens or elements.
+*protractor-image-comparison* is a lightweight *protractor* plugin for browsers / mobile browsers / hybrid apps to do image comparison on screens, elements or full page screens.
 
 You can:
 
-- save or compare screens / elements against a baseline
-- save or compare a fullpage screenshot against a baseline (**desktop AND mobile are now supported**)
+- save or compare screens / elements / full page screens against a baseline
 - automatically create a baseline when no baseline is there
-- disable css animations by default
-- ignore anti-aliasing differences
-- compare images by ignoring their colors (do a grayscale comparison)
-- blockout custom regions during comparison (all)
-- ignore regions by making them transparent in the base image (all) thanks to [tharders](https://github.com/tharders)
-- parameter to hide / show scrollbars [pnad](https://github.com/pnad)
-- increase the element dimenisions screenshots (all)
-- provide custom iOS and Android offsets for status-/address-/toolbar (mobile only)
-- automatically exclude a statusbar during screencomparison (mobile only)
-- taking a screenshot directly from canvas, tnx to [tuomas2](https://github.com/tuomas2), see [here](https://github.com/wswebcreation/protractor-image-comparison/blob/master/docs/index.md#saveelementelement-tag-options--promise). **!!This isn't supported in IE11 and Safari 9!!**
-- use a tolerance property called `saveAboveTolerance` that prevents saving result image to diff folder, tnx to [IgorSasovets](https://github.com/IgorSasovets )**
-- **NEW**, more accurate comparison with 2 new methods called `ignoreLess` and `ignoreNothing`. These 2 methods compare with different `red, green, blue, alpha, minBrightness and maxBrightness`
-- **NEW**, more accurate percentage. In previous releases the mismatch was with max with 2 digits. With `rawMisMatchPercentage:true`, you can have a result like `0.69803221`
+- blockout custom regions and even automatically exclude a status and or tool bars (mobile only) during a comparison
+- increase the element dimensions screenshots
+- use different comparison methods
+- and much more, see the [options here]()
 
-Comparison is based on [ResembleJS](https://github.com/Huddle/Resemble.js). If you want to compare images online you can check the [online tool](https://huddleeng.github.io/Resemble.js/)
+The module is now based on:
+- the power of [`webdriver-image-comparison`](https://github.com/wswebcreation/webdriver-image-comparison). This is a lightweight module to retrieve the neeeded data and screenshots for all browsers / devices
+- the comparison comparison power of [ResembleJS](https://github.com/Huddle/Resemble.js). If you want to compare images online you can check the [online tool](https://huddleeng.github.io/Resemble.js/)
+
+
+It can be used for:
+
+- desktop browsers (Chrome / Firefox / Safari / Internet Explorer 11 / Microsoft Edge)
+- mobile / tablet browsers (Chrome / Safari on emulators / real devices) via Appium
+- Hybrid apps via Appium
+
+> NOTE: See the browser-matrix at the [top](./README.md#protractor-image-comparison) of this readme to see all the supported browser/OS-versions.
 
 ## Installation
-Install this module locally with the following command:
-
-```shell
-npm install protractor-image-comparison
-```
-
-Save to dependencies or dev-dependencies:
+Install this module locally with the following command to be used as a (dev-)dependency:
 
 ```shell
 npm install --save protractor-image-comparison
@@ -48,78 +42,145 @@ npm install --save-dev protractor-image-comparison
 ```
 
 ## Usage
-*protractor-image-comparison* can be used for:
+> ***protractor-image-comparison* supports NodeJS 8 or higher** 
 
-- desktop browsers (Chrome / Firefox / Safari / Internet Explorer 11 / Microsoft Edge)
-- mobile / tablet browsers (Chrome / Safari on emulators / real devices) via Appium
-- Hybrid apps via Appium
-
-For more information about mobile testing see the [Appium](./docs/appium.md) documentation.
-
-### Load from the configuration file of *protractor*
-
-You can load `protractor-image-comparison` form the config like below
+### Configuration
+ 
+In comparison to **versions < 3** *protractor-image-comparison* can now be used as a plugin with the following code:
 
 ```js
-exports.config = {
-   // your config here ...
+// protractor.conf.js
+const { join } = require('path');
 
-    onPrepare: function() {
-        const protractorImageComparison = require('protractor-image-comparison');
-        browser.protractorImageComparison = new protractorImageComparison(
-            {
-                baselineFolder: 'path/to/baseline/',
-                screenshotPath: 'path/to/save/actual/screenshots/'
-            }
-        );
-    },
-}
+exports.config = {
+
+  // ... the rest of your config
+
+  plugins: [
+  	{
+  		// The module name
+  		package: 'protractor-image-comparison',
+			// Some options, see the docs for more
+			options: {
+				baselineFolder: join(process.cwd(), './baseline/'),
+				formatImageName: `{tag}-{logName}-{width}x{height}`,
+				screenshotPath: join(process.cwd(), '.tmp/'),
+				savePerInstance: true,
+				autoSaveBaseline: true,
+			},
+  	},
+  ],
+};
 ```
 
-The full list of options can be found [here](./docs/index.md#new-protractorimagecomparisonoptions)
+More options can be found [here](./docs/index.md#new-protractorimagecomparisonoptions).
 
-> **NOTE: You don't need to run AND `saveElement|saveScreen|saveFullPageScreens` if you want to run `checkElement|checkScreen|checkFullPageScreen`**
+### Writing tests
+*protractor-image-comparison* is framework agnostic, meaning that you can use it with all the frameworks Protractor supports like `Jasmine|Mocha|CucumberJS`. 
+You can use it like this:
 
-If you run for the first time without having a baseline the `check`-methods will reject the promise with the following warning:
+```typescript
+import {$, browser} from 'protractor';
 
-    `Image not found, saving current image as new baseline.`
+describe('protractor-image-comparison desktop', () => {
+  beforeEach(async () => {
+    await browser.get(browser.baseUrl);
+  });
+  
+  it('should save some screenshots', async() => {
+  	// Save a screen
+  	await browser.imageComparison.saveScreen('examplePaged', { /* some options*/ });
+  	
+  	// Save an element
+  	await browser.imageComparison.saveElement($('.uk-button:nth-child(1)'), 'firstButtonElement', { /* some options*/ });
+  	
+  	// Save a full page screens
+  	await browser.imageComparison.saveFullPageScreen('fullPage', { /* some options*/ });
+	});
+  
+  it('should compare successful with a baseline', async() => {
+  	// Check a screen
+  	expect(await browser.imageComparison.checkScreen('examplePaged', { /* some options*/ })).toEqual(0);
+  	
+  	// Check an element
+  	expect(await browser.imageComparison.checkElement($('.uk-button:nth-child(1)'), 'firstButtonElement', { /* some options*/ })).toEqual(0);
+  	
+  	// Check a full page screens
+  	expect(await browser.imageComparison.checkFullPageScreen('fullPage', { /* some options*/ })).toEqual(0);
+	});
+});
+``` 
+
+**If you run for the first time without having a baseline the `check`-methods will reject the promise with the following warning:**
+
+```shell
+#####################################################################################
+ Baseline image not found, save the actual image manually to the baseline.
+ The image can be found here:
+ /Users/wswebcreation/Git/protractor-image-comparison/.tmp/actual/desktop_chrome/examplePage-chrome-latest-1366x768.png
+ If you want the module to auto save a non existing image to the baseline you
+ can provide 'autoSaveBaseline: true' to the options.
+#####################################################################################
+
+```
 
 This means that the current screenshot is saved in the actual folder and you **manually need to copy it to your baseline**.
-If you instantiate `protractor-image-comparsion` with `autoSaveBaseline: true`, see [docs](./docs/index.md#new-protractorimagecomparisonoptions),
-the image will automatically be saved into the baselinefolder.
+If you instantiate `protractor-image-comparsion` with `autoSaveBaseline: true` the image will automatically be saved into the baseline folder.
 
+### Test result outputs
+The `save(Screen/Element/FullPageScreen)` methods will provide the following information after the method has been executed:
 
-*protractor-image-comparison* provides:
+```js
+const saveResult = { 
+	// The device pixel ratio of the instance that has run
+  devicePixelRatio: 1,
+  
+  // The formatted filename, this depends on the options `formatImageName`
+  fileName: 'examplePage-chrome-latest-1366x768.png',
+  
+  // The path where the actual screenshot file can be found
+  path: '/Users/wswebcreation/Git/protractor-image-comparison/.tmp/actual/desktop_chrome',
+};
+```
 
-- two comparison methods `checkScreen` and `checkElement`.
-- two helper methods `saveScreen` and `saveElement` for saving images.
-- **NEW** a helper `saveFullPageScreens` and a comparison method `checkFullPageScreen` for saving and comparing a fullpage screenshot.
+By default the `check(Screen/Element/FullPageScreen)` methods will only provide a mismatch percentage like `1.23`, but when the plugin has the options `returnAllCompareData: true` the following information is provided after the method has been executed:
 
-The comparison methods return a result in percentages like `0` or `3.94`, or when `rawMisMatchPercentage:true` it can return a percentage like `0.00244322` .
-
-*protractor-image-comparison* can work with Jasmine, Mocha and Cucumber.js. See [Examples](./docs/examples.md) for or a Jasmine implementation.
-
-More information about the **methods** can be found [here](./docs/methods.md).
-
-## Ouput
-To see example of the output please check [here](./docs/output.md)
-
-## Conventions
-See [conventions.md](./docs/conventions.md).
-
-## Contribution
-See [CONTRIBUTING.md](./docs/CONTRIBUTING.md).
+```js
+const checkResult = {  
+  // The formatted filename, this depends on the options `formatImageName`
+  fileName: 'examplePage-chrome-headless-latest-1366x768.png',
+  folders: {
+      // The actual folder and the file name
+      actual: '/Users/wswebcreation/Git/protractor-image-comparison/.tmp/actual/desktop_chrome/examplePage-chrome-headless-latest-1366x768.png',
+      // The baseline folder and the file name
+      baseline: '/Users/wswebcreation/Git/protractor-image-comparison/localBaseline/desktop_chrome/examplePage-chrome-headless-latest-1366x768.png',
+      // This following folder is optional and only if there is a mismatch
+      // The folder that holds the diffs and the file name
+      diff: '/Users/wswebcreation/Git/protractor-image-comparison/.tmp/diff/desktop_chrome/examplePage-chrome-headless-latest-1366x768.png',
+    },
+    // The mismatch percentage
+    misMatchPercentage: 2.34
+};
+```
 
 ## FAQ
+### Do I need to use a `save(Screen/Element/FullPageScreen)` methods when I want to run `check(Screen/Element/FullPageScreen)`?
+No, you don't need to do this. The `check(Screen/Element/FullPageScreen)` will do this automatically for you
+
 ### Width and height cannot be negative
 It could be that the error `Width and height cannot be negative` is thrown. 9 out of 10 times this is related to creating an image of an element that is not in the view. Please be sure you always make sure the element in is in the view before you try to make an image of the element.
 
 ### Changing the color on an element is not detected by protractor-image-comparison
 When using Chrome and using the `chromeOptions.args:['--disable-gpu']` it could be possible that the images can't be compared in the correct way. If you remove this argument all will work again. See [here](https://github.com/wswebcreation/protractor-image-comparison/issues/33#issuecomment-333409063)
 
-## Credits
-- Comparison core of `./lib/resemble.js` [ResembleJS](https://github.com/Huddle/Resemble.js)
+## Ouput
+~~To see example of the output please check [here](./docs/output.md)~~
 
-## TODO
-* Update documentation for Mobile
-* New (mobile friendly) testpage
+## Contribution
+~~See [CONTRIBUTING.md](./docs/CONTRIBUTING.md).~~
+
+## TODO:
+- [ ] (re)write README.md
+- [ ] Write a options doc
+- [ ] (re)write CONTRIBUTING.md
+- [ ] (re)write output.md

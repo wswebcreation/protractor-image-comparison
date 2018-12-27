@@ -22,5 +22,4 @@ before_script:
 
 script:
 - npm run compile
-- npm run unit.test
-- npm run new.saucelabs
+- npm run test.saucelabs

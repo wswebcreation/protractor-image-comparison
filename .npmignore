@@ -4,6 +4,5 @@ node_modules/
 .tmp/
 .gitignore
 .travis.yml
-perfecto.config.json
 local.config.json
 localBaseline/
