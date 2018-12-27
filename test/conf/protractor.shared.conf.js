@@ -1,10 +1,8 @@
-'use strict';
-
-let SpecReporter = require('jasmine-spec-reporter').SpecReporter;
+const {join} = require('path');
+const SpecReporter = require('jasmine-spec-reporter').SpecReporter;
 
 exports.config = {
 	baseUrl: 'https://wswebcreation.github.io/protractor-image-comparison/',
-	// baseUrl: 'http://127.0.0.1:8080',
 	disableChecks: true,
 	framework: 'jasmine2',
 	maxInstances: 5,
@@ -16,12 +14,17 @@ exports.config = {
 		print: function () {
 		}
 	},
-	onPrepare: function () {
-		// Compile on the fly
-		require('babel-register');
+	SELENIUM_PROMISE_MANAGER: false,
+	onPrepare: async () => {
+		// Transpile on the fly
+		require('ts-node').register({
+			project: join(__dirname, './tsconfig.e2e.json')
+		});
 
-		browser.waitForAngularEnabled(false);
+		// Disable Angular, because it's not an angular site
+		await browser.waitForAngularEnabled(false);
 
+		// Add the reporter
 		jasmine.getEnv().addReporter(new SpecReporter({
 			spec: {
 				displayStacktrace: 'none',
@@ -32,13 +35,14 @@ exports.config = {
 			}
 		}));
 
-		return browser.getProcessedConfig().then(_ => {
-			browser.browserName = _.capabilities.browserName.toLowerCase();
-			browser.logName = _.capabilities.logName;
+		// Set some config data
+		const processedConfig = await browser.getProcessedConfig();
+		browser.browserName = processedConfig.capabilities.browserName.toLowerCase();
+		browser.logName = processedConfig.capabilities.logName;
 
-			if (!('platformName' in _.capabilities)) {
-				return browser.driver.manage().window().setSize(1366, 768);
-			}
-		});
+		// Resize the screens if it is a VM
+		if (!('platformName' in processedConfig.capabilities)) {
+			await browser.driver.manage().window().setSize(1366, 768);
+		}
 	}
 };

@@ -69,7 +69,7 @@ const data =  {
 	fileName: 'examplePage-chrome-latest-1366x768.png',
 	folders: { 
 		actual: '/users/git/protractor-image-comparison/.tmp/actual/desktop_chrome/examplePage-chrome-latest-1366x768.png',
-  	baseline: '/users/git/protractor-image-comparison/test/saucebaseline/desktop_chrome/examplePage-chrome-latest-1366x768.png',
+  	baseline: sauceLabsBaseline,
   	diff: '/users/git/protractor-image-comparison/actual/desktop_chrome/examplePage-chrome-latest-1366x768.png', 
   },
   misMatchPercentage: 0,
