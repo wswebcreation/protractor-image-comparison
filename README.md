@@ -18,11 +18,10 @@ You can:
 - blockout custom regions and even automatically exclude a status and or tool bars (mobile only) during a comparison
 - increase the element dimensions screenshots
 - use different comparison methods
-- and much more, see the [options here]()
+- and much more, see the [options here](./docs/OPTIONS.md)
 
-The module is now based on:
-- the power of [`webdriver-image-comparison`](https://github.com/wswebcreation/webdriver-image-comparison). This is a lightweight module to retrieve the neeeded data and screenshots for all browsers / devices
-- the comparison comparison power of [ResembleJS](https://github.com/Huddle/Resemble.js). If you want to compare images online you can check the [online tool](https://huddleeng.github.io/Resemble.js/)
+The module is now based on the power of the new [`webdriver-image-comparison`](https://github.com/wswebcreation/webdriver-image-comparison) module. This is a lightweight module to retrieve the needed data and screenshots for all browsers / devices.
+The comparison power comes from [ResembleJS](https://github.com/Huddle/Resemble.js). If you want to compare images online you can check the [online tool](https://huddleeng.github.io/Resemble.js/)
 
 
 It can be used for:
@@ -48,32 +47,29 @@ npm install --save-dev protractor-image-comparison
  
 In comparison to **versions < 3** *protractor-image-comparison* can now be used as a plugin with the following code:
 
-```js
+```typescript
 // protractor.conf.js
 const { join } = require('path');
-
 exports.config = {
-
-  // ... the rest of your config
-
-  plugins: [
-  	{
-  		// The module name
-  		package: 'protractor-image-comparison',
+	// ... the rest of your config
+	plugins: [
+		{
+			// The module name
+			package: 'protractor-image-comparison',
 			// Some options, see the docs for more
 			options: {
 				baselineFolder: join(process.cwd(), './baseline/'),
 				formatImageName: `{tag}-{logName}-{width}x{height}`,
 				screenshotPath: join(process.cwd(), '.tmp/'),
 				savePerInstance: true,
-				autoSaveBaseline: true,
+				// ... more options
 			},
-  	},
-  ],
+		},
+	],
 };
 ```
 
-More options can be found [here](./docs/index.md#new-protractorimagecomparisonoptions).
+More plugin options can be found [here](./docs/OPTIONS.md#plugin-options).
 
 ### Writing tests
 *protractor-image-comparison* is framework agnostic, meaning that you can use it with all the frameworks Protractor supports like `Jasmine|Mocha|CucumberJS`. 
@@ -134,14 +130,14 @@ The `save(Screen/Element/FullPageScreen)` methods will provide the following inf
 const saveResult = { 
 	// The device pixel ratio of the instance that has run
   devicePixelRatio: 1,
-  
   // The formatted filename, this depends on the options `formatImageName`
   fileName: 'examplePage-chrome-latest-1366x768.png',
-  
   // The path where the actual screenshot file can be found
   path: '/Users/wswebcreation/Git/protractor-image-comparison/.tmp/actual/desktop_chrome',
 };
 ```
+
+See the [Check output on failure](./docs/OUTPUT.md#check-output-on-failure) section in the [output](./docs/OUTPUT.md) docs for the images.
 
 By default the `check(Screen/Element/FullPageScreen)` methods will only provide a mismatch percentage like `1.23`, but when the plugin has the options `returnAllCompareData: true` the following information is provided after the method has been executed:
 
@@ -163,6 +159,8 @@ const checkResult = {
 };
 ```
 
+See the [Save output](./docs/OUTPUT.md#save-output) section in the [output](./docs/OUTPUT.md) docs for the images.
+
 ## FAQ
 ### Do I need to use a `save(Screen/Element/FullPageScreen)` methods when I want to run `check(Screen/Element/FullPageScreen)`?
 No, you don't need to do this. The `check(Screen/Element/FullPageScreen)` will do this automatically for you
@@ -173,14 +171,8 @@ It could be that the error `Width and height cannot be negative` is thrown. 9 ou
 ### Changing the color on an element is not detected by protractor-image-comparison
 When using Chrome and using the `chromeOptions.args:['--disable-gpu']` it could be possible that the images can't be compared in the correct way. If you remove this argument all will work again. See [here](https://github.com/wswebcreation/protractor-image-comparison/issues/33#issuecomment-333409063)
 
-## Ouput
-~~To see example of the output please check [here](./docs/output.md)~~
-
 ## Contribution
-~~See [CONTRIBUTING.md](./docs/CONTRIBUTING.md).~~
+See [CONTRIBUTING.md](./docs/CONTRIBUTING.md).
 
 ## TODO:
-- [ ] (re)write README.md
-- [ ] Write a options doc
-- [ ] (re)write CONTRIBUTING.md
-- [ ] (re)write output.md
+- [ ] (re)write OUTPUT.md with new images

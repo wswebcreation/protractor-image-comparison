@@ -4,16 +4,18 @@ about: Create a report to help us improve.
 
 ---
 
+> **NOTE: Be aware of the fact that this module is only a plugin that provides all functionality from [`webdriver-image-comparison`](https://github.com/wswebcreation/webdriver-image-comparison). So please check if this is an issue with this plugin or with `webdriver-image-comparison`.**
+
 **Environment (please complete the following information):**
  - Node.js version: [e.g. 8.9.1]
  - NPM version: [e.g. 5.8.0]
  - Browser name and version: [e.g. Chrome 68]
  - Platform name and version: [e.g. Windows 10]
  - protractor version: [e.g. 5.1.0]
- - protractor-image-comparison version: [e.g. 2.0.0]
+ - protractor-image-comparison version: [e.g. 3.0.0]
 
 **Config of protractor + protractor-image-comparison**
-An example of how you configured the reporter in your webdriver.io config
+An example of how you configured the protractor-image-comparison
 
 **Describe the bug**
 A clear and concise description of what the bug is.
