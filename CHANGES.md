@@ -9,6 +9,7 @@
 - dropped support for Safari 9
 
 ## NEW
+- The `png-image` and `pngjs-image` are now completely removed and replaced by the latest version of [`canvas`](https://github.com/Automattic/node-canvas)
 - `resizeDimensions` for `saveElement` and `checkElement` will now accept an object in pixels, see below
 
 ```
