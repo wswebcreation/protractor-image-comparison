@@ -6,3 +6,5 @@ node_modules/
 .travis.yml
 local.config.json
 localBaseline/
+test/
+docs/
