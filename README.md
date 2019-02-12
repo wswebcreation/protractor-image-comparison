@@ -7,8 +7,6 @@ protractor-image-comparison
 
 [![Sauce Test Status](https://saucelabs.com/browser-matrix/wswebcreation-nl.svg)](https://saucelabs.com/u/wswebcreation-nl)
 
-> **I'M CURRENTLY REFACTORING THE MODULE, FOR MORE INFO SEE ISSUE [83](https://github.com/wswebcreation/protractor-image-comparison/issues/83)**
-
 ## What can it do?
 *protractor-image-comparison* is a lightweight *protractor* plugin for browsers / mobile browsers / hybrid apps to do image comparison on screens or elements.
 
@@ -28,8 +26,9 @@ You can:
 - automatically exclude a statusbar during screencomparison (mobile only)
 - taking a screenshot directly from canvas, tnx to [tuomas2](https://github.com/tuomas2), see [here](https://github.com/wswebcreation/protractor-image-comparison/blob/master/docs/index.md#saveelementelement-tag-options--promise). **!!This isn't supported in IE11 and Safari 9!!**
 - use a tolerance property called `saveAboveTolerance` that prevents saving result image to diff folder, tnx to [IgorSasovets](https://github.com/IgorSasovets )**
-- **NEW**, more accurate comparison with 2 new methods called `ignoreLess` and `ignoreNothing`. These 2 methods compare with different `red, green, blue, alpha, minBrightness and maxBrightness`
-- **NEW**, more accurate percentage. In previous releases the mismatch was with max with 2 digits. With `rawMisMatchPercentage:true`, you can have a result like `0.69803221`
+- more accurate comparison with 2 new methods called `ignoreLess` and `ignoreNothing`. These 2 methods compare with different `red, green, blue, alpha, minBrightness and maxBrightness`
+- more accurate percentage. In previous releases the mismatch was with max with 2 digits. With `rawMisMatchPercentage:true`, you can have a result like `0.69803221`
+- **NEW**, clearFolder to delete runtime folder (actual & diff) on initialisation
 
 Comparison is based on [ResembleJS](https://github.com/Huddle/Resemble.js). If you want to compare images online you can check the [online tool](https://huddleeng.github.io/Resemble.js/)
 

@@ -7,6 +7,7 @@ const path = require('path');
 const PNGImage = require('png-image');
 const PNGJSImage = require('pngjs-image');
 const resembleJS = require('./lib/compareImages');
+const rimraf = require('rimraf');
 
 /**
  * image-diff protractor plugin class
@@ -33,6 +34,7 @@ const resembleJS = require('./lib/compareImages');
  * @param {object}  options.androidOffsets Object that will hold custom values for the statusBar, addressBar, addressBarScrolled and toolBar
  * @param {object}  options.iosOffsets Object that will hold the custom values for the statusBar, addressBar, addressBarScrolled and toolBar
  * @param {number}  options.saveAboveTolerance Allowable value of misMatchPercentage that prevents saving image with differences
+ * @param {boolean} options.clearFolder delete runtime folder (actual & diff) on initialisation
  *
  * @property {string}   actualFolder Path where the actual screenshots are saved
  * @property {number}   addressBarShadowPadding Mobile Chrome and mobile Safari have a shadow below the addressbar, this property will make sure that it wont be seen in the image
@@ -132,6 +134,17 @@ class protractorImageComparison {
     this.testInBrowser = false;
     this.toolBarShadowPadding = 6;
     this.viewPortHeight = 0;
+
+    if(options.clearFolder) {
+        rimraf(this.actualFolder , (e) => {
+            if(e !== null) throw new Error(e);
+            fs.ensureDirSync(this.actualFolder);
+        });
+        rimraf(this.diffFolder , (e) => {
+            if(e !== null) throw new Error(e);
+            fs.ensureDirSync(this.diffFolder);
+        });
+    }
 
     fs.ensureDirSync(this.actualFolder);
     fs.ensureDirSync(this.baselineFolder);

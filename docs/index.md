@@ -91,6 +91,7 @@ protractorImageComparison
 | options.androidOffsets | <code>object</code> | Object that will hold custom values for the statusBar, addressBar, addressBarScrolled and toolBar |
 | options.iosOffsets | <code>object</code> | Object that will hold the custom values for the statusBar, addressBar, addressBarScrolled and toolBar |
 | options.saveAboveTolerance | <code>number</code> | Allowable value of misMatchPercentage that prevents saving image with differences |
+| options.clearFolder | <code>boolean</code> | Delete runtime folder (actual & diff) on initialisation |
 
 <a name="checkElement"></a>
 
