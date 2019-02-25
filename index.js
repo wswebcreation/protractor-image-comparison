@@ -7,7 +7,6 @@ const path = require('path');
 const PNGImage = require('png-image');
 const PNGJSImage = require('pngjs-image');
 const resembleJS = require('./lib/compareImages');
-const rimraf = require('rimraf');
 
 /**
  * image-diff protractor plugin class
@@ -136,14 +135,8 @@ class protractorImageComparison {
     this.viewPortHeight = 0;
 
     if(options.clearFolder) {
-        rimraf(this.actualFolder , (e) => {
-            if(e !== null) throw new Error(e);
-            fs.ensureDirSync(this.actualFolder);
-        });
-        rimraf(this.diffFolder , (e) => {
-            if(e !== null) throw new Error(e);
-            fs.ensureDirSync(this.diffFolder);
-        });
+        fs.removeSync(this.actualFolder);
+        fs.removeSync(this.diffFolder);
     }
 
     fs.ensureDirSync(this.actualFolder);
