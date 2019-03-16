@@ -178,5 +178,5 @@ async function getInstanceData() {
 		name,
 		nativeWebScreenshot,
 		platformName,
-	}
+	};
 }

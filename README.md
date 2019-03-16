@@ -7,6 +7,7 @@ protractor-image-comparison
 
 [![Sauce Test Status](https://saucelabs.com/browser-matrix/wswebcreation-nl.svg)](https://saucelabs.com/u/wswebcreation-nl)
 
+> **NOTE:** V3 is out, please read the [releases](https://github.com/wswebcreation/protractor-image-comparison/releases) for all the (breaking)changes
 
 ## What can it do?
 *protractor-image-comparison* is a lightweight *protractor* plugin for browsers / mobile browsers / hybrid apps to do image comparison on screens, elements or full page screens.
@@ -176,3 +177,7 @@ See [CONTRIBUTING.md](./docs/CONTRIBUTING.md).
 
 ## TODO:
 - [ ] (re)write OUTPUT.md with new images
+- [ ] iOS Safari on iPads can have multiple tabs, so the address bar is bigger making the cutout go wrong
+- [ ] add more tests and create new ones
+- [ ] prepare the Android tool bar to automatically block it out
+- [ ] create a new website
