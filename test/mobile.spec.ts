@@ -17,7 +17,6 @@ describe('new image compare', () => {
 
 	describe('compare element', () => {
 		it('should compare successful with a baseline', async () => {
-			await browser.executeScript('arguments[0].innerHTML = "nottuB";', await $('.uk-button:nth-child(1)').getWebElement());
 			expect(await browser.imageComparison.checkElement($('.uk-button:nth-child(1)'), 'firstButtonElement')).toEqual(0);
 		});
 	});
