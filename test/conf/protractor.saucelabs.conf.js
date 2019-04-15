@@ -31,7 +31,7 @@ config.multiCapabilities = [
 		browserName: 'safari',
 		logName: 'iPadAirSimulator',
 		platformName: 'ios',
-		platformVersion: '10.3',
+		platformVersion: '12.2',
 		specs: [ mobileSpecs ],
 		...defaultCapabilities,
 	},
@@ -49,22 +49,33 @@ config.multiCapabilities = [
 		deviceName: 'iPhone X Simulator',
 		logName: 'iPhoneXSimulator',
 		platformName: 'ios',
-		platformVersion: '12.0',
+		platformVersion: '12.2',
 		specs: [ mobileSpecs ],
 		...defaultCapabilities,
 	},
-	// Not supported in the cloud now
 	// {
-	// 	deviceName: 'iPad Pro (12.9-inch) (3rd generation)',
+	// 	deviceName: 'iPad Pro (12.9 inch) (3rd generation) Simulator',
 	// 	browserName: 'safari',
 	// 	logName: 'iPadPro12.9.3rdGeneration',
 	// 	platformName: 'ios',
-	// 	platformVersion: '12.1'
+	// 	platformVersion: '12.2',
+	// 	specs: [ mobileSpecs ],
+	// 	...defaultCapabilities,
 	// },
 
 	/**
 	 * Android with native Webscreenshot
 	 */
+	{
+		browserName: 'chrome',
+		deviceName: 'Google Pixel GoogleAPI Emulator',
+		logName: 'GooglePixelGoogleAPIEmulator8.1NativeWebScreenshot',
+		platformName: 'Android',
+		platformVersion: '8.1',
+		specs: [ mobileSpecs ],
+		nativeWebScreenshot: true,
+		...defaultCapabilities,
+	},
 	{
 		browserName: 'chrome',
 		deviceName: 'Google Pixel GoogleAPI Emulator',
@@ -101,6 +112,15 @@ config.multiCapabilities = [
 	/**
 	 * Android with chrome driver screenshots
 	 */
+	{
+		browserName: 'chrome',
+		deviceName: 'Google Pixel GoogleAPI Emulator',
+		logName: 'GooglePixelGoogleAPIEmulator8.1ChromeDriver',
+		platformName: 'Android',
+		platformVersion: '8.1',
+		specs: [ mobileSpecs ],
+		...defaultCapabilities,
+	},
 	{
 		browserName: 'chrome',
 		deviceName: 'Google Pixel GoogleAPI Emulator',
@@ -202,7 +222,7 @@ config.plugins = [
 		path: join(process.cwd(), './build/index.js'),
 		options: {
 			baselineFolder: join(process.cwd(), './test/sauceLabsBaseline/'),
-			debug: false,
+			debug: true,
 			formatImageName: `{tag}-{logName}-{width}x{height}`,
 			screenshotPath: join(process.cwd(), '.tmp/'),
 			savePerInstance: true,

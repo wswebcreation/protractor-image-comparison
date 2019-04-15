@@ -4,6 +4,7 @@
 - create a `canvasScreenshot` of an element has been removed
 - `saveFullPageScreens` has been renamed to `saveFullPageScreen`
 - `nativeWebScreenshot` has been removed from the options. This can only be added/determined from the capabilities
+- `ignoreTransparentPixel` has been removed from the options.
 - `androidOffsets` and `iosOffsets` have been removed from the options. They are now set for a lot of iOS and Android versions in the [`webdriver-image-comparison constants.ts`](https://github.com/wswebcreation/webdriver-image-comparison/blob/master/lib/helpers/constants.ts)
 - dropped support for Firefox 47
 - dropped support for Safari 9
