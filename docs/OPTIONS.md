@@ -24,6 +24,7 @@ exports.config = {
 				savePerInstance: true,
 				autoSaveBaseline: true,
 				blockOutToolBar: true,
+				clearRuntimeFolder: true,
 				// ... more options
 			},
 		},
