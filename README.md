@@ -176,8 +176,5 @@ When using Chrome and using the `chromeOptions.args:['--disable-gpu']` it could 
 See [CONTRIBUTING.md](./docs/CONTRIBUTING.md).
 
 ## TODO:
-- [ ] (re)write OUTPUT.md with new images
 - [ ] iOS Safari on iPads can have multiple tabs, so the address bar is bigger making the cutout go wrong
-- [ ] add more tests and create new ones
-- [ ] prepare the Android tool bar to automatically block it out
 - [ ] create a new website
