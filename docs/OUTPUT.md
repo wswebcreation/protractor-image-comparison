@@ -1,37 +1,73 @@
 # Save output
 ## saveElement
+```js
+await browser.imageComparison.saveElement(firstButton, 'example-element-tag');
+```
 ### Desktop
-![saveElement Desktop](./images/dangerAlert-compare-chromeLatest-1366x768.png)
+![saveElement Desktop](./images/firstButtonElement-chrome-latest-1366x768.png)
 ### Mobile
-![saveElement Mobile](./images/dangerAlert-compare-iPhone_6SimulatorSafari-375x667-dpr-2.png)
+#### Android
+![saveElement Mobile](./images/firstButtonElement-GooglePixelGoogleAPIEmulator8.1ChromeDriver-360x640.png)
+#### iOS
+![saveElement Mobile](./images/firstButtonElement-iPhoneXSimulator-375x812.png)
 
 ## saveScreen
+```js
+await browser.imageComparison.saveScreen('example-page-tag');
+```
 ### Desktop
-![saveScreen Desktop](./images/example-page-compare-chromeLatest-1366x768.png)
+![saveScreen Desktop](./images/examplePage-chrome-latest-1366x768.png)
 ### Mobile
-![saveScreen Mobile](./images/example-page-compare-iPhone_6SimulatorSafari-375x667-dpr-2.png)
+#### Android ChromeDriver
+![saveScreen Mobile](./images/examplePage-GooglePixelGoogleAPIEmulator8.1ChromeDriver-360x640.png)
+#### Android nativeWebScreenshot
+![saveScreen Mobile](./images/examplePage-GooglePixelGoogleAPIEmulator8.1NativeWebScreenshot-360x640.png)
+#### iOS
+![saveScreen Mobile](./images/examplePage-iPhoneXSimulator-375x812.png)
 
-## saveFullPageScreens
+## saveFullPageScreen
+```js
+await browser.imageComparison.saveFullPageScreen('full-page-tag');
+```
 ### Desktop
-![saveFullPageScreens Desktop](./images/example-fullpage-compare-chromeLatest-1366x768.png)
+![saveFullPageScreens Desktop](./images/fullPage-chrome-latest-1366x768.png)
 ### Mobile
-![saveFullPageScreens Mobile](./images/fullPage-iPhone_6SimulatorSafari-375x667-dpr-2.png)
+#### Android
+![saveFullPageScreens Mobile](./images/fullPage-GooglePixelGoogleAPIEmulator8.1NativeWebScreenshot-360x640.png)
+#### iOS
+![saveFullPageScreens Mobile](./images/fullPage-iPhoneXSimulator-375x812.png)
 
 # Check output on failure
+
+> **NOTE:** Only the diff of a browser is shown here, but the output is the same for Android and iOS. The first button text has been changed from `Button` to `Buttons`
+
 ## checkElement
+```js
+await browser.imageComparison.checkElement('example-element-tag');
+```
 ### Desktop
-![checkElement Desktop](./images/dangerAlert-compare-fail-chromeLatest-1366x768.png)
-### Mobile
-![checkElement Mobile](./images/dangerAlert-compare-fail-iPhone_6SimulatorSafari-375x667-dpr-2.png)
+![checkElement Desktop](./images/firstButtonElement-fail-chrome-latest-1366x768.png)
 
 ## checkScreen
+```js
+await browser.imageComparison.checkScreen('example-page-tag');
+```
 ### Desktop
-![checkScreen Desktop](./images/example-page-compare-fail-chromeLatest-1366x768.png)
-### Mobile
-![checkScreen Mobile](./images/example-page-compare-fail-iPhone_6SimulatorSafari-375x667-dpr-2.png)
+![checkScreen Desktop](./images/examplePage-fail-chrome-latest-1366x768.png)
 
 ## checkFullPageScreens
+```js
+await browser.imageComparison.checkFullPageScreen('full-page-tag');
+```
 ### Desktop
-![checkFullPageScreens Desktop](./images/example-fullpage-compare-fail-chromeLatest-1366x768.png)
-### Mobile
-![checkFullPageScreens Mobile](./images/example-fullpage-compare-fail-iPhone_6SimulatorSafari-375x667-dpr-2.png)
+![checkFullPageScreens Desktop](./images/fullPage-fail-chrome-latest-1366x768.png)
+
+
+# Blockouts
+
+> **NOTE:** Not all blockout options are shown here, but below you will find an output for Android NativeWebScreenshot and iOS where the status+address and toolbar are blocked out
+
+## Android nativeWebScreenshot
+![saveFullPageScreens Mobile](./images/examplePage-blockout-GooglePixelGoogleAPIEmulator8.1NativeWebScreenshot-360x640.png)
+## iOS
+![saveFullPageScreens Mobile](./images/examplePage-blockout-iPhoneXSimulator-375x812.png)

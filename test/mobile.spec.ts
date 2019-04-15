@@ -1,10 +1,6 @@
 import {$, browser} from 'protractor';
 
 describe('new image compare', () => {
-	const examplePage = 'examplePage';
-	const fullPage = 'fullPage';
-	const firstButton = $('.uk-button:nth-child(1)');
-
 	beforeEach(async () => {
 		await browser.get(browser.baseUrl);
 		await browser.sleep(500);
@@ -15,13 +11,14 @@ describe('new image compare', () => {
 
 	describe('compare screen', () => {
 		it('should compare successful with a baseline', async () => {
-			expect(await browser.imageComparison.checkScreen(examplePage)).toEqual(0);
+			expect(await browser.imageComparison.checkScreen('examplePage')).toEqual(0);
 		});
 	});
 
 	describe('compare element', () => {
 		it('should compare successful with a baseline', async () => {
-			expect(await browser.imageComparison.checkElement(firstButton, 'firstButtonElement')).toEqual(0);
+			await browser.executeScript('arguments[0].innerHTML = "nottuB";', await $('.uk-button:nth-child(1)').getWebElement());
+			expect(await browser.imageComparison.checkElement($('.uk-button:nth-child(1)'), 'firstButtonElement')).toEqual(0);
 		});
 	});
 

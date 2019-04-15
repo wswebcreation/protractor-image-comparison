@@ -10,8 +10,6 @@ import {
 	saveScreen,
 } from 'webdriver-image-comparison';
 
-// @TODO: refactor the options, the default options should only be used later on
-
 export default class ProtractorImageComparison extends BaseClass {
 	constructor(options: ClassOptions) {
 		super(options);
