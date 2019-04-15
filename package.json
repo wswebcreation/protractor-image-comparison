@@ -1,6 +1,6 @@
 {
 	"name": "protractor-image-comparison",
-	"version": "3.0.0",
+	"version": "3.0.1",
 	"description": "npm-module to compare images with protractor",
 	"main": "./build/index.js",
 	"types": "./build/index.d.ts",
@@ -11,6 +11,7 @@
 		"test.local.ios": "./node_modules/.bin/protractor ./test/conf/protractor.local.ios.conf.js",
 		"test.saucelabs": "./node_modules/.bin/protractor ./test/conf/protractor.saucelabs.conf.js",
 		"precompile": "npm run clean",
+		"prepublish": "npm run compile",
 		"compile": "tsc",
 		"lint": "tslint -p tsconfig.json",
 		"clean": "rimraf coverage build tmp",
