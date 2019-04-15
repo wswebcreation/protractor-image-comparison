@@ -1,40 +1,48 @@
-'use strict';
-
-let SpecReporter = require('jasmine-spec-reporter').SpecReporter;
+const {join} = require('path');
+const SpecReporter = require('jasmine-spec-reporter').SpecReporter;
 
 exports.config = {
-    baseUrl: 'https://wswebcreation.github.io/protractor-image-comparison/',
-    disableChecks: true,
-    framework: 'jasmine2',
-    jasmineNodeOpts: {
-        showColors: true,
-        defaultTimeoutInterval: 180000,
-        isVerbose: true,
-        includeStackTrace: true,
-        print: function () {
-        }
-    },
-    onPrepare: function () {
-        browser.ignoreSynchronization = true;
+	baseUrl: 'https://wswebcreation.github.io/protractor-image-comparison/',
+	disableChecks: true,
+	framework: 'jasmine2',
+	maxInstances: 5,
+	jasmineNodeOpts: {
+		showColors: true,
+		defaultTimeoutInterval: 180000,
+		isVerbose: true,
+		includeStackTrace: true,
+		print: function () {
+		}
+	},
+	SELENIUM_PROMISE_MANAGER: false,
+	onPrepare: async () => {
+		// Transpile on the fly
+		require('ts-node').register({
+			project: join(__dirname, './tsconfig.e2e.json')
+		});
 
-        jasmine.getEnv().addReporter(new SpecReporter({
-            spec: {
-                displayStacktrace: 'none',
-                displayFailuresSummary: false,
-                displayPendingSummary: false,
-                displayPendingSpec: true,
-                displaySpecDuration: true
-            }
-        }));
+		// Disable Angular, because it's not an angular site
+		await browser.waitForAngularEnabled(false);
 
-        return browser.getProcessedConfig()
-            .then(_ => {
-                browser.browserName = _.capabilities.browserName.toLowerCase();
-                browser.logName = _.capabilities.logName;
+		// Add the reporter
+		jasmine.getEnv().addReporter(new SpecReporter({
+			spec: {
+				displayStacktrace: 'none',
+				displayFailuresSummary: false,
+				displayPendingSummary: false,
+				displayPendingSpec: true,
+				displaySpecDuration: true
+			}
+		}));
 
-                if (!('platformName' in _.capabilities)) {
-                    return browser.driver.manage().window().setSize(1366, 768);
-                }
-            });
-    }
+		// Set some config data
+		const processedConfig = await browser.getProcessedConfig();
+		browser.browserName = processedConfig.capabilities.browserName.toLowerCase();
+		browser.logName = processedConfig.capabilities.logName;
+
+		// Resize the screens if it is a VM
+		if (!('platformName' in processedConfig.capabilities)) {
+			await browser.driver.manage().window().setSize(1366, 768);
+		}
+	}
 };

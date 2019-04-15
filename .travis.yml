@@ -1,8 +1,11 @@
 sudo: false
 
+os:
+- osx
+
 language: node_js
 node_js:
-- '6'
+- '8'
 
 addons:
   sauce_connect: true
@@ -18,5 +21,5 @@ before_script:
 - npm install
 
 script:
-- npm run unit.test
-- npm run test.ci
+- npm run compile
+- npm run test.saucelabs

@@ -1,64 +1,62 @@
 {
-  "name": "protractor-image-comparison",
-  "version": "2.0.1",
-  "description": "npm-module to compare images with protractor",
-  "main": "index.js",
-  "scripts": {
-    "changelog": "node ./test/changelog.js",
-    "commitmsg": "validate-commit-msg",
-    "docs": "jsdoc2md ./index.js > ./docs/index.md",
-    "test": "node ./test/cli image-comparison",
-    "test.android.adb": "node ./test/cli image-comparison -r -e android.adb",
-    "test.android.chromedriver": "node ./test/cli image-comparison -r -e android.chromedriver",
-    "test.ci": "node ./test/cli image-comparison -r -e saucelabs",
-    "test.ios.simulator": "node ./test/cli image-comparison -r -e ios.simulator",
-    "test.local": "node ./test/cli image-comparison -r -e local",
-    "test.init": "node ./test/cli image-comparison -r -e init",
-    "test.perfecto": "node ./test/cli image-comparison -r -e perfecto",
-    "test.saucelabs": "node ./test/cli image-comparison -r -e saucelabs",
-    "unit.test": "JASMINE_CONFIG_PATH=test/unit/jasmine.json jasmine",
-    "unit.test.coverage": "JASMINE_CONFIG_PATH=test/unit/jasmine.json istanbul cover jasmine",
-    "wd-update": "node_modules/.bin/webdriver-manager update"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/wswebcreation/protractor-image-comparison.git"
-  },
-  "keywords": [
-    "image-diff",
-    "image-comparison",
-    "protractor",
-    "comparison",
-    "pix",
-    "resemblejs",
-    "image",
-    "diff",
-    "difference",
-    "compare"
-  ],
-  "author": "Wim Selles - wswebcreation",
-  "license": "ISC",
-  "dependencies": {
-    "assert": "1.4.1",
-    "camel-case": "3.0.0",
-    "canvas-prebuilt": "^1.6.5-prerelease.1",
-    "fs-extra": "1.0.0",
-    "png-image": "1.1.1",
-    "pngjs-image": "0.11.7"
-  },
-  "devDependencies": {
-    "chalk": "1.1.3",
-    "commander": "2.9.0",
-    "conventional-changelog": "1.1.0",
-    "husky": "^0.13.1",
-    "istanbul": "0.4.5",
-    "jasmine-spec-reporter": "3.2.0",
-    "jsdoc-to-markdown": "2.0.1",
-    "protractor": "^5.1.0",
-    "validate-commit-msg": "^2.11.1"
-  },
-  "engines": {
-    "npm": ">=3.0.0",
-    "node": ">=4.6.0"
-  }
+	"name": "protractor-image-comparison",
+	"version": "3.0.0",
+	"description": "npm-module to compare images with protractor",
+	"main": "./build/index.js",
+	"types": "./build/index.d.ts",
+	"scripts": {
+		"test.init": "./node_modules/.bin/protractor ./test/conf/protractor.local.init.conf.js",
+		"test.local.android": "./node_modules/.bin/protractor ./test/conf/protractor.local.android.conf.js",
+		"test.local.desktop": "./node_modules/.bin/protractor ./test/conf/protractor.local.desktop.conf.js",
+		"test.local.ios": "./node_modules/.bin/protractor ./test/conf/protractor.local.ios.conf.js",
+		"test.saucelabs": "./node_modules/.bin/protractor ./test/conf/protractor.saucelabs.conf.js",
+		"precompile": "npm run clean",
+		"compile": "tsc",
+		"lint": "tslint -p tsconfig.json",
+		"clean": "rimraf coverage build tmp",
+		"watch": "npm run compile -- -w"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/wswebcreation/protractor-image-comparison.git"
+	},
+	"keywords": [
+		"image-diff",
+		"image-comparison",
+		"protractor",
+		"comparison",
+		"pix",
+		"resemblejs",
+		"image",
+		"diff",
+		"difference",
+		"compare",
+		"plugin"
+	],
+	"author": "Wim Selles - wswebcreation",
+	"license": "ISC",
+	"dependencies": {
+		"webdriver-image-comparison": "^0.3.0"
+	},
+	"devDependencies": {
+		"@types/fs-extra": "^5.0.5",
+		"@types/jasmine": "^3.3.10",
+		"@types/node": "^10.14.1",
+		"awesome-typescript-loader": "^5.2.1",
+		"fs-extra": "^7.0.1",
+		"husky": "^1.3.1",
+		"jasmine": "^3.3.1",
+		"jasmine-spec-reporter": "^4.2.1",
+		"jasmine-ts": "^0.3.0",
+		"protractor": "^5.4.2",
+		"rimraf": "^2.6.3",
+		"source-map-loader": "^0.2.4",
+		"ts-node": "^7.0.1",
+		"tslint": "^5.12.0",
+		"tslint-eslint-rules": "^5.4.0",
+		"tslint-jasmine-rules": "^1.5.1",
+		"typescript": "^3.3.3333",
+		"validate-commit-msg": "^2.14.0",
+		"vrsource-tslint-rules": "^6.0.0"
+	}
 }

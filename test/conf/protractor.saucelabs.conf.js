@@ -1,123 +1,236 @@
-'use strict';
+const { join } = require('path');
+let config = require('./protractor.shared.conf').config;
+const basicSpecs = '../basics.spec.ts';
+const deskSpecs = '../desktop.spec.ts';
+const mobileSpecs = '../mobile.spec.ts';
+const screenResolution = '1600x1200';
+const defaultCapabilities = {
+	shardTestFiles: true,
+	tunnelIdentifier: process.env.TRAVIS_JOB_NUMBER,
+};
 
-let config = require('./protractor.shared.conf.js').config;
-const deskSpecs = ['../desktop.spec.js'];
-const mobileSpecs = ['../mobile.spec.js'];
-
-
-config.sauceUser = process.env.SAUCE_USERNAME ? process.env.SAUCE_USERNAME : process.env.IC_SAUCE_USERNAME;
-config.sauceKey = process.env.SAUCE_ACCESS_KEY ? process.env.SAUCE_ACCESS_KEY : process.env.IC_SAUCE_ACCESS_KEY;
-config.sauceBuild = process.env.TRAVIS_JOB_NUMBER;
+config.sauceUser = process.env.IC_SAUCE_USERNAME ? process.env.IC_SAUCE_USERNAME : process.env.SAUCE_USERNAME;
+config.sauceKey = process.env.IC_SAUCE_ACCESS_KEY ? process.env.IC_SAUCE_ACCESS_KEY : process.env.SAUCE_ACCESS_KEY;
+config.sauceBuild = process.env.TRAVIS_JOB_NUMBER || 'local-build';
 
 config.multiCapabilities = [
+	/**
+	 * iOS
+	 */
+	{
+		deviceName: 'iPad Pro (12.9 inch) (2nd generation) Simulator',
+		browserName: 'safari',
+		logName: 'iPadPro12.9.2nd',
+		platformName: 'ios',
+		platformVersion: '12.0',
+		specs: [ mobileSpecs ],
+		...defaultCapabilities,
+	},
+	{
+		deviceName: 'iPad Air Simulator',
+		browserName: 'safari',
+		logName: 'iPadAirSimulator',
+		platformName: 'ios',
+		platformVersion: '12.2',
+		specs: [ mobileSpecs ],
+		...defaultCapabilities,
+	},
+	{
+		browserName: 'safari',
+		deviceName: 'iPhone 8 Simulator',
+		logName: 'iPhone8Simulator',
+		platformName: 'ios',
+		platformVersion: '11.3',
+		specs: [ mobileSpecs ],
+		...defaultCapabilities,
+	},
+	{
+		browserName: 'safari',
+		deviceName: 'iPhone X Simulator',
+		logName: 'iPhoneXSimulator',
+		platformName: 'ios',
+		platformVersion: '12.2',
+		specs: [ mobileSpecs ],
+		...defaultCapabilities,
+	},
+	// {
+	// 	deviceName: 'iPad Pro (12.9 inch) (3rd generation) Simulator',
+	// 	browserName: 'safari',
+	// 	logName: 'iPadPro12.9.3rdGeneration',
+	// 	platformName: 'ios',
+	// 	platformVersion: '12.2',
+	// 	specs: [ mobileSpecs ],
+	// 	...defaultCapabilities,
+	// },
 
-    // Mobile
-    {
-        appiumVersion: "1.8.0",
-        browserName: 'Safari',
-        deviceName: "iPhone 6 Simulator",
-        deviceOrientation: "portrait",
-        platformName: 'iOS',
-        platformVersion: '10.0',
-        public: "public",
-        "tunnel-identifier": process.env.TRAVIS_JOB_NUMBER,
-        logName: "iPhone 6 Simulator Safari",
-        shardTestFiles: true,
-        specs: mobileSpecs
-    },
-    {
-        appiumVersion: "1.8.0",
-        browserName: 'Safari',
-        deviceName: "iPad Air 2 Simulator",
-        deviceOrientation: "portrait",
-        platformName: 'iOS',
-        platformVersion: '10.0',
-        public: "public",
-        "tunnel-identifier": process.env.TRAVIS_JOB_NUMBER,
-        logName: "iPad Air 2 Simulator Safari",
-        shardTestFiles: true,
-        specs: mobileSpecs
-    },
-    // Desktop
-    {
-        browserName: 'chrome',
-        platform: "Windows 10",
-        version: "latest",
-        screenResolution: "1400x1050",
-        // passed: true,
-        public: "public",
-        "tunnel-identifier": process.env.TRAVIS_JOB_NUMBER,
-        logName: "Chrome latest",
-        shardTestFiles: true,
-        specs: deskSpecs
-    },
-    {
-        browserName: 'firefox',
-        platform: "Windows 10",
-        version: "latest",
-        screenResolution: "1400x1050",
-        public: "public",
-        "tunnel-identifier": process.env.TRAVIS_JOB_NUMBER,
-        logName: "Firefox latest",
-        shardTestFiles: true,
-        specs: deskSpecs
-    },
-    {
-        browserName: 'firefox',
-        platform: "Windows 10",
-        version: "47",
-        screenResolution: "1400x1050",
-        public: "public",
-        "tunnel-identifier": process.env.TRAVIS_JOB_NUMBER,
-        logName: "Firefox 47",
-        shardTestFiles: true,
-        specs: deskSpecs
-    },
-    {
-        browserName: 'internet explorer',
-        platform: "Windows 8.1",
-        version: "11.0",
-        screenResolution: "1400x1050",
-        public: "public",
-        "tunnel-identifier": process.env.TRAVIS_JOB_NUMBER,
-        logName: "IE11",
-        shardTestFiles: true,
-        specs: deskSpecs
-    },
-    {
-        browserName: 'MicrosoftEdge',
-        platform: "Windows 10",
-        version: "latest",
-        screenResolution: "1400x1050",
-        public: "public",
-        "tunnel-identifier": process.env.TRAVIS_JOB_NUMBER,
-        logName: "Microsoft Edge latest",
-        shardTestFiles: true,
-        specs: deskSpecs
-    },
-    // Use 9 and 10 because of the different webdriver, 9 has an old and 10 a new
-    {
-        browserName: 'safari',
-        platform: "OS X 10.11",
-        version: "9",
-        screenResolution: "1600x1200",
-        public: "public",
-        "tunnel-identifier": process.env.TRAVIS_JOB_NUMBER,
-        logName: "Safari 9",
-        shardTestFiles: true,
-        specs: deskSpecs
-    },
-    {
-        browserName: 'safari',
-        platform: "OS X 10.11",
-        version: "10",
-        screenResolution: "1600x1200",
-        public: "public",
-        "tunnel-identifier": process.env.TRAVIS_JOB_NUMBER,
-        logName: "Safari 10",
-        shardTestFiles: true,
-        specs: deskSpecs
-    }
+	/**
+	 * Android with native Webscreenshot
+	 */
+	{
+		browserName: 'chrome',
+		deviceName: 'Google Pixel GoogleAPI Emulator',
+		logName: 'GooglePixelGoogleAPIEmulator8.1NativeWebScreenshot',
+		platformName: 'Android',
+		platformVersion: '8.1',
+		specs: [ mobileSpecs ],
+		nativeWebScreenshot: true,
+		...defaultCapabilities,
+	},
+	{
+		browserName: 'chrome',
+		deviceName: 'Google Pixel GoogleAPI Emulator',
+		logName: 'GooglePixelGoogleAPIEmulator7.1NativeWebScreenshot',
+		platformName: 'Android',
+		platformVersion: '7.1',
+		specs: [ mobileSpecs ],
+		nativeWebScreenshot: true,
+		...defaultCapabilities,
+	},
+	{
+		browserName: 'chrome',
+		deviceName: 'Android GoogleAPI Emulator',
+		logName: 'AndroidGoogleApiEmulator6.0NativeWebScreenshot',
+		platformName: 'Android',
+		platformVersion: '6.0',
+		specs: [ mobileSpecs ],
+		nativeWebScreenshot: true,
+		...defaultCapabilities,
+	},
+	// Not supporting Android Tablets now with nativeWebScreenshot
+	// {
+	// 	browserName: 'chrome',
+	// 	deviceName: 'Google Pixel C GoogleAPI Emulator',
+	// 	logName: 'GooglePixelCTablet7.1NativeWebScreenshot',
+	// 	platformName: 'Android',
+	// 	platformVersion: '7.1',
+	// 	tunnelIdentifier,
+	// 	shardTestFiles,
+	// 	specs: [ mobileSpecs ],
+	// 	nativeWebScreenshot: true,
+	// },
+
+	/**
+	 * Android with chrome driver screenshots
+	 */
+	{
+		browserName: 'chrome',
+		deviceName: 'Google Pixel GoogleAPI Emulator',
+		logName: 'GooglePixelGoogleAPIEmulator8.1ChromeDriver',
+		platformName: 'Android',
+		platformVersion: '8.1',
+		specs: [ mobileSpecs ],
+		...defaultCapabilities,
+	},
+	{
+		browserName: 'chrome',
+		deviceName: 'Google Pixel GoogleAPI Emulator',
+		logName: 'GooglePixelGoogleAPIEmulator7.1ChromeDriver',
+		platformName: 'Android',
+		platformVersion: '7.1',
+		specs: [ mobileSpecs ],
+		...defaultCapabilities,
+	},
+	{
+		browserName: 'chrome',
+		deviceName: 'Android GoogleAPI Emulator',
+		logName: 'AndroidGoogleApiEmulator6.0ChromeDriver',
+		platformName: 'Android',
+		platformVersion: '6.0',
+		specs: [ mobileSpecs ],
+		...defaultCapabilities,
+	},
+	{
+		browserName: 'chrome',
+		deviceName: 'Google Pixel C GoogleAPI Emulator',
+		logName: 'GooglePixelCTablet7.1ChromeDriver',
+		platformName: 'Android',
+		platformVersion: '7.1',
+		specs: [ mobileSpecs ],
+		...defaultCapabilities,
+	},
+
+	/**
+	 * Desktop browsers
+	 */
+	{
+		browserName: 'chrome',
+		platform: 'Windows 10',
+		version: 'latest',
+		logName: 'chrome-latest',
+		specs: [ basicSpecs ],
+		screenResolution,
+		...defaultCapabilities,
+	},
+	{
+		browserName: 'chrome',
+		platform: 'Windows 10',
+		version: 'latest',
+		logName: 'chrome-latest',
+		specs: [ deskSpecs ],
+		screenResolution,
+		...defaultCapabilities,
+	},
+	{
+		browserName: 'firefox',
+		platform: 'Windows 10',
+		version: 'latest',
+		logName: 'Firefox latest',
+		specs: [ deskSpecs ],
+		screenResolution,
+		...defaultCapabilities,
+	},
+	{
+		browserName: 'internet explorer',
+		platform: 'Windows 8.1',
+		version: 'latest',
+		logName: 'IE11',
+		specs: [ deskSpecs ],
+		screenResolution,
+		...defaultCapabilities,
+	},
+	{
+		browserName: 'MicrosoftEdge',
+		platform: 'Windows 10',
+		version: 'latest',
+		logName: 'Microsoft Edge latest',
+		specs: [ deskSpecs ],
+		screenResolution,
+		...defaultCapabilities,
+	},
+	{
+		browserName: 'safari',
+		platform: 'macOS 10.12',
+		version: '11.0',
+		logName: 'SierraSafari11',
+		specs: [ deskSpecs ],
+		screenResolution,
+		...defaultCapabilities,
+	},
+	{
+		browserName: 'safari',
+		platform: 'macOS 10.13',
+		version: '12.0',
+		logName: 'HiSierraSafari12',
+		specs: [ deskSpecs ],
+		screenResolution,
+		...defaultCapabilities,
+	}
+];
+
+config.plugins = [
+	{
+		path: join(process.cwd(), './build/index.js'),
+		options: {
+			baselineFolder: join(process.cwd(), './test/sauceLabsBaseline/'),
+			debug: true,
+			formatImageName: `{tag}-{logName}-{width}x{height}`,
+			screenshotPath: join(process.cwd(), '.tmp/'),
+			savePerInstance: true,
+			autoSaveBaseline: true,
+			blockOutStatusBar: true,
+			blockOutToolBar: true,
+		},
+	},
 ];
 
 exports.config = config;
