@@ -9,6 +9,9 @@ import {
 	saveFullPageScreen,
 	saveScreen,
 } from 'webdriver-image-comparison';
+import {SaveFullPageMethodOptions} from 'webdriver-image-comparison/build/commands/fullPage.interfaces';
+import {SaveScreenMethodOptions} from 'webdriver-image-comparison/build/commands/screen.interfaces';
+import {SaveElementMethodOptions} from 'webdriver-image-comparison/build/commands/element.interfaces';
 
 export default class ProtractorImageComparison extends BaseClass {
 	constructor(options: ClassOptions) {
@@ -18,7 +21,7 @@ export default class ProtractorImageComparison extends BaseClass {
 	/**
 	 * Saves an image of an element
 	 */
-	async saveElement(element: ElementFinder, tag: string, saveElementOptions = {}) {
+	async saveElement(element: ElementFinder, tag: string, saveElementOptions: SaveElementMethodOptions = {}) {
 		browser.instanceData = browser.instanceData || await getInstanceData();
 
 		return saveElement(
@@ -40,7 +43,7 @@ export default class ProtractorImageComparison extends BaseClass {
 	/**
 	 * Saves an image of a viewport
 	 */
-	async saveScreen(tag: string, saveScreenOptions = {}) {
+	async saveScreen(tag: string, saveScreenOptions: SaveScreenMethodOptions = {}) {
 		browser.instanceData = browser.instanceData || await getInstanceData();
 
 		return saveScreen(
@@ -61,8 +64,12 @@ export default class ProtractorImageComparison extends BaseClass {
 	/**
 	 * Saves an image of the complete screen
 	 */
-	async saveFullPageScreen(tag: string, saveFullPageScreenOptions = {}) {
+	async saveFullPageScreen(tag: string, saveFullPageScreenOptions: SaveFullPageMethodOptions = {}) {
 		browser.instanceData = browser.instanceData || await getInstanceData();
+
+		if (saveFullPageScreenOptions.hideAfterFirstScroll) {
+			saveFullPageScreenOptions.hideAfterFirstScroll = await getWebElements(saveFullPageScreenOptions.hideAfterFirstScroll);
+		}
 
 		return saveFullPageScreen(
 			{
@@ -82,7 +89,7 @@ export default class ProtractorImageComparison extends BaseClass {
 	/**
 	 * Compare an image of an element
 	 */
-	async checkElement(element: ElementFinder, tag: string, checkElementOptions = {}) {
+	async checkElement(element: ElementFinder, tag: string, checkElementOptions: SaveElementMethodOptions = {}) {
 		browser.instanceData = browser.instanceData || await getInstanceData();
 
 		return checkElement(
@@ -104,7 +111,7 @@ export default class ProtractorImageComparison extends BaseClass {
 	/**
 	 * Compares an image of a viewport
 	 */
-	async checkScreen(tag: string, checkScreenOptions = {}) {
+	async checkScreen(tag: string, checkScreenOptions: SaveScreenMethodOptions = {}) {
 		browser.instanceData = browser.instanceData || await getInstanceData();
 
 		return checkScreen(
@@ -125,8 +132,12 @@ export default class ProtractorImageComparison extends BaseClass {
 	/**
 	 * Compares an image of a viewport
 	 */
-	async checkFullPageScreen(tag: string, checkFullPageOptions = {}) {
+	async checkFullPageScreen(tag: string, checkFullPageOptions: SaveFullPageMethodOptions = {}) {
 		browser.instanceData = browser.instanceData || await getInstanceData();
+
+		if (checkFullPageOptions.hideAfterFirstScroll) {
+			checkFullPageOptions.hideAfterFirstScroll = await getWebElements(checkFullPageOptions.hideAfterFirstScroll);
+		}
 
 		return checkFullPageScreen(
 			{
@@ -177,4 +188,16 @@ async function getInstanceData() {
 		nativeWebScreenshot,
 		platformName,
 	};
+}
+
+/**
+ * Get all the web elements
+ */
+async function getWebElements(elements: HTMLElement[]) {
+	for (let i = 0; i < elements.length; i++) {
+		elements[i] =
+			<HTMLElement><unknown>await (<ElementFinder><unknown>elements[i]).getWebElement();
+	}
+
+	return elements;
 }
