@@ -179,3 +179,9 @@ See [CONTRIBUTING.md](./docs/CONTRIBUTING.md).
 ## TODO:
 - [ ] iOS Safari on iPads can have multiple tabs, so the address bar is bigger making the cutout go wrong
 - [ ] create a new website
+
+## Credits
+`protractor-image-comparison` uses an open source licence from Sauce Labs.
+![Powered by Sauce LAbs](./docs/images/powered-by-saucelabs.png)
+
+You can request your open source licence [here](https://saucelabs.com/open-source/open-sauce)
