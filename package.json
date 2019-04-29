@@ -37,7 +37,7 @@
 	"author": "Wim Selles - wswebcreation",
 	"license": "ISC",
 	"dependencies": {
-		"webdriver-image-comparison": "^0.3.0"
+		"webdriver-image-comparison": "^0.4.2"
 	},
 	"devDependencies": {
 		"@types/fs-extra": "^5.0.5",

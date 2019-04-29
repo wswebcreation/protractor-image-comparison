@@ -86,6 +86,8 @@ describe('protractor-image-comparison desktop', () => {
   		],
   		ignoreAlpha: true,
   		blockOutStatusBar: true,
+  		hideElements: [$('#id')],
+			removeElements: [$('#id2')],
   	})).toEqual(0);
   	
   	// Check an element
@@ -97,6 +99,7 @@ describe('protractor-image-comparison desktop', () => {
   	// Check a full page screens
   	expect(await browser.imageComparison.checkFullPageScreen('fullPage', {
   		ignoreColors: true,
+  		hideAfterFirstScroll: [$('#sticky-header')],
   	})).toEqual(0);
 	});
 });
