@@ -17,6 +17,7 @@ You can:
 - save or compare screens / elements / full page screens against a baseline
 - automatically create a baseline when no baseline is there
 - blockout custom regions and even automatically exclude a status and or tool bars (mobile only) during a comparison
+- hide / remove elements during comparison like for example stickyheaders (**NEW**)
 - increase the element dimensions screenshots
 - use different comparison methods
 - and much more, see the [options here](./docs/OPTIONS.md)
