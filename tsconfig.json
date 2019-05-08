@@ -3,7 +3,7 @@
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,
     "emitDecoratorMetadata": true,
-		"declaration": false,
+		"declaration": true,
 		"experimentalDecorators": true,
 		"lib": [
 			"es2017",
