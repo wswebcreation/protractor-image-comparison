@@ -10,12 +10,14 @@
 		"test.local.desktop": "./node_modules/.bin/protractor ./test/conf/protractor.local.desktop.conf.js",
 		"test.local.ios": "./node_modules/.bin/protractor ./test/conf/protractor.local.ios.conf.js",
 		"test.saucelabs": "./node_modules/.bin/protractor ./test/conf/protractor.saucelabs.conf.js",
-		"precompile": "npm run clean",
-		"prepublish": "npm run compile",
 		"compile": "tsc",
 		"lint": "tslint -p tsconfig.json",
 		"clean": "rimraf coverage build tmp",
-		"watch": "npm run compile -- -w"
+		"watch": "npm run compile -- -w",
+		"release": "np",
+		"precompile": "npm run clean",
+		"prepublish": "npm run compile",
+		"prerelease": "npm run compile"
 	},
 	"repository": {
 		"type": "git",
@@ -37,7 +39,7 @@
 	"author": "Wim Selles - wswebcreation",
 	"license": "ISC",
 	"dependencies": {
-		"webdriver-image-comparison": "^0.4.2"
+		"webdriver-image-comparison": "^0.4.7"
 	},
 	"devDependencies": {
 		"@types/fs-extra": "^5.0.5",
@@ -49,6 +51,7 @@
 		"jasmine": "^3.3.1",
 		"jasmine-spec-reporter": "^4.2.1",
 		"jasmine-ts": "^0.3.0",
+		"np": "^5.0.1",
 		"protractor": "^5.4.2",
 		"rimraf": "^2.6.3",
 		"source-map-loader": "^0.2.4",
