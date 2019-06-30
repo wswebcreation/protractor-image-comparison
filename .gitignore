@@ -7,3 +7,4 @@ coverage/
 localBaseline/
 
 build/
+package-lock.json

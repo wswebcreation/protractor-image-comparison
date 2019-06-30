@@ -208,9 +208,9 @@ config.multiCapabilities = [
 	},
 	{
 		browserName: 'safari',
-		platform: 'macOS 10.13',
-		version: '12.0',
-		logName: 'HiSierraSafari12',
+		platform: 'macOS 10.14',
+		version: 'latest',
+		logName: 'MojaveSafariLatest',
 		specs: [ deskSpecs ],
 		screenResolution,
 		...defaultCapabilities,
