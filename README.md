@@ -185,3 +185,4 @@ See [CONTRIBUTING.md](./docs/CONTRIBUTING.md).
 ![Powered by Sauce LAbs](./docs/images/powered-by-saucelabs.png)
 
 You can request your open source licence [here](https://saucelabs.com/open-source/open-sauce)
+
