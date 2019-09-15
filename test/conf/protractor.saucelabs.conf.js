@@ -1,6 +1,8 @@
-const { join } = require('path');
-let config = require('./protractor.shared.conf').config;
+const {join} = require('path');
+let {config} = require('./protractor.shared.conf');
 const basicSpecs = '../basics.spec.ts';
+const saveMethodFolderSpecs = '../saveMethodsFolders.spec.ts';
+const checkMethodFolderSpecs = '../checkMethodsFolders.spec.ts';
 const deskSpecs = '../desktop.spec.ts';
 const mobileSpecs = '../mobile.spec.ts';
 const screenResolution = '1600x1200';
@@ -23,7 +25,7 @@ config.multiCapabilities = [
 		logName: 'iPadPro12.9.2nd',
 		platformName: 'ios',
 		platformVersion: '12.0',
-		specs: [ mobileSpecs ],
+		specs: [mobileSpecs],
 		...defaultCapabilities,
 	},
 	{
@@ -32,7 +34,7 @@ config.multiCapabilities = [
 		logName: 'iPadAirSimulator',
 		platformName: 'ios',
 		platformVersion: '12.2',
-		specs: [ mobileSpecs ],
+		specs: [mobileSpecs],
 		...defaultCapabilities,
 	},
 	{
@@ -41,7 +43,7 @@ config.multiCapabilities = [
 		logName: 'iPhone8Simulator',
 		platformName: 'ios',
 		platformVersion: '11.3',
-		specs: [ mobileSpecs ],
+		specs: [mobileSpecs],
 		...defaultCapabilities,
 	},
 	{
@@ -50,7 +52,7 @@ config.multiCapabilities = [
 		logName: 'iPhoneXSimulator',
 		platformName: 'ios',
 		platformVersion: '12.2',
-		specs: [ mobileSpecs ],
+		specs: [mobileSpecs],
 		...defaultCapabilities,
 	},
 	// {
@@ -72,7 +74,7 @@ config.multiCapabilities = [
 		logName: 'GooglePixelGoogleAPIEmulator8.1NativeWebScreenshot',
 		platformName: 'Android',
 		platformVersion: '8.1',
-		specs: [ mobileSpecs ],
+		specs: [mobileSpecs],
 		nativeWebScreenshot: true,
 		...defaultCapabilities,
 	},
@@ -82,7 +84,7 @@ config.multiCapabilities = [
 		logName: 'GooglePixelGoogleAPIEmulator7.1NativeWebScreenshot',
 		platformName: 'Android',
 		platformVersion: '7.1',
-		specs: [ mobileSpecs ],
+		specs: [mobileSpecs],
 		nativeWebScreenshot: true,
 		...defaultCapabilities,
 	},
@@ -92,7 +94,7 @@ config.multiCapabilities = [
 		logName: 'AndroidGoogleApiEmulator6.0NativeWebScreenshot',
 		platformName: 'Android',
 		platformVersion: '6.0',
-		specs: [ mobileSpecs ],
+		specs: [mobileSpecs],
 		nativeWebScreenshot: true,
 		...defaultCapabilities,
 	},
@@ -118,7 +120,7 @@ config.multiCapabilities = [
 		logName: 'GooglePixelGoogleAPIEmulator8.1ChromeDriver',
 		platformName: 'Android',
 		platformVersion: '8.1',
-		specs: [ mobileSpecs ],
+		specs: [mobileSpecs],
 		...defaultCapabilities,
 	},
 	{
@@ -127,7 +129,7 @@ config.multiCapabilities = [
 		logName: 'GooglePixelGoogleAPIEmulator7.1ChromeDriver',
 		platformName: 'Android',
 		platformVersion: '7.1',
-		specs: [ mobileSpecs ],
+		specs: [mobileSpecs],
 		...defaultCapabilities,
 	},
 	{
@@ -136,7 +138,7 @@ config.multiCapabilities = [
 		logName: 'AndroidGoogleApiEmulator6.0ChromeDriver',
 		platformName: 'Android',
 		platformVersion: '6.0',
-		specs: [ mobileSpecs ],
+		specs: [mobileSpecs],
 		...defaultCapabilities,
 	},
 	{
@@ -145,7 +147,7 @@ config.multiCapabilities = [
 		logName: 'GooglePixelCTablet7.1ChromeDriver',
 		platformName: 'Android',
 		platformVersion: '7.1',
-		specs: [ mobileSpecs ],
+		specs: [mobileSpecs],
 		...defaultCapabilities,
 	},
 
@@ -157,7 +159,7 @@ config.multiCapabilities = [
 		platform: 'Windows 10',
 		version: 'latest',
 		logName: 'chrome-latest',
-		specs: [ basicSpecs ],
+		specs: [basicSpecs],
 		screenResolution,
 		...defaultCapabilities,
 	},
@@ -166,7 +168,25 @@ config.multiCapabilities = [
 		platform: 'Windows 10',
 		version: 'latest',
 		logName: 'chrome-latest',
-		specs: [ deskSpecs ],
+		specs: [saveMethodFolderSpecs],
+		screenResolution,
+		...defaultCapabilities,
+	},
+	{
+		browserName: 'chrome',
+		platform: 'Windows 10',
+		version: 'latest',
+		logName: 'chrome-latest',
+		specs: [checkMethodFolderSpecs],
+		screenResolution,
+		...defaultCapabilities,
+	},
+	{
+		browserName: 'chrome',
+		platform: 'Windows 10',
+		version: 'latest',
+		logName: 'chrome-latest',
+		specs: [deskSpecs],
 		screenResolution,
 		...defaultCapabilities,
 	},
@@ -175,7 +195,7 @@ config.multiCapabilities = [
 		platform: 'Windows 10',
 		version: 'latest',
 		logName: 'Firefox latest',
-		specs: [ deskSpecs ],
+		specs: [deskSpecs],
 		screenResolution,
 		...defaultCapabilities,
 	},
@@ -184,7 +204,7 @@ config.multiCapabilities = [
 		platform: 'Windows 8.1',
 		version: 'latest',
 		logName: 'IE11',
-		specs: [ deskSpecs ],
+		specs: [deskSpecs],
 		screenResolution,
 		...defaultCapabilities,
 	},
@@ -193,7 +213,7 @@ config.multiCapabilities = [
 		platform: 'Windows 10',
 		version: 'latest',
 		logName: 'Microsoft Edge latest',
-		specs: [ deskSpecs ],
+		specs: [deskSpecs],
 		screenResolution,
 		...defaultCapabilities,
 	},
@@ -202,7 +222,7 @@ config.multiCapabilities = [
 		platform: 'macOS 10.12',
 		version: '11.0',
 		logName: 'SierraSafari11',
-		specs: [ deskSpecs ],
+		specs: [deskSpecs],
 		screenResolution,
 		...defaultCapabilities,
 	},
@@ -211,7 +231,7 @@ config.multiCapabilities = [
 		platform: 'macOS 10.14',
 		version: 'latest',
 		logName: 'MojaveSafariLatest',
-		specs: [ deskSpecs ],
+		specs: [deskSpecs],
 		screenResolution,
 		...defaultCapabilities,
 	}

@@ -4,6 +4,7 @@ import {normalize, join} from 'path'
 
 describe('protractor-image-comparison local development initialization', () => {
 	const localBaseline = 'localBaseline';
+	const checkBaseline = 'checkBaseline';
 	const firstButton = $('.uk-button:nth-child(1)');
 
 	beforeEach(async () => {
@@ -21,20 +22,56 @@ describe('protractor-image-comparison local development initialization', () => {
 
 		await copy(normalize(`${path}/${fileName}`), join(process.cwd(), `./${localBaseline}/${path.split('/').pop()}/${fileName}`));
 		await copy(
-			normalize(`${path}/${fileName}`), join(process.cwd(),
-				`./${localBaseline}/${path.split('/').pop()}/${fileName.replace(examplePage, examplePageFail)}`)
+			normalize(`${path}/${fileName}`),
+			join(
+				process.cwd(),
+				`./${localBaseline}/${path.split('/').pop()}/${fileName.replace(examplePage, examplePageFail)}`,
+			),
+		);
+		await copy(
+			normalize(`${path}/${fileName}`),
+			join(
+				process.cwd(),
+				`./${localBaseline}/${ checkBaseline }/${path.split('/').pop()}/${fileName.replace(examplePage, 'screenCheckFolders')}`,
+			),
 		);
 	});
 
 	it('should save the compare element screenshot', async () => {
 		const {fileName, path} = await browser.imageComparison.saveElement(firstButton, 'firstButtonElement');
 
-		await copy(normalize(`${path}/${fileName}`), join(process.cwd(), `./${localBaseline}/${path.split('/').pop()}/${fileName}`));
+		await copy(
+			normalize(`${path}/${fileName}`),
+			join(
+				process.cwd(),
+				`./${localBaseline}/${path.split('/').pop()}/${fileName}`,
+			),
+		);
+		await copy(
+			normalize(`${path}/${fileName}`),
+			join(
+				process.cwd(),
+				`./${localBaseline}/${ checkBaseline }/${path.split('/').pop()}/${ fileName.replace('firstButtonElement', 'elementCheckFolders') }`,
+			),
+		);
 	});
 
 	it('should save the compare fullpage screenshots', async () => {
 		const {fileName, path} = await browser.imageComparison.saveFullPageScreen('fullPage', {fullPageScrollTimeout: '1500'});
 
-		await copy(normalize(`${path}/${fileName}`), join(process.cwd(), `./${localBaseline}/${path.split('/').pop()}/${fileName}`));
+		await copy(
+			normalize(`${path}/${fileName}`),
+			join(
+				process.cwd(),
+				`./${localBaseline}/${path.split('/').pop()}/${fileName}`,
+			),
+		);
+		await copy(
+			normalize(`${path}/${fileName}`),
+			join(
+				process.cwd(),
+				`./${localBaseline}/${ checkBaseline }/${path.split('/').pop()}/${ fileName.replace('fullPage', 'fullPageCheckFolders') }`,
+			),
+		);
 	});
 });

@@ -12,6 +12,12 @@ import {
 import {SaveFullPageMethodOptions} from 'webdriver-image-comparison/build/commands/fullPage.interfaces';
 import {SaveScreenMethodOptions} from 'webdriver-image-comparison/build/commands/screen.interfaces';
 import {SaveElementMethodOptions} from 'webdriver-image-comparison/build/commands/element.interfaces';
+import {
+	getFolders,
+	getInstanceData,
+	optionElementsToWebElements,
+	getWebElements,
+} from './utils';
 
 export default class ProtractorImageComparison extends BaseClass {
 	constructor(options: ClassOptions) {
@@ -32,7 +38,7 @@ export default class ProtractorImageComparison extends BaseClass {
 				screenShot: browser.takeScreenshot
 			},
 			browser.instanceData,
-			this.folders,
+			getFolders(saveElementOptions, this.folders),
 			<HTMLElement><unknown>await element.getWebElement(),
 			tag,
 			{
@@ -56,7 +62,7 @@ export default class ProtractorImageComparison extends BaseClass {
 				screenShot: browser.takeScreenshot,
 			},
 			browser.instanceData,
-			this.folders,
+			getFolders(saveScreenOptions, this.folders),
 			tag,
 			{
 				wic: this.defaultOptions,
@@ -83,7 +89,7 @@ export default class ProtractorImageComparison extends BaseClass {
 				screenShot: browser.takeScreenshot
 			},
 			browser.instanceData,
-			this.folders,
+			getFolders(saveFullPageScreenOptions, this.folders),
 			tag,
 			{
 				wic: this.defaultOptions,
@@ -106,7 +112,7 @@ export default class ProtractorImageComparison extends BaseClass {
 				screenShot: browser.takeScreenshot
 			},
 			browser.instanceData,
-			this.folders,
+			getFolders(checkElementOptions, this.folders),
 			<HTMLElement><unknown>await element.getWebElement(),
 			tag,
 			{
@@ -130,7 +136,7 @@ export default class ProtractorImageComparison extends BaseClass {
 				screenShot: browser.takeScreenshot
 			},
 			browser.instanceData,
-			this.folders,
+			getFolders(checkScreenOptions, this.folders),
 			tag,
 			{
 				wic: this.defaultOptions,
@@ -153,7 +159,7 @@ export default class ProtractorImageComparison extends BaseClass {
 				screenShot: browser.takeScreenshot
 			},
 			browser.instanceData,
-			this.folders,
+			getFolders(checkFullPageOptions, this.folders),
 			tag,
 			{
 				wic: this.defaultOptions,
@@ -161,70 +167,4 @@ export default class ProtractorImageComparison extends BaseClass {
 			},
 		);
 	}
-}
-
-/**
- * Get the instance data
- *
- * @returns {Promise<{
- *    browserName: string,
- *    deviceName: string,
- *    logName: string,
- *    name: string,
- *    nativeWebScreenshot: boolean,
- *    platformName: string
- *  }>}
- */
-async function getInstanceData() {
-	const instanceConfig = (await browser.getProcessedConfig()).capabilities;
-
-	// Substract the needed data from the running instance
-	const browserName = (instanceConfig.browserName || '').toLowerCase();
-	const logName = instanceConfig.logName || '';
-	const name = instanceConfig.name || '';
-
-	// For mobile
-	const platformName = (instanceConfig.platformName || '').toLowerCase();
-	const deviceName = (instanceConfig.deviceName || '').toLowerCase();
-	const nativeWebScreenshot = !!instanceConfig.nativeWebScreenshot;
-
-	return {
-		browserName,
-		deviceName,
-		logName,
-		name,
-		nativeWebScreenshot,
-		platformName,
-	};
-}
-
-/**
- * Transform all `hideElements`, `removeElements` and `hideAfterFirstScroll`-elements to WebElements
- */
-async function optionElementsToWebElements(options: SaveFullPageMethodOptions) {
-	if (options.hideElements) {
-		options.hideElements = await getWebElements(options.hideElements);
-	}
-
-	if (options.removeElements) {
-		options.removeElements = await getWebElements(options.removeElements);
-	}
-
-	if (options.hideAfterFirstScroll) {
-		options.hideAfterFirstScroll = await getWebElements(options.hideAfterFirstScroll);
-	}
-
-	return options;
-}
-
-/**
- * Get all the web elements
- */
-async function getWebElements(elements: HTMLElement[]) {
-	for (let i = 0; i < elements.length; i++) {
-		elements[i] =
-			<HTMLElement><unknown>await (<ElementFinder><unknown>elements[i]).getWebElement();
-	}
-
-	return elements;
 }

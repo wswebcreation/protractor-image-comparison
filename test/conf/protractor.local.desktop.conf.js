@@ -6,6 +6,8 @@ let config = require('./protractor.shared.conf').config;
 config.specs = [
 	'../basics.spec.ts',
 	'../desktop.spec.ts',
+	'../checkMethodsFolders.spec.ts',
+	'../saveMethodsFolders.spec.ts',
 ];
 
 config.beforeLaunch = () => {
@@ -27,14 +29,14 @@ config.multiCapabilities = [
 			args: [ 'disable-infobars' ]
 		},
 	},
-	{
-		browserName: 'chrome',
-		logName: 'chrome-headless-latest',
-		shardTestFiles: true,
-		chromeOptions: {
-			args: [ '--headless' ]
-		},
-	},
+	// {
+	// 	browserName: 'chrome',
+	// 	logName: 'chrome-headless-latest',
+	// 	shardTestFiles: true,
+	// 	chromeOptions: {
+	// 		args: [ '--headless' ]
+	// 	},
+	// },
 ];
 
 config.plugins = [
@@ -42,7 +44,7 @@ config.plugins = [
 		path: join(process.cwd(), './build/index.js'),
 		options: {
 			baselineFolder: join(process.cwd(), './localBaseline/'),
-			debug: false,
+			debug: true,
 			formatImageName: `{tag}-{logName}-{width}x{height}`,
 			screenshotPath: join(process.cwd(), '.tmp/'),
 			savePerInstance: true,
