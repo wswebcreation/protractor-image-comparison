@@ -70,6 +70,16 @@ config.multiCapabilities = [
 	 */
 	{
 		browserName: 'chrome',
+		deviceName: 'Samsung Galaxy S9 WQHD GoogleAPI Emulator',
+		logName: 'EmulatorSamsungGalaxyS9WQHDGoogleAPI9.0NativeWebScreenshot',
+		platformName: 'Android',
+		platformVersion: '9.0',
+		specs: [ mobileSpecs ],
+		nativeWebScreenshot: true,
+		...defaultCapabilities,
+	},
+	{
+		browserName: 'chrome',
 		deviceName: 'Google Pixel GoogleAPI Emulator',
 		logName: 'GooglePixelGoogleAPIEmulator8.1NativeWebScreenshot',
 		platformName: 'Android',
@@ -78,16 +88,19 @@ config.multiCapabilities = [
 		nativeWebScreenshot: true,
 		...defaultCapabilities,
 	},
-	{
-		browserName: 'chrome',
-		deviceName: 'Google Pixel GoogleAPI Emulator',
-		logName: 'GooglePixelGoogleAPIEmulator7.1NativeWebScreenshot',
-		platformName: 'Android',
-		platformVersion: '7.1',
-		specs: [mobileSpecs],
-		nativeWebScreenshot: true,
-		...defaultCapabilities,
-	},
+	/**
+	 * 7.1 is disabled due to image problems
+	 */
+	// {
+	// 	browserName: 'chrome',
+	// 	deviceName: 'Google Pixel GoogleAPI Emulator',
+	// 	logName: 'GooglePixelGoogleAPIEmulator7.1NativeWebScreenshot',
+	// 	platformName: 'Android',
+	// 	platformVersion: '7.1',
+	// 	specs: [mobileSpecs],
+	// 	nativeWebScreenshot: true,
+	// 	...defaultCapabilities,
+	// },
 	{
 		browserName: 'chrome',
 		deviceName: 'Android GoogleAPI Emulator',
@@ -116,6 +129,15 @@ config.multiCapabilities = [
 	 */
 	{
 		browserName: 'chrome',
+		deviceName: 'Samsung Galaxy S9 WQHD GoogleAPI Emulator',
+		logName: 'EmulatorSamsungGalaxyS9WQHDGoogleAPI9.0ChromeDriver',
+		platformName: 'Android',
+		platformVersion: '9.0',
+		specs: [ mobileSpecs ],
+		...defaultCapabilities,
+	},
+	{
+		browserName: 'chrome',
 		deviceName: 'Google Pixel GoogleAPI Emulator',
 		logName: 'GooglePixelGoogleAPIEmulator8.1ChromeDriver',
 		platformName: 'Android',
@@ -123,15 +145,18 @@ config.multiCapabilities = [
 		specs: [mobileSpecs],
 		...defaultCapabilities,
 	},
-	{
-		browserName: 'chrome',
-		deviceName: 'Google Pixel GoogleAPI Emulator',
-		logName: 'GooglePixelGoogleAPIEmulator7.1ChromeDriver',
-		platformName: 'Android',
-		platformVersion: '7.1',
-		specs: [mobileSpecs],
-		...defaultCapabilities,
-	},
+	/**
+	 * 7.1 is disabled due to image problems
+	 */
+	// {
+	// 	browserName: 'chrome',
+	// 	deviceName: 'Google Pixel GoogleAPI Emulator',
+	// 	logName: 'GooglePixelGoogleAPIEmulator7.1ChromeDriver',
+	// 	platformName: 'Android',
+	// 	platformVersion: '7.1',
+	// 	specs: [mobileSpecs],
+	// 	...defaultCapabilities,
+	// },
 	{
 		browserName: 'chrome',
 		deviceName: 'Android GoogleAPI Emulator',
@@ -141,15 +166,18 @@ config.multiCapabilities = [
 		specs: [mobileSpecs],
 		...defaultCapabilities,
 	},
-	{
-		browserName: 'chrome',
-		deviceName: 'Google Pixel C GoogleAPI Emulator',
-		logName: 'GooglePixelCTablet7.1ChromeDriver',
-		platformName: 'Android',
-		platformVersion: '7.1',
-		specs: [mobileSpecs],
-		...defaultCapabilities,
-	},
+	/**
+	 * 7.1 is disabled due to image problems
+	 */
+	// {
+	// 	browserName: 'chrome',
+	// 	deviceName: 'Google Pixel C GoogleAPI Emulator',
+	// 	logName: 'GooglePixelCTablet7.1ChromeDriver',
+	// 	platformName: 'Android',
+	// 	platformVersion: '7.1',
+	// 	specs: [mobileSpecs],
+	// 	...defaultCapabilities,
+	// },
 
 	/**
 	 * Desktop browsers
