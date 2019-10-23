@@ -1,6 +1,6 @@
 {
 	"name": "protractor-image-comparison",
-	"version": "3.5.0",
+	"version": "3.6.0",
 	"description": "npm-module to compare images with protractor",
 	"main": "./build/index.js",
 	"types": "./build/index.d.ts",
