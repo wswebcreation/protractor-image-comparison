@@ -12,6 +12,7 @@ export async function getInstanceData() {
 
 	// Substract the needed data from the running instance
 	const browserName = (instanceConfig.browserName || '').toLowerCase();
+	const browserVersion = instanceConfig.browserVersion || '';
 	const logName = instanceConfig.logName || '';
 	const name = instanceConfig.name || '';
 
@@ -22,6 +23,7 @@ export async function getInstanceData() {
 
 	return {
 		browserName,
+		browserVersion,
 		deviceName,
 		logName,
 		name,
