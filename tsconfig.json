@@ -20,6 +20,7 @@
 		"pretty": true,
 		"removeComments": true,
 		"sourceMap": true,
+		"inlineSources": true,
 		"skipLibCheck": true,
 		"target": "es5",
 		"typeRoots": [
