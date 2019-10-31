@@ -14,7 +14,7 @@
 		"lint": "tslint -p tsconfig.json",
 		"clean": "rimraf coverage build tmp",
 		"watch": "npm run compile -- -w",
-		"release": "np",
+		"release": "np --no-yarn",
 		"precompile": "npm run clean",
 		"prepublish": "npm run compile",
 		"prerelease": "npm run compile"
