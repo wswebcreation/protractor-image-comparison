@@ -9,7 +9,7 @@ import ProtractorImageComparison from './protractor.image.compare';
 async function setup() {
 	const configOptions: ClassOptions = typeof this.config.options === 'object' ? this.config.options : {};
 
-	browser.imageComparison = new ProtractorImageComparison(configOptions);
+	browser.imageComparison = await ProtractorImageComparison.build(configOptions);
 }
 
 exports.setup = setup;

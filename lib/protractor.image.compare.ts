@@ -17,11 +17,22 @@ import {
 	getInstanceData,
 	optionElementsToWebElements,
 	getWebElements,
+	isAsyncFn,
 } from './utils';
 
 export default class ProtractorImageComparison extends BaseClass {
-	constructor(options: ClassOptions) {
-		super(options);
+
+	/**
+	 * @description This method create new ProtractorImageComparison instance
+	 * and provides to use async functions in library options
+	 */
+	static async build(options: ClassOptions): Promise<ProtractorImageComparison> {
+		const instance = new ProtractorImageComparison(options);
+		if (options.baselineFolder && isAsyncFn(options.baselineFolder)) {
+			const baselineFolderPath = await options.baselineFolder(options);
+			instance.folders.baselineFolder = baselineFolderPath;
+		}
+		return instance;
 	}
 
 	/**
