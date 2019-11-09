@@ -19,7 +19,6 @@ install:
 
 before_script:
   - npm install
-  - npx webdriver-manager update
 
 script:
   - npm run compile

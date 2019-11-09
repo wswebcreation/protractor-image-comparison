@@ -86,6 +86,9 @@ export function getFolders(
 	};
 }
 
-export function isAsyncFn(fn: () => void) {
+/**
+ * @description Detect if a function is asynchronous
+ */
+export function isAsyncFn(fn: () => void): boolean {
 	return fn.constructor.name === 'AsyncFunction';
 }
