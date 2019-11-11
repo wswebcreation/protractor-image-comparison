@@ -30,7 +30,26 @@ exports.config = {
 		},
 	],
 };
-``` 
+```
+
+### baselineFolder
+This option can be `string`, `function`, or `async function`.
+For example, we can create custom folder name for every browser instance:
+
+```js
+savePerInstance: false,
+// argument is current plugin options
+baselineFolder: async (options) => {
+  const capabilities = await browser.getCapabilities();
+  const version = capabilities.get('browserVersion') || capabilities.get('version');
+  const browserName = capabilities.get('browserName');
+
+  if (IS_HEADLESS) {
+    return `desktop_${ browserName }_headless`
+  }
+  return `desktop_${ browserName }_${ version }`
+}
+```
 
 ## Method options
 Methods options are the options that can be set per method. If the option has the same key as an options that has been set during the instantiation of the plugin, this method option will override the plugin option value.

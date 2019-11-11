@@ -1,7 +1,5 @@
 import {browser, ElementFinder} from "protractor";
 import {SaveFullPageMethodOptions} from "webdriver-image-comparison/build/commands/fullPage.interfaces";
-import {SaveElementMethodOptions} from "webdriver-image-comparison/build/commands/element.interfaces";
-import {SaveScreenMethodOptions} from "webdriver-image-comparison/build/commands/screen.interfaces";
 
 
 /**
@@ -86,4 +84,11 @@ export function getFolders(
 		baselineFolder: (methodOptions.baselineFolder ? methodOptions.baselineFolder : folders.baselineFolder),
 		diffFolder: (methodOptions.diffFolder ? methodOptions.diffFolder : folders.diffFolder)
 	};
+}
+
+/**
+ * @description Detect if a function is asynchronous
+ */
+export function isAsyncFn(fn: () => void): boolean {
+	return fn.constructor.name === 'AsyncFunction';
 }
