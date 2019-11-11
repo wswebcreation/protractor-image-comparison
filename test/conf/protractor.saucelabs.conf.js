@@ -55,6 +55,15 @@ config.multiCapabilities = [
 		specs: [mobileSpecs],
 		...defaultCapabilities,
 	},
+	{
+		browserName: 'safari',
+		deviceName: 'iPhone 11 Simulator',
+		logName: 'iPhone11Simulator',
+		platformName: 'ios',
+		platformVersion: '13.0',
+		specs: [mobileSpecs],
+		...defaultCapabilities,
+	},
 	// {
 	// 	deviceName: 'iPad Pro (12.9 inch) (3rd generation) Simulator',
 	// 	browserName: 'safari',
