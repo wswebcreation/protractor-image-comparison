@@ -1,10 +1,21 @@
-node_modules/
+# Ide
 .idea/
-*.log
-.DS_Store
-.tmp/
-coverage/
-localBaseline/
+.vscode/
 
+# Dependecies
+node_modules/
+
+# Build
 build/
-package-lock.json
+coverage/
+
+# Other
+*.log
+.tmp/
+.DS_Store
+
+# Baselines
+
+actual/
+diff/
+test/images/local

@@ -1,10 +1,14 @@
-import {$, browser} from 'protractor';
-import {copy} from 'fs-extra';
-import {normalize, join} from 'path'
+ 
+/* eslint-disable */
+
+import { $, browser } from 'protractor';
+import { copy } from 'fs-extra';
+import { normalize, join } from 'path'
+
 
 describe('protractor-image-comparison local development initialization', () => {
-	const localBaseline = 'localBaseline';
-	const checkBaseline = 'checkBaseline';
+	const localBaseline = 'test/images/local';
+	const checkBaseline = 'check';
 	const firstButton = $('.uk-button:nth-child(1)');
 
 	beforeEach(async () => {
@@ -18,9 +22,10 @@ describe('protractor-image-comparison local development initialization', () => {
 	it('should save the compare screenshot screenshots', async () => {
 		const examplePage = 'examplePage';
 		const examplePageFail = 'examplePageFail';
-		const {fileName, path} = await browser.imageComparison.saveScreen(examplePage);
-
+		const { fileName, path } = await browser.imageComparison.saveScreen(examplePage);
+		
 		await copy(normalize(`${path}/${fileName}`), join(process.cwd(), `./${localBaseline}/${path.split('/').pop()}/${fileName}`));
+		
 		await copy(
 			normalize(`${path}/${fileName}`),
 			join(
@@ -38,7 +43,7 @@ describe('protractor-image-comparison local development initialization', () => {
 	});
 
 	it('should save the compare element screenshot', async () => {
-		const {fileName, path} = await browser.imageComparison.saveElement(firstButton, 'firstButtonElement');
+		const { fileName, path } = await browser.imageComparison.saveElement(firstButton, 'firstButtonElement');
 
 		await copy(
 			normalize(`${path}/${fileName}`),
@@ -57,7 +62,7 @@ describe('protractor-image-comparison local development initialization', () => {
 	});
 
 	it('should save the compare fullpage screenshots', async () => {
-		const {fileName, path} = await browser.imageComparison.saveFullPageScreen('fullPage', {fullPageScrollTimeout: '1500'});
+		const { fileName, path } = await browser.imageComparison.saveFullPageScreen('fullPage', { fullPageScrollTimeout: 1500 });
 
 		await copy(
 			normalize(`${path}/${fileName}`),

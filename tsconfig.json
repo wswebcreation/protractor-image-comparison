@@ -1,33 +1,26 @@
 {
   "compilerOptions": {
-    "allowUnreachableCode": false,
-    "allowUnusedLabels": false,
     "emitDecoratorMetadata": true,
-		"declaration": true,
 		"experimentalDecorators": true,
+		"declaration": true,
+		"module": "commonjs",
+		"moduleResolution": "node",
+		"outDir": "./build",
+		"sourceMap": true,
+		"inlineSources": true,
+		"target": "es5",
 		"lib": [
 			"es2017",
 			"dom"
 		],
-		"module": "commonjs",
-		"moduleResolution": "node",
-		"noFallthroughCasesInSwitch": true,
-		"noImplicitAny": true,
-		"noImplicitReturns": true,
-		"noImplicitUseStrict": false,
-		"noLib": false,
-		"outDir": "./build",
-		"pretty": true,
-		"removeComments": true,
-		"sourceMap": true,
-		"inlineSources": true,
-		"skipLibCheck": true,
-		"target": "es5",
 		"typeRoots": [
 			"node_modules/@types"
 		]
   },
   "include": [
-    "lib/**/*"
-  ]
+    "lib/"
+	],
+	"exclude": [
+		"node_modules/"
+	]
 }

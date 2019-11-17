@@ -1,4 +1,4 @@
-let config = require('./protractor.local.desktop.conf').config;
+const { config } = require('./protractor.local.desktop.conf');
 
 config.specs= ['../init.spec.ts'];
 

@@ -1,24 +1,22 @@
-import {browser, ElementFinder} from 'protractor';
+import { ElementFinder, ProtractorBrowser } from 'protractor';
+import { SaveFullPageMethodOptions } from 'webdriver-image-comparison/build/commands/fullPage.interfaces';
+import { SaveScreenMethodOptions } from 'webdriver-image-comparison/build/commands/screen.interfaces';
+import { SaveElementMethodOptions } from 'webdriver-image-comparison/build/commands/element.interfaces';
 import {
 	BaseClass,
+	ClassOptions,
 	checkElement,
 	checkFullPageScreen,
 	checkScreen,
-	ClassOptions,
 	saveElement,
 	saveFullPageScreen,
 	saveScreen,
 } from 'webdriver-image-comparison';
-import {SaveFullPageMethodOptions} from 'webdriver-image-comparison/build/commands/fullPage.interfaces';
-import {SaveScreenMethodOptions} from 'webdriver-image-comparison/build/commands/screen.interfaces';
-import {SaveElementMethodOptions} from 'webdriver-image-comparison/build/commands/element.interfaces';
-import {
-	getFolders,
-	getInstanceData,
-	optionElementsToWebElements,
-	getWebElements,
-	isAsyncFn,
-} from './utils';
+
+import { getFolders, getInstanceData, optionElementsToWebElements, getWebElements, isAsyncFn } from './utils';
+
+
+declare let browser: ProtractorBrowser;
 
 export default class ProtractorImageComparison extends BaseClass {
 
@@ -35,13 +33,14 @@ export default class ProtractorImageComparison extends BaseClass {
 		return instance;
 	}
 
+
 	/**
 	 * Saves an image of an element
 	 */
-	async saveElement(element: ElementFinder, tag: string, saveElementOptions: SaveElementMethodOptions = {}) {
+	async saveElement(element: ElementFinder, tag: string, options: SaveElementMethodOptions = {}) {
 		browser.instanceData = browser.instanceData || await getInstanceData();
 
-		saveElementOptions = await optionElementsToWebElements(saveElementOptions);
+		options = await optionElementsToWebElements(options);
 
 		return saveElement(
 			{
@@ -49,12 +48,12 @@ export default class ProtractorImageComparison extends BaseClass {
 				screenShot: browser.takeScreenshot
 			},
 			browser.instanceData,
-			getFolders(saveElementOptions, this.folders),
-			<HTMLElement><unknown>await element.getWebElement(),
+			getFolders(options, this.folders),
+			element.getWebElement() as unknown as HTMLElement,
 			tag,
 			{
 				wic: this.defaultOptions,
-				method: saveElementOptions
+				method: options
 			},
 		);
 	}
@@ -62,10 +61,10 @@ export default class ProtractorImageComparison extends BaseClass {
 	/**
 	 * Saves an image of a viewport
 	 */
-	async saveScreen(tag: string, saveScreenOptions: SaveScreenMethodOptions = {}) {
+	async saveScreen(tag: string, options: SaveScreenMethodOptions = {}) {
 		browser.instanceData = browser.instanceData || await getInstanceData();
 
-		saveScreenOptions = await optionElementsToWebElements(saveScreenOptions);
+		options = await optionElementsToWebElements(options);
 
 		return saveScreen(
 			{
@@ -73,11 +72,11 @@ export default class ProtractorImageComparison extends BaseClass {
 				screenShot: browser.takeScreenshot,
 			},
 			browser.instanceData,
-			getFolders(saveScreenOptions, this.folders),
+			getFolders(options, this.folders),
 			tag,
 			{
 				wic: this.defaultOptions,
-				method: saveScreenOptions,
+				method: options,
 			},
 		);
 	}
@@ -85,13 +84,13 @@ export default class ProtractorImageComparison extends BaseClass {
 	/**
 	 * Saves an image of the complete screen
 	 */
-	async saveFullPageScreen(tag: string, saveFullPageScreenOptions: SaveFullPageMethodOptions = {}) {
+	async saveFullPageScreen(tag: string, options: SaveFullPageMethodOptions = {}) {
 		browser.instanceData = browser.instanceData || await getInstanceData();
 
-		saveFullPageScreenOptions = await optionElementsToWebElements(saveFullPageScreenOptions);
+		options = await optionElementsToWebElements(options);
 
-		if (saveFullPageScreenOptions.hideAfterFirstScroll) {
-			saveFullPageScreenOptions.hideAfterFirstScroll = await getWebElements(saveFullPageScreenOptions.hideAfterFirstScroll);
+		if (options.hideAfterFirstScroll) {
+			options.hideAfterFirstScroll = await getWebElements(options.hideAfterFirstScroll);
 		}
 
 		return saveFullPageScreen(
@@ -100,11 +99,11 @@ export default class ProtractorImageComparison extends BaseClass {
 				screenShot: browser.takeScreenshot
 			},
 			browser.instanceData,
-			getFolders(saveFullPageScreenOptions, this.folders),
+			getFolders(options, this.folders),
 			tag,
 			{
 				wic: this.defaultOptions,
-				method: saveFullPageScreenOptions,
+				method: options,
 			},
 		);
 	}
@@ -112,10 +111,10 @@ export default class ProtractorImageComparison extends BaseClass {
 	/**
 	 * Compare an image of an element
 	 */
-	async checkElement(element: ElementFinder, tag: string, checkElementOptions: SaveElementMethodOptions = {}) {
+	async checkElement(element: ElementFinder, tag: string, options: SaveElementMethodOptions = {}) {
 		browser.instanceData = browser.instanceData || await getInstanceData();
 
-		checkElementOptions = await optionElementsToWebElements(checkElementOptions);
+		options = await optionElementsToWebElements(options);
 
 		return checkElement(
 			{
@@ -123,12 +122,12 @@ export default class ProtractorImageComparison extends BaseClass {
 				screenShot: browser.takeScreenshot
 			},
 			browser.instanceData,
-			getFolders(checkElementOptions, this.folders),
-			<HTMLElement><unknown>await element.getWebElement(),
+			getFolders(options, this.folders),
+			element.getWebElement() as unknown as HTMLElement,
 			tag,
 			{
 				wic: this.defaultOptions,
-				method: checkElementOptions,
+				method: options,
 			},
 		);
 	}
@@ -136,10 +135,10 @@ export default class ProtractorImageComparison extends BaseClass {
 	/**
 	 * Compares an image of a viewport
 	 */
-	async checkScreen(tag: string, checkScreenOptions: SaveScreenMethodOptions = {}) {
+	async checkScreen(tag: string, options: SaveScreenMethodOptions = {}) {
 		browser.instanceData = browser.instanceData || await getInstanceData();
 
-		checkScreenOptions = await optionElementsToWebElements(checkScreenOptions);
+		options = await optionElementsToWebElements(options);
 
 		return checkScreen(
 			{
@@ -147,11 +146,11 @@ export default class ProtractorImageComparison extends BaseClass {
 				screenShot: browser.takeScreenshot
 			},
 			browser.instanceData,
-			getFolders(checkScreenOptions, this.folders),
+			getFolders(options, this.folders),
 			tag,
 			{
 				wic: this.defaultOptions,
-				method: checkScreenOptions,
+				method: options,
 			},
 		);
 	}
@@ -159,10 +158,10 @@ export default class ProtractorImageComparison extends BaseClass {
 	/**
 	 * Compares an image of a viewport
 	 */
-	async checkFullPageScreen(tag: string, checkFullPageOptions: SaveFullPageMethodOptions = {}) {
+	async checkFullPageScreen(tag: string, options: SaveFullPageMethodOptions = {}) {
 		browser.instanceData = browser.instanceData || await getInstanceData();
 
-		checkFullPageOptions = await optionElementsToWebElements(checkFullPageOptions);
+		options = await optionElementsToWebElements(options);
 
 		return checkFullPageScreen(
 			{
@@ -170,11 +169,11 @@ export default class ProtractorImageComparison extends BaseClass {
 				screenShot: browser.takeScreenshot
 			},
 			browser.instanceData,
-			getFolders(checkFullPageOptions, this.folders),
+			getFolders(options, this.folders),
 			tag,
 			{
 				wic: this.defaultOptions,
-				method: checkFullPageOptions,
+				method: options,
 			},
 		);
 	}
