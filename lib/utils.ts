@@ -1,39 +1,43 @@
-import {browser, ElementFinder} from "protractor";
-import {SaveFullPageMethodOptions} from "webdriver-image-comparison/build/commands/fullPage.interfaces";
+import { ElementFinder, ProtractorBrowser } from 'protractor';
+import { Folders } from 'webdriver-image-comparison/build/base.interface';
 
+import { InstanceData, BaseMethodOptions } from './interfaces';
+
+
+declare let browser: ProtractorBrowser;
 
 /**
  * Get the instance data
  */
-export async function getInstanceData() {
-	const instanceConfig = (await browser.getProcessedConfig()).capabilities;
+export async function getInstanceData(): Promise<InstanceData> {
+	const { capabilities = {} } = await browser.getProcessedConfig();
+	const options = [
+		'browserName',
+		'browserVersion',
+		'logName',
+		'platformName',
+		'deviceName'
+	];
 
-	// Substract the needed data from the running instance
-	const browserName = (instanceConfig.browserName || '').toLowerCase();
-	const browserVersion = instanceConfig.browserVersion || '';
-	const logName = instanceConfig.logName || '';
-	const name = instanceConfig.name || '';
+	const data = options.reduce<{ [key: string]: string }>((result, key) => {
+		const value: string = capabilities[key] || '';
+		result[key] = value.toLowerCase();
+		return result;
+	}, {});
 
-	// For mobile
-	const platformName = (instanceConfig.platformName || '').toLowerCase();
-	const deviceName = (instanceConfig.deviceName || '').toLowerCase();
-	const nativeWebScreenshot = !!instanceConfig.nativeWebScreenshot;
+	const nativeWebScreenshot = Boolean(capabilities.nativeWebScreenshot);
 
-	return {
-		browserName,
-		browserVersion,
-		deviceName,
-		logName,
-		name,
-		nativeWebScreenshot,
-		platformName,
-	};
+	return { ...data, nativeWebScreenshot };
 }
 
 /**
  * Transform all `hideElements`, `removeElements` and `hideAfterFirstScroll`-elements to WebElements
  */
-export async function optionElementsToWebElements(options: SaveFullPageMethodOptions) {
+export async function optionElementsToWebElements(options: BaseMethodOptions) {
+	// TODO (vitalie-ly): It's bad solution to mutate variable.
+	// The function should be pure and hasn't side effects
+	// I think it should be fixed in future 
+
 	if (options.hideElements) {
 		options.hideElements = await getWebElements(options.hideElements);
 	}
@@ -51,14 +55,10 @@ export async function optionElementsToWebElements(options: SaveFullPageMethodOpt
 
 /**
  * Get all the web elements
- */
+*/
 export async function getWebElements(elements: HTMLElement[]) {
-	for (let i = 0; i < elements.length; i++) {
-		elements[i] =
-			<HTMLElement><unknown>await (<ElementFinder><unknown>elements[i]).getWebElement();
-	}
-
-	return elements;
+	// TODO (vitalie-ly): I think there is wrong type in webdriver-image-comparison
+	return (elements as unknown as ElementFinder[]).map(e => e.getWebElement()) as unknown as HTMLElement[];
 }
 
 /**
@@ -67,22 +67,11 @@ export async function getWebElements(elements: HTMLElement[]) {
  * If folder options are passed in use those values
  * Otherwise, use the values set during instantiation
  */
-export function getFolders(
-	methodOptions: any,
-	folders?: {
-		actualFolder?: string,
-		baselineFolder?: string,
-		diffFolder?: string,
-	}):
-	{
-		actualFolder: string,
-		baselineFolder: string,
-		diffFolder: string
-	} {
+export function getFolders(methodOptions: any, folders: Folders): Folders {
 	return {
-		actualFolder: (methodOptions.actualFolder ? methodOptions.actualFolder : folders.actualFolder),
-		baselineFolder: (methodOptions.baselineFolder ? methodOptions.baselineFolder : folders.baselineFolder),
-		diffFolder: (methodOptions.diffFolder ? methodOptions.diffFolder : folders.diffFolder)
+		actualFolder: methodOptions.actualFolder || folders.actualFolder,
+		baselineFolder: methodOptions.baselineFolder || folders.baselineFolder,
+		diffFolder: methodOptions.diffFolder || folders.diffFolder
 	};
 }
 

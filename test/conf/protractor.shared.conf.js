@@ -1,5 +1,6 @@
-const {join} = require('path');
-const SpecReporter = require('jasmine-spec-reporter').SpecReporter;
+const { resolve } = require('path');
+const { SpecReporter } = require('jasmine-spec-reporter');
+
 
 exports.config = {
 	baseUrl: 'https://wswebcreation.github.io/protractor-image-comparison/',
@@ -11,14 +12,13 @@ exports.config = {
 		defaultTimeoutInterval: 180000,
 		isVerbose: true,
 		includeStackTrace: true,
-		print: function () {
-		}
+		print: () => {}
 	},
 	SELENIUM_PROMISE_MANAGER: false,
 	onPrepare: async () => {
 		// Transpile on the fly
 		require('ts-node').register({
-			project: join(__dirname, './tsconfig.e2e.json')
+			project: resolve(__dirname, './tsconfig.e2e.json')
 		});
 
 		// Disable Angular, because it's not an angular site
@@ -44,5 +44,8 @@ exports.config = {
 		if (!('platformName' in processedConfig.capabilities)) {
 			await browser.driver.manage().window().setSize(1366, 768);
 		}
-	}
+	},
+	specs: [
+		'../main.spec.ts'
+	]
 };

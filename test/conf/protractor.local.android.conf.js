@@ -1,8 +1,6 @@
-let config = require('./protractor.shared.conf').config;
+const { resolve } = require('path');
+const { config } = require('./protractor.shared.conf');
 
-config.specs = [
-	'../../new.mobile.spec.ts'
-];
 
 config.seleniumAddress = 'http://localhost:4726/wd/hub';
 
@@ -24,16 +22,16 @@ config.capabilities = {
 
 config.plugins = [
 	{
-		path: join(process.cwd(), './build/index.js'),
+		path: resolve(process.cwd(), './build/index.js'),
 		options: {
-			baselineFolder: join(process.cwd(), './localBaseline'),
+			baselineFolder: resolve(process.cwd(), './test/images/local-baseline'),
+			screenshotPath: resolve(process.cwd(), './test/images/'),
+			formatImageName: '{tag}-{logName}-{width}x{height}',
 			debug: false,
-			formatImageName: `{tag}-{logName}-{width}x{height}`,
-			screenshotPath: join(process.cwd(), '.tmp/'),
 			savePerInstance: true,
 			autoSaveBaseline: true,
 			blockOutStatusBar: true,
-			blockOutToolBar: true,
+			blockOutToolBar: true
 		},
 	},
 ];

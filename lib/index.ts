@@ -1,5 +1,5 @@
-import {browser} from 'protractor';
-import {ClassOptions} from 'webdriver-image-comparison';
+import { browser } from 'protractor';
+import { ClassOptions } from 'webdriver-image-comparison';
 import ProtractorImageComparison from './protractor.image.compare';
 
 /**

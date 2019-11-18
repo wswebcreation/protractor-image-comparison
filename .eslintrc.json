@@ -1,0 +1,24 @@
+{
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["@typescript-eslint"],
+  "extends": [ "plugin:@typescript-eslint/recommended" ],
+  "rules": {
+    "@typescript-eslint/explicit-function-return-type": "off",
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/no-use-before-define": "off",
+    "@typescript-eslint/no-var-requires": "off",
+    "object-curly-spacing": ["warn", "always"],
+    "quotes": ["warn", "single"],
+    "max-len": ["warn", 120],
+    "indent": [2, "tab"],
+    "no-tabs": "off",
+    "eol-last": ["warn", "always"]
+  },
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "extensions": [".ts", ".js"]
+      }
+    }
+  }
+}
