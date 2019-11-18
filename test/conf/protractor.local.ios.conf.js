@@ -53,15 +53,14 @@ config.plugins = [
 	{
 		path: resolve(process.cwd(), './build/index.js'),
 		options: {
-			baselineFolder: resolve(process.cwd(), './test/images/baseline'),
+			baselineFolder: resolve(process.cwd(), './test/images/local-baseline'),
 			screenshotPath: resolve(process.cwd(), './test/images/'),
 			formatImageName: '{tag}-{logName}-{width}x{height}',
 			debug: false,
 			savePerInstance: true,
 			autoSaveBaseline: true,
 			blockOutStatusBar: true,
-			blockOutToolBar: true,
-			clearRuntimeFolder: true
+			blockOutToolBar: true
 		},
 	},
 ];

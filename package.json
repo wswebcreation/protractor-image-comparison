@@ -14,7 +14,7 @@
 		"lint": "eslint lib/*",
 		"clean": "rimraf coverage build tmp",
 		"watch": "tsc -w",
-		"release": "np",
+		"release": "np --no-yarn",
 		"precompile": "npm run clean",
 		"prepublish": "npm run compile",
 		"prerelease": "npm run compile"

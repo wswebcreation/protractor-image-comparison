@@ -18,4 +18,4 @@ coverage/
 
 actual/
 diff/
-test/images/local
+test/images/local-baseline

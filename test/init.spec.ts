@@ -7,7 +7,7 @@ import { normalize, join } from 'path'
 
 
 describe('protractor-image-comparison local development initialization', () => {
-	const localBaseline = 'test/images/local';
+	const localBaseline = 'test/images/local-baseline';
 	const checkBaseline = 'check';
 	const firstButton = $('.uk-button:nth-child(1)');
 
