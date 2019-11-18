@@ -1,6 +1,7 @@
 const { resolve } = require('path');
 const { config } = require('./protractor.shared.conf');
 
+config.seleniumAddress = 'http://localhost:4444/wd/hub/';
 
 config.multiCapabilities = [
 	{

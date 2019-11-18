@@ -1,6 +1,4 @@
- 
 /* eslint-disable */
-
 import { $, browser } from 'protractor';
 import { copy } from 'fs-extra';
 import { normalize, join } from 'path'
@@ -8,7 +6,6 @@ import { normalize, join } from 'path'
 
 describe('protractor-image-comparison local development initialization', () => {
 	const localBaseline = 'test/images/local-baseline';
-	const checkBaseline = 'check';
 	const firstButton = $('.uk-button:nth-child(1)');
 
 	beforeEach(async () => {
@@ -23,21 +20,14 @@ describe('protractor-image-comparison local development initialization', () => {
 		const examplePage = 'examplePage';
 		const examplePageFail = 'examplePageFail';
 		const { fileName, path } = await browser.imageComparison.saveScreen(examplePage);
-		
+
 		await copy(normalize(`${path}/${fileName}`), join(process.cwd(), `./${localBaseline}/${path.split('/').pop()}/${fileName}`));
-		
+
 		await copy(
 			normalize(`${path}/${fileName}`),
 			join(
 				process.cwd(),
 				`./${localBaseline}/${path.split('/').pop()}/${fileName.replace(examplePage, examplePageFail)}`,
-			),
-		);
-		await copy(
-			normalize(`${path}/${fileName}`),
-			join(
-				process.cwd(),
-				`./${localBaseline}/${ checkBaseline }/${path.split('/').pop()}/${fileName.replace(examplePage, 'screenCheckFolders')}`,
 			),
 		);
 	});
@@ -52,13 +42,6 @@ describe('protractor-image-comparison local development initialization', () => {
 				`./${localBaseline}/${path.split('/').pop()}/${fileName}`,
 			),
 		);
-		await copy(
-			normalize(`${path}/${fileName}`),
-			join(
-				process.cwd(),
-				`./${localBaseline}/${ checkBaseline }/${path.split('/').pop()}/${ fileName.replace('firstButtonElement', 'elementCheckFolders') }`,
-			),
-		);
 	});
 
 	it('should save the compare fullpage screenshots', async () => {
@@ -69,13 +52,6 @@ describe('protractor-image-comparison local development initialization', () => {
 			join(
 				process.cwd(),
 				`./${localBaseline}/${path.split('/').pop()}/${fileName}`,
-			),
-		);
-		await copy(
-			normalize(`${path}/${fileName}`),
-			join(
-				process.cwd(),
-				`./${localBaseline}/${ checkBaseline }/${path.split('/').pop()}/${ fileName.replace('fullPage', 'fullPageCheckFolders') }`,
 			),
 		);
 	});

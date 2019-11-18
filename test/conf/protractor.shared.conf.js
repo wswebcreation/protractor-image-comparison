@@ -1,6 +1,7 @@
-const { resolve } = require('path');
-const { SpecReporter } = require('jasmine-spec-reporter');
-
+const {resolve} = require('path');
+const {SpecReporter} = require('jasmine-spec-reporter');
+const {removeSync} = require('fs-extra');
+const {blue} = require('chalk');
 
 exports.config = {
 	baseUrl: 'https://wswebcreation.github.io/protractor-image-comparison/',
@@ -12,9 +13,23 @@ exports.config = {
 		defaultTimeoutInterval: 180000,
 		isVerbose: true,
 		includeStackTrace: true,
-		print: () => {}
+		print: () => {
+		}
 	},
 	SELENIUM_PROMISE_MANAGER: false,
+	beforeLaunch: () => {
+		const screenshotPath = './test/images/';
+		const actual = resolve(process.cwd(), screenshotPath, 'actual');
+		const diff = resolve(process.cwd(), screenshotPath, 'diff');
+
+		console.log(blue('\n###################################################################'));
+		console.log(blue(`Removing the ${actual} folder.`));
+		console.log(blue(`Removing the ${diff} folder.`));
+		console.log(blue('###################################################################\n'));
+
+		removeSync(actual);
+		removeSync(diff);
+	},
 	onPrepare: async () => {
 		// Transpile on the fly
 		require('ts-node').register({

@@ -5,10 +5,7 @@ os:
 
 language: node_js
 node_js:
-  - '8'
-
-addons:
-  sauce_connect: true
+  - '10'
 
 notifications:
     on_success: always
@@ -16,9 +13,6 @@ notifications:
 
 install:
 - npm install
-
-before_script:
-  - npm install
 
 script:
   - npm run compile
