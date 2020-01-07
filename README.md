@@ -9,6 +9,9 @@ protractor-image-comparison
 
 > **NOTE:** V3 is out, please read the [releases](https://github.com/wswebcreation/protractor-image-comparison/releases) for all the (breaking)changes
 
+> **NOTE for Windows users!!<br/>**
+> Please check the [FAQ](./README.md#faq)
+
 ## What can it do?
 *protractor-image-comparison* is a lightweight *protractor* plugin for browsers / mobile browsers / hybrid apps to do image comparison on screens, elements or full page screens.
 
@@ -172,6 +175,9 @@ It could be that the error `Width and height cannot be negative` is thrown. 9 ou
 
 ### Changing the color on an element is not detected by protractor-image-comparison
 When using Chrome and using the `chromeOptions.args:['--disable-gpu']` it could be possible that the images can't be compared in the correct way. If you remove this argument all will work again. See [here](https://github.com/wswebcreation/protractor-image-comparison/issues/33#issuecomment-333409063)
+
+### Installation of Canvas on Windows failed with Node-Gyp logs
+Canvas uses Node-Gyp and might cause some issues on Windows that are not fully set up. Please check [this post](https://spin.atomicobject.com/2019/03/27/node-gyp-windows/) for Fixing Node-Gyp Issues on Windows. (Thanks to [IgorSasovets](https://github.com/IgorSasovets))
 
 ## Contribution
 See [CONTRIBUTING.md](./docs/CONTRIBUTING.md).
