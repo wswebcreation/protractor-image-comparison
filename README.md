@@ -9,7 +9,6 @@ protractor-image-comparison
 
 > **NOTE:** V3 is out, please read the [releases](https://github.com/wswebcreation/protractor-image-comparison/releases) for all the (breaking)changes
 
-
 > **NOTE for Windows users!!<br/>**
 > Please check the [FAQ](./README.md#faq)
 
