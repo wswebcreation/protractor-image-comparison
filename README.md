@@ -13,7 +13,7 @@ protractor-image-comparison
 > Please check the [FAQ](./README.md#faq)
 
 # Important News
-**Date: 16th of January 2016**
+**Date: 16th of January 2020**
 
 **I will stop maintaining this module per the first of July 2020.** If you look at Protractor you can get the feeling that, in spite of all the effort that the Open Source Community is putting in it, it is not being maintained by Google anymore.
 To be honest, I'm pretty sure about it. If you look at the facts, see image below, you will notice that:
